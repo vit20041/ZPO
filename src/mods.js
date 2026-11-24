@@ -677,4 +677,5 @@ MODS.vzt = { label: 'Důležité vztahy', chap: 'přehled vzorců', tpl: 'tpl-vz
 MODS.lab = { label: 'Laboratoř', chap: 'rozběh motoru', ch: [] };
 MODS.faz = { label: 'Fázorové diagramy', chap: 'interaktivně', ch: [] };
 MODS.pole = { label: 'Točivé pole', chap: 'interaktivně', ch: [] };
-const TAB_ORDER = ['uvod', 'vzt', 'mech', 'tep', 'reg', 'dc', 'ser', 'am', 'sm', 'spec', 'lab', 'pole', 'faz', 'opak', 'stroje'];
+MODS.zk = { label: 'Zkoušení', chap: 'všetečné otázky', ch: [] };
+const TAB_ORDER = ['uvod', 'vzt', 'mech', 'tep', 'reg', 'dc', 'ser', 'am', 'sm', 'spec', 'lab', 'pole', 'faz', 'opak', 'zk', 'stroje'];

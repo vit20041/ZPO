@@ -365,7 +365,7 @@ table.vz td:last-child{color:var(--mut);font-size:14.5px}
 
 /* laboratoř: přístroje a diagramy */
 .ldiag{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,400px),1fr));gap:14px;margin:14px 0}
-.ldg .dgb{min-height:120px}.ldg .dgb svg{width:100%;height:auto;display:block;max-height:360px}
+.ldg .dgb{min-height:120px}.ldg .dgb svg{width:100%;height:auto;display:block;max-height:360px}.ldg .dgb svg.flow{max-height:none}
 .mini .mgr{stroke:var(--rule);stroke-width:.6}.mini .max{stroke:var(--mut);stroke-width:1}
 .mini .mtx{font-size:11px;fill:var(--mut)}.mini .mxl{font-size:12px;fill:var(--ink)}.mini .mtl{font-size:12px;stroke:none!important;fill:currentColor}
 .mini path{fill:none;stroke-width:2.2}.mini .mc1{stroke:var(--red);color:var(--red)}.mini .mc2{stroke:var(--och);color:var(--och)}.mini .mc3{stroke:var(--grn,#2a8a4a);color:var(--grn,#2a8a4a)}
@@ -381,6 +381,22 @@ table.vz td:last-child{color:var(--mut);font-size:14.5px}
 .dbr i{display:block;height:12px;background:var(--rule);border-radius:6px;overflow:hidden}.dbr b{display:block;height:100%;background:var(--blu)}.dbr.g b{background:var(--red)}
 .dbr em{font-style:normal;font-variant-numeric:tabular-nums;text-align:right}
 .dgn{font-size:13px;color:var(--mut);margin:6px 0}
+
+/* zkoušení */
+.zk section{margin:10px 0 18px}.zq{border:1px solid var(--rule);border-radius:10px;background:var(--panel);margin:8px 0}
+.zq summary{cursor:pointer;padding:10px 14px;display:flex;gap:10px;justify-content:space-between;align-items:baseline;font-weight:600}
+.zq summary::-webkit-details-marker{display:none}.zq summary::before{content:'▸';color:var(--red);margin-right:4px}.zq[open] summary::before{content:'▾'}
+.zqt{flex:1}.zqg{font-size:12px;font-weight:400;color:var(--mut);white-space:nowrap}
+.zqa{padding:0 14px 10px 30px}.zqa p{margin:6px 0}.zqr{font-size:13px}.zqr a,.lref a{color:var(--blu)}
+.lref{font-size:13px;margin:8px 0 0}.zkone{margin:10px 0}
+.tscroll{overflow-x:auto}.zku td{vertical-align:top}.zku td:nth-child(5){min-width:280px}
+@media (max-width:640px){.zqg{display:none}.zqa{padding-left:14px}}
+/* tok výkonu, osciloskop */
+.flow .fnode{fill:var(--blu);fill-opacity:.75}.flow .floss{fill:var(--red);fill-opacity:.7}.flow .fgain{fill:var(--grn,#2a8a4a);fill-opacity:.7}
+.flow .ftn{font-size:13px;font-weight:600;fill:var(--ink)}.flow .ftl{font-size:12.5px;fill:var(--mut)}.flow .ftv{font-size:13px;fill:var(--ink);font-variant-numeric:tabular-nums}.flow .fcon{stroke:var(--mut);stroke-dasharray:2 2}
+.dosc{grid-column:1/-1}.osccv{width:100%;height:260px;display:block;background:var(--bg);border-radius:8px}
+.osct{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;margin:4px 0 8px;font-size:13px}
+.osc-u{color:var(--mut)}.osc-a{color:var(--red)}.osc-b{color:var(--och)}.osc-c{color:var(--blu)}.osc-r{color:var(--grn,#2a8a4a)}
 </style>
 <script>window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']]},svg:{fontCache:'global'},startup:{typeset:false}};</script>
 <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-svg.js"></script>

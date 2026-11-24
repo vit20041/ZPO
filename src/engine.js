@@ -258,6 +258,7 @@ function renderCards() {
   if (tab === 'lab') { renderLab(el); return; }
   if (tab === 'faz' && typeof renderFaz === 'function') { renderFaz(el); return; }
   if (tab === 'pole') { renderPole(el); return; }
+  if (tab === 'zk') { renderZk(el); return; }
   const list = CARDS.map((c, i) => [c, i]).filter(([c]) => m.ch.includes(c[0]));
   el.innerHTML = list.length ? `<div class="wrap"><h2>Otázky k ověření (kap. ${m.chap})</h2><div class="qgrid">${list.map(([c, i]) => cardHTML(c, i)).join('')}</div></div>` : '';
 }

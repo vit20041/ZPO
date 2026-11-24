@@ -27,7 +27,8 @@ function labInit() {
     L = { m: 'sm', P, s: new Float64Array(1), nu: 0, MN: 1, ws: TAU * P.f / P.pp };
   }
   Object.assign(L, { gen: LAB.gen, t: 0, thv: 0, fang: 0, fmag: 0, NB, bi: 0, bn: 0, nextS: 0, Mp: 0 });
-  L.buf = { t: new Float64Array(NB), n: new Float64Array(NB), I: new Float64Array(NB), M: new Float64Array(NB) };
+  L.buf = { t: new Float64Array(NB), n: new Float64Array(NB), I: new Float64Array(NB), M: new Float64Array(NB), nq: new Float64Array(NB) };
+  L.osc = { t: new Float64Array(OSC_N), a: new Float64Array(OSC_N), b: new Float64Array(OSC_N), c: new Float64Array(OSC_N), r: new Float64Array(OSC_N), u: new Float64Array(OSC_N), i: 0, n: 0 }; L.nextO = 0; L.qW = 0; L.flow = null;
   L.meas = { U: 0, I: 0, n: 0, M: 0, b: 0, x1: 0, x2: 0, x3: 0, x4: 0 };
   L.K = [0, 1, 2, 3].map(() => new Float64Array(L.s.length)); L.tmp = new Float64Array(L.s.length);
   labLog = [];
@@ -79,7 +80,7 @@ function stepAM(dt) {
     s[2] += dt * (-a / tau - w * b); s[3] += dt * (-b / tau + w * a); s[0] = Lh / L2 * s[2]; s[1] = Lh / L2 * s[3];
     if (gen) { s[4] = W + dt * (-labMz(W) - P.B * W) / P.J; L.Mp = primeMover(W).Mp; }
     else { let Mz = labMz(W); if (Mz === null) Mz = passive(0, W, Mz0); const Wn = W + dt * (-Mz - P.B * W) / P.J; s[4] = (LAB.lt === 'react' && Mz0 && Math.sign(Wn) !== Math.sign(W)) ? 0 : Wn; }
-    return { M: 0, i: 0, u: 0, p: 0, q: 0 };
+    return { M: 0, i: 0, u: 0, p: 0, q: 0, ia: 0, ib: 0, ra: (L1 * s[2] - Lh * s[0]) / D, rb: (L1 * s[3] - Lh * s[1]) / D, ua: 0, R1, R2 };
   }
   const fn = (y, o) => {
     const i1a = (L2 * y[0] - Lh * y[2]) / D, i1b = (L2 * y[1] - Lh * y[3]) / D, i2a = (L1 * y[2] - Lh * y[0]) / D, i2b = (L1 * y[3] - Lh * y[1]) / D, w = pp * y[4];
@@ -91,7 +92,7 @@ function stepAM(dt) {
   rk4s(s, dt, fn, L.K, L.tmp);
   const i1a = (L2 * s[0] - Lh * s[2]) / D, i1b = (L2 * s[1] - Lh * s[3]) / D;
   if (gen) L.Mp = primeMover(s[4]).Mp;
-  return { M: 1.5 * pp * (s[0] * i1b - s[1] * i1a), i: Math.hypot(i1a, i1b) * kv, u: Math.hypot(ua, ub) / kv, p: 1.5 * (ua * i1a + ub * i1b), q: 1.5 * (ub * i1a - ua * i1b) };
+  return { M: 1.5 * pp * (s[0] * i1b - s[1] * i1a), i: Math.hypot(i1a, i1b) * kv, u: Math.hypot(ua, ub) / kv, p: 1.5 * (ua * i1a + ub * i1b), q: 1.5 * (ub * i1a - ua * i1b), ia: i1a, ib: i1b, ra: (L1 * s[2] - Lh * s[0]) / D, rb: (L1 * s[3] - Lh * s[1]) / D, ua, R1, R2 };
 }
 function stepDC(dt) {
   const P = L.P, d = L.d, s = L.s, C = LAB_DC, reg = C.mode === 'reg';    /* s: i, Ω, i_f, u měniče */
@@ -157,21 +158,25 @@ function stepSM(dt) {
 }
 function labAdvance(simT) {
   const dt = L.m === 'am' ? 5e-5 : L.m === 'dc' ? 2e-5 : 1e-4, cap = L.m === 'am' ? 3000 : 6000;
+  const W0 = L.m === 'am' ? L.s[4] : L.m === 'dc' ? L.s[1] : L.nu * L.ws, t0 = L.t;
   L.acc = (L.acc || 0) + simT; const n = Math.min(Math.floor(L.acc / dt), cap); L.acc = n === cap ? 0 : L.acc - n * dt; let r = null;
   for (let k = 0; k < n; k++) {
     r = L.m === 'am' ? stepAM(dt) : L.m === 'dc' ? (L.gen ? stepDCgen(dt) : stepDC(dt)) : stepSM(dt);
     const W = L.m === 'am' ? L.s[4] : L.m === 'dc' ? L.s[1] : L.nu * L.ws;
     L.thv += W * dt; L.t += dt;
+    if (L.m === 'am' && !L.gen) labStatic(dt);
+    if (L.t >= L.nextO) { L.nextO = L.t + OSC_DT; oscPush(r); }
     if (L.m === 'am') { const p = Math.hypot(L.s[0], L.s[1]); if (p > 1e-4) L.fang = Math.atan2(L.s[1], L.s[0]) / L.P.pp; L.fmag = p; }
     if (L.t >= L.nextS) {
       L.nextS = L.t + 0.002; const b = L.buf, i = L.bi;
-      b.t[i] = L.t; b.n[i] = toRpm(W); b.I[i] = L.m === 'am' ? r.i * Math.SQRT1_2 : L.m === 'dc' ? r.i : r.c.I; b.M[i] = r.M;
+      b.t[i] = L.t; b.n[i] = toRpm(W); b.I[i] = L.m === 'am' ? r.i * Math.SQRT1_2 : L.m === 'dc' ? r.i : r.c.I; b.M[i] = r.M; b.nq[i] = L.m === 'am' && !L.gen ? toRpm(L.qW) : NaN;
       L.bi = (i + 1) % L.NB; L.bn = Math.min(L.NB, L.bn + 1);
     }
   }
   if (!r) return;
   const m = L.meas, W = L.m === 'am' ? L.s[4] : L.m === 'dc' ? L.s[1] : L.nu * L.ws;
   m.n = toRpm(W); m.M = r.M; m.Mp = L.Mp;
+  labFlow(r, W, L.t > t0 ? (W - W0) / (L.t - t0) : 0);
   if (L.m === 'am') {
     m.U = r.u * Math.sqrt(1.5); m.I = r.i * Math.SQRT1_2; m.x1 = L.f;
     const ns = 60 * L.f / L.P.pp, on = L.gen ? G_AM.on : LAB_AM.on && !LAB_AM.dcb;
@@ -372,7 +377,7 @@ function renderLab(el) {
 <div class="gauges">${meters.map(([k, t, u]) => `<div class="meter"><p>${t}</p><div id="gw-${k}">${gaugeSVG(k, ...labGR[k])}</div><div class="lcd"><span id="lcd-${k}">0</span><small>${u}</small></div></div>`).join('')}</div></div><div class="lgrp linside" id="lb-inside">${labInsideHTML()}</div></div>
 <div class="ldiag" id="lb-diag">${labDiagHTML()}</div>
 <div class="lcds">${extra.map(([k, t, u]) => `<div class="meter sm"><p>${sub(t)}</p><div class="lcd"><span id="lcx-${k}">0</span><small>${u}</small></div></div>`).join('')}</div>
-<div class="lchart"><canvas id="lb-cv" aria-label="Průběh otáček, proudu a momentu za poslední 3 sekundy"></canvas><p class="note">Poslední 3 s simulace: <span class="k-n">■ otáčky</span> <span class="k-i">■ proud</span> <span class="k-m">■ moment</span> (každá veličina ve stupnici svého měřáku)</p></div>
+<div class="lchart"><canvas id="lb-cv" aria-label="Průběh otáček, proudu a momentu za poslední 3 sekundy"></canvas><p class="note">Poslední 3 s simulace: <span class="k-n">■ otáčky</span> <span class="k-i">■ proud</span> <span class="k-m">■ moment</span>${L.m === 'am' && !L.gen ? ' <span class="k-n">┅ otáčky podle ustálené charakteristiky M(n)</span>' : ''} (každá veličina ve stupnici svého měřáku)</p></div>
 <div class="cols2"><div><h3>Co zkusit</h3>${labTips()}</div><div><h3>Záznam</h3><ol id="lb-ev" class="lev"></ol></div></div></div>`;
   labCol = null; labLogDraw(); labDraw(); labStartLoop();
 }
@@ -431,7 +436,7 @@ function labChart() {
     for (let j = 0; j < N; j++) { const i = (start + j) % L.NB; if (b.t[i] < t0) continue; const x = X(b.t[i]), y = Y(b[key][i]); if (first) c.moveTo(x, y); else c.lineTo(x, y); first = false; }
     c.stroke();
   };
-  tr('M', col.och, labGR.M); tr('I', col.red, labGR.I); tr('n', col.blu, labGR.n);
+  tr('M', col.och, labGR.M); tr('I', col.red, labGR.I); if (L.m === 'am' && !L.gen) { c.setLineDash([6, 4]); tr('nq', col.blu, labGR.n); c.setLineDash([]); } tr('n', col.blu, labGR.n);
 }
 function labLoop(ts) {
   labRaf = 0;
@@ -688,7 +693,7 @@ function labScnHTML() {
 function labScnBox() {
   if (!SCN) return '';
   const sc = SCN.sc, done = SCN.i >= sc.steps.length;
-  return `<div class="lnow"><p class="lgh">${sc.n}${done ? ' (dokončeno)' : ''}</p><p class="lnowt">${sub(SCN.last || 'Připravuji…')}</p><ol class="lsteps">${sc.steps.map((s, k) => `<li class="${k < SCN.i ? 'done' : k === SCN.i ? 'cur' : ''}">${sub(s.s.split(':')[0].split('.')[0])}</li>`).join('')}</ol></div>`;
+  return `<div class="lnow"><p class="lgh">${sc.n}${done ? ' (dokončeno)' : ''}</p><p class="lnowt">${sub(SCN.last || 'Připravuji…')}</p><ol class="lsteps">${sc.steps.map((s, k) => `<li class="${k < SCN.i ? 'done' : k === SCN.i ? 'cur' : ''}">${sub(s.s.split(':')[0].split('.')[0])}</li>`).join('')}</ol><p class="lref">K tomu: ${refLinks(SCN_REF[sc.id])}</p></div>`;
 }
 function labScnDraw() { const b = $('#lb-scn-box'); if (b) b.innerHTML = labScnBox(); }
 document.addEventListener('click', e => {

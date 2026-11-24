@@ -38,10 +38,13 @@ function labDiagHTML() {
   if (m !== 'dc') c.push(['dph', 'Fázorový diagram (aktuální stav)', m === 'sm' ? 'Generátorová konvence: U_i = U + jX_d I_d + jX_q I_q; u motoru je β záporné. Platí v synchronizmu.' : 'Ustálený stav z T-schématu pro okamžitý skluz (napájení ze sítě). Proudy ve vlastním měřítku.']);
   c.push(['dch', m === 'sm' ? 'Výkon v závislosti na zátěžném úhlu' : m === 'am' ? 'Momentová charakteristika a pracovní bod' : L.gen ? 'Charakteristika dynama' : 'Mechanická charakteristika a pracovní bod', m === 'sm' ? 'Červený bod je okamžitý stav. Při kývání se pohybuje po křivce kolem rovnovážného bodu; plochy nad a pod čarou momentu turbíny/zátěže se vyrovnávají (metoda rovnosti ploch). Za vrcholem křivky je stroj nestabilní.' : m === 'am' ? 'Červeně ustálená charakteristika M(n) pro aktuální napětí, kmitočet a odpor v rotoru, modře zátěž, bod je okamžitý stav (při rozběhu se od statické křivky odchyluje kvůli přechodovým dějům).' : L.gen ? 'Napětí naprázdno v závislosti na budicím proudu (magnetizační křivka) a odporová přímka budicího obvodu; průsečík je bod nabuzení derivačního dynama.' : 'Přímka n(M) pro aktuální napětí, odpor a buzení; modře zátěž, bod je okamžitý stav.']);
   if (m === 'sm') c.push(['dv', 'V-křivky', 'Proud statoru v závislosti na buzení pro stálý činný výkon. Vlevo od minima je stroj podbuzený (odebírá jalový výkon), vpravo přebuzený (dodává). Bod je okamžitý stav.']);
-  return c.map(([id, h, n]) => `<div class="lgrp ldg"><p class="lgh">${h}</p><div id="${id}" class="dgb"></div><p class="note">${sub(n)}</p></div>`).join('');
+  c.push(['dflow', 'Tok výkonu (okamžitě)', 'Kam teče výkon právě teď. Modře uzly, červeně co odchází (ztráty, urychlování), zeleně co přitéká (např. energie ze setrvačnosti při brzdění). Při rozběhu je dobře vidět, že u asynchronního motoru se v rotoru ztratí tolik energie, kolik se jí uloží do setrvačnosti.']);
+  return c.map(([id, h, n]) => `<div class="lgrp ldg"><p class="lgh">${h}</p><div id="${id}" class="dgb"></div><p class="note">${sub(n)}</p></div>`).join('') + `<div class="lgrp ldg dosc"><p class="lgh">Osciloskop</p>${oscHTML()}<p class="note">${sub(oscNote())}</p></div>`;
 }
 function labDiagUpdate() {
   if (++dgTick % 3) return;                                                /* stačí asi 20× za sekundu */
+  oscDraw();
+  if (L.flow) { const e = document.getElementById('dflow'); if (e) e.innerHTML = flowSVG(L.flow, L.flowU); }
   const m = L.m, me = L.meas;
   const put = (id, h) => { const e = document.getElementById(id); if (e) e.innerHTML = h; };
   if (m === 'sm') {
