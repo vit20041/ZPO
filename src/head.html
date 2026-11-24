@@ -269,6 +269,17 @@ table.vz td{border-top:1px solid var(--rule);padding:8px 10px;vertical-align:mid
 table.vz td:first-child{width:52%;overflow-x:auto;max-width:0}
 table.vz td:last-child{color:var(--mut);font-size:14.5px}
 @media (max-width:760px){table.vz td{display:block;width:auto!important;max-width:none}table.vz td:last-child{border-top:0;padding-top:0}}
+
+.lctl{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:12px;margin:0 0 12px}
+@media (max-width:820px){.lctl{grid-template-columns:1fr}}
+.lgrp{background:var(--panel);border:1px solid var(--rule);border-radius:12px;padding:12px 14px;display:grid;gap:10px;align-content:start}
+.lgh{margin:0;font-weight:600}
+.lrow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.btn.tgl[aria-pressed=true]{background:var(--red);border-color:var(--red);color:#fff}
+.lsl{display:flex;flex-direction:column;gap:3px;font-size:14px}.lsl>span{display:flex;justify-content:space-between;gap:8px;color:var(--mut)}.lsl b{color:var(--ink);font-variant-numeric:tabular-nums}
+.lsl input[type=range]{width:100%;accent-color:var(--red);min-height:28px}
+.ltips{margin:0;padding-left:20px}.ltips li{margin:5px 0}
+.lbar .lrun{display:flex;gap:8px;flex-wrap:wrap;margin:0}
 </style>
 <script>window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']]},svg:{fontCache:'global'},startup:{typeset:false}};</script>
 <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-svg.js"></script>
