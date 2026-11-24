@@ -2,7 +2,7 @@
 <h2>Teorie a odvození: cize buzený stejnosměrný motor</h2>
 <nav class="toc scroll" aria-label="Obsah"><a href="#d1">Jak motor funguje</a><a href="#d2">Přenos motoru</a><a href="#d3">Statické charakteristiky</a><a href="#d4">Optimální modul</a><a href="#d5">Symetrické optimum</a><a href="#d6">Omezení proudu</a><a href="#d7">Měniče a kvadranty</a></nav>
 <div class="arts">
-<article id="d1"><h3>Jak motor funguje</h3><figure class="sch" data-fig="dcsec"></figure><figure class="sch" data-fig="dcconn"></figure><figure class="sch" data-fig="dcekv"></figure>
+<article id="d1"><h3>Jak motor funguje</h3><figure class="sch" data-fig="dcsec"></figure><figure class="sch" data-fig="dcconn"></figure><figure class="sch" data-fig="dcekv"></figure><figure class="sch" data-fig="komut"></figure><figure class="sch" data-fig="reakce"></figure>
 <p>Budicí proud \(i_f\) vytvoří v magnetickém obvodu tok \(\Phi\). Proud kotvy \(i_q\) teče vodiči, které leží v tomto poli, a vzniká síla, tedy moment \(M = C\Phi\, i_q\). Když se kotva točí, vodiče protínají pole a indukuje se v nich napětí \(u_i = C\Phi\,\Omega\), které působí proti napájecímu napětí.</p>
 <p>Obě rovnice obsahují tutéž konstantu \(\xi = C\Phi\). Indukované napětí je <b>vnitřní zpětná vazba motoru</b>: čím rychleji se točí, tím menší rozdíl \(u_q - u_i\) zbývá na odporu kotvy, tím menší proud a moment. Motor zrychluje, dokud moment nepokryje zátěž.</p>
 <div class="chain"><span>u<sub>q</sub></span><b>−</b><span>u<sub>i</sub></span><i>→</i><span>1/(R<sub>d</sub>(1+sτ<sub>d</sub>))</span><i>→</i><span>i<sub>q</sub></span><i>→</i><span>ξ</span><i>→</i><span>M</span><b>−</b><span>M<sub>z</sub></span><i>→</i><span>1/(sJ<sub>c</sub>)</span><i>→</i><span>Ω</span><i>→</i><span>ξ</span><i>→</i><span>u<sub>i</sub> (zpět)</span></div>
@@ -45,7 +45,7 @@
 \[\frac{\mathrm d\Omega}{\mathrm dt}=\frac{\xi I_{max}-M_z}{J_c}\qquad\Rightarrow\qquad t_{roz}=J_c\,\frac{\Delta\Omega}{\xi I_{max}-M_z}\]
 <p>Během omezení se integrátor nesmí dál nabíjet (anti-windup, zde podmíněná integrace), jinak by po dosažení rychlosti vznikl velký překmit. Rampa žádané hodnoty dělá totéž „měkčeji“: zrychlení drží pod mezí, kterou dovolí proud.</p></article>
 
-<article id="d7"><h3>Měniče a kvadranty</h3><figure class="sch" data-fig="conv"></figure>
+<article id="d7"><h3>Měniče a kvadranty</h3><figure class="sch" data-fig="conv"></figure><figure class="sch" data-fig="leonard"></figure>
 <div class="scroll"><table><thead><tr><th>Měnič</th><th>u<sub>q</sub></th><th>i<sub>q</sub></th><th>Kvadranty</th></tr></thead><tbody>
 <tr><td>Reverzační usměrňovač (2 antiparalelní můstky)</td><td>±</td><td>±</td><td>I.–IV.</td></tr>
 <tr><td>Nereverzační tyristorový usměrňovač</td><td>±</td><td>+</td><td>I. a IV.</td></tr>
@@ -68,7 +68,7 @@
 <div class="trnum" id="tr-num"></div></div>
 <div class="trfig"><div class="fig trp"><svg id="tr-plane" role="img" aria-label="Prostorový vektor v rovině alfa beta s osami d q"></svg></div><div class="fig trt"><svg id="tr-time" role="img" aria-label="Fázové proudy v čase"></svg></div></div></div>
 <div class="arts">
-<article id="a1"><h3>Jak motor funguje</h3><figure class="sch" data-fig="amsec"></figure>
+<article id="a1"><h3>Jak motor funguje</h3><figure class="sch" data-fig="amsec"></figure><figure class="sch" data-fig="tocive"></figure>
 <p>Tři vinutí statoru posunutá o 120° napájená souměrnými proudy vytvoří <b>točivé magnetické pole</b> s úhlovou rychlostí \(\Omega_1 = \omega_1/p_p\). Pole protíná tyče klece rotoru a indukuje v nich napětí úměrné rozdílu rychlostí; rotorové proudy v poli vytvoří moment. Bez rozdílu rychlostí (skluzu) by se nic neindukovalo, proto se motor točí vždy o skluz pomaleji:</p>
 \[s=\frac{\omega_1-p_p\Omega}{\omega_1},\qquad \omega_2 = s\,\omega_1 \;\text{(rotorová úhlová frekvence)}\]
 <p>Výkon přenesený přes vzduchovou mezeru \(P_\delta\) se dělí na mechanický \((1-s)P_\delta\) a ztráty v rotoru \(sP_\delta\). Proto je řízení rychlosti velkým skluzem ztrátové a hospodárné je měnit \(\omega_1\) (frekvenci).</p></article>
@@ -106,7 +106,7 @@
 <p>To jsou přesně dvě smyčky T-schématu: \(R_1, X_{1\sigma}\) v sérii, příčná \(X_h\) a rotorová větev \(X_{2\sigma}, R_2/s\). Výkon v \(R_2/s\) je \(P_\delta\), moment \(M = P_\delta/\Omega_1\):</p>
 \[M=\frac{3p_p}{\omega_1}\,I_2^2\,\frac{R_2}{s}\quad(\text{efektivní hodnoty})\]</article>
 
-<article id="a6"><h3>Klossův vztah</h3>
+<article id="a6"><h3>Klossův vztah</h3><figure class="sch" data-fig="mschar"></figure><figure class="sch" data-fig="kruz"></figure><figure class="sch" data-fig="yd"></figure>
 <p>Zanedbáme \(R_1\) a magnetizační proud (\(X_h\to\infty\)). Pak \(I_2 = U_1/\sqrt{(R_2/s)^2+X^2}\) s \(X = X_{1\sigma}+X_{2\sigma}\):</p>
 \[M=\frac{3p_pU_1^2}{\omega_1}\cdot\frac{R_2/s}{(R_2/s)^2+X^2}\]
 <p>Maximum podle proměnné \(R_2/s\) nastane při \(R_2/s = X\) (derivace čitatele a jmenovatele):</p>

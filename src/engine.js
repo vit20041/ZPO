@@ -226,7 +226,7 @@ function fitFigs(root) {
 }
 function renderDeriv() {
   const m = mod(), el = $('#deriv');
-  if (tab === 'opak' || tab === 'stroje') { el.innerHTML = ''; el.hidden = true; return; }
+  if (!m.tpl) { el.innerHTML = ''; el.hidden = true; return; }
   el.hidden = false;
   const tpl = document.getElementById(m.tpl);
   el.innerHTML = ''; el.classList.remove('tex-ok');
@@ -254,6 +254,8 @@ function renderCards() {
     return;
   }
   if (tab === 'stroje') { renderStroje(el); return; }
+  if (tab === 'lab') { renderLab(el); return; }
+  if (tab === 'faz' && typeof renderFaz === 'function') { renderFaz(el); return; }
   const list = CARDS.map((c, i) => [c, i]).filter(([c]) => m.ch.includes(c[0]));
   el.innerHTML = list.length ? `<div class="wrap"><h2>Otázky k ověření (kap. ${m.chap})</h2><div class="qgrid">${list.map(([c, i]) => cardHTML(c, i)).join('')}</div></div>` : '';
 }
@@ -271,11 +273,12 @@ document.addEventListener('click', e => {
 
 /* ---------- Elektrické stroje (Voženílek): otázky, příklady, obrázky ---------- */
 let stView = 'q', stPart = 'all', stOrder = null;
-const ST_GAL = [['dcsec', 2], ['dcconn', 2], ['dcekv', 2], ['ser', 2], ['trafo', 3], ['amsec', 5], ['tsch', 5], ['smsec', 6], ['smph', 6], ['spec', 7]];
+const ST_GAL = [['kvadr', 1], ['dcsec', 2], ['dcconn', 2], ['dcekv', 2], ['komut', 2], ['reakce', 2], ['dynamo', 2], ['leonard', 2], ['ser', 2], ['trafo', 3], ['trafoph', 3], ['hodiny', 3], ['tocive', 4], ['amsec', 5], ['tsch', 5], ['mschar', 5], ['yd', 5], ['kruz', 5], ['smsec', 6], ['smph', 6], ['fazovani', 6], ['spec', 7]];
 function stCardHTML(c, i, ex) {
   const id = (ex ? 'x' : 's') + i, link = ex ? c[3] : c[4];
   const head = ex ? `<span class="chn">${ST_PARTS[c[0]].split(' ')[0]} př.</span>${sub(c[1])}` : `<span class="chn">kap. ${c[1]}</span>${sub(c[2])}`;
-  const body = ex ? `<p>Výsledek: <b>${sub(c[2])}</b></p>` : `<p>${sub(c[3])}</p>`;
+  const sol = ex && typeof ST_SOL !== 'undefined' ? ST_SOL[i] : null;
+  const body = ex ? (sol ? `<p class="solh">Postup řešení</p><ol class="sol">${sol.map(s => `<li>${sub(s)}</li>`).join('')}</ol>` : '') + `<p class="res">Výsledek (kniha): <b>${sub(c[2])}</b></p>` : `<p>${sub(c[3])}</p>`;
   return `<details class="qc${ex ? ' ex' : ''}${known[id] ? ' known' : ''}" data-id="${id}"><summary>${head}</summary><div class="ans">${body}<div class="qa">${link ? `<button type="button" class="btn" data-load="${link}">Ověřit v simulaci</button>` : ''}<label class="chk"><input type="checkbox" data-known="${id}"${known[id] ? ' checked' : ''}><span>Umím</span></label></div></div></details>`;
 }
 function renderStroje(el) {

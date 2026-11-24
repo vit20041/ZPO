@@ -1,0 +1,112 @@
+<template id="tpl-vzt"><div class="wrap">
+<h2>Důležité vztahy: stroje a pohony</h2>
+<p class="lead">Přehled k opakování: náhradní schémata, napěťové a momentové rovnice a nejčastější vzorce. Značení odpovídá skriptům ZPO a knize Elektrické stroje; u každého vztahu je stručně, co znamená a kdy platí.</p>
+<nav class="toc scroll" aria-label="Obsah"><a href="#v1">Základy</a><a href="#v2">Mechanika pohonu</a><a href="#v3">Stejnosměrný stroj</a><a href="#v4">Transformátor</a><a href="#v5">Střídavá vinutí</a><a href="#v6">Asynchronní stroj</a><a href="#v7">Synchronní stroj</a><a href="#v8">Prostorový vektor a FOC</a><a href="#v9">Regulace</a><a href="#v10">Ztráty a oteplení</a></nav>
+<div class="arts one">
+
+<article id="v1"><h3>Základy (elektromagnetismus, energie)</h3>
+<table class="vz"><tbody>
+<tr><td>\[u_i = \frac{\mathrm d\psi}{\mathrm dt},\qquad \psi = N\Phi\]</td><td>Indukční zákon. Transformační napětí od změny toku v čase, pohybové od pohybu vodiče v poli.</td></tr>
+<tr><td>\[u = B\,l\,v,\qquad F = B\,l\,i\]</td><td>Napětí indukované ve vodiči délky l pohybujícím se rychlostí v; síla na vodič s proudem v poli (pravidlo levé ruky).</td></tr>
+<tr><td>\[F_m = N I = \oint H\,\mathrm dl = R_m\Phi,\qquad R_m = \frac{l}{\mu S}\]</td><td>Hopkinsonův zákon: „Ohmův zákon“ magnetického obvodu. Většinu mmn spotřebuje vzduchová mezera.</td></tr>
+<tr><td>\[L = \frac{\psi}{i},\qquad W_m = \tfrac12 L i^2\]</td><td>Indukčnost a energie magnetického pole (lineární obvod).</td></tr>
+<tr><td>\[M \sim F_1 F_2 \sin\vartheta\]</td><td>Moment mezi dvěma poli (stator, rotor); největší při 90° el.</td></tr>
+<tr><td>\[P \sim C\,D^2 l\,n,\qquad C \sim A\,B\]</td><td>Essonův vztah: výkon je úměrný kubatuře D²l, otáčkám a elektrickému (A) a magnetickému (B) využití.</td></tr>
+<tr><td>\[\eta = \frac{P_2}{P_1} = \frac{P_2}{P_2 + \Delta P}\]</td><td>Účinnost. Maximum nastává, když se proměnné (Jouleovy) ztráty rovnají stálým ztrátám (naprázdno).</td></tr>
+</tbody></table></article>
+
+<article id="v2"><h3>Mechanika pohonu</h3><figure class="sch" data-fig="kvadr"></figure>
+<table class="vz"><tbody>
+<tr><td>\[J\frac{\mathrm d\Omega}{\mathrm dt} = M - M_z\]</td><td>Pohybová rovnice (J stálé). Dynamický moment M − M_z urychluje.</td></tr>
+<tr><td>\[P = M\,\Omega,\qquad \Omega = \frac{2\pi n}{60}\]</td><td>Mechanický výkon; n v ot/min.</td></tr>
+<tr><td>\[J_{red} = J_m + J_z\left(\frac{\Omega_z}{\Omega_m}\right)^2 + m\left(\frac{v}{\Omega_m}\right)^2\]</td><td>Redukce momentů setrvačnosti a hmot na hřídel motoru (zachování kinetické energie).</td></tr>
+<tr><td>\[M_{z,red} = \frac{M_z}{i\,\eta_p}\ \text{(motor pohání)},\qquad M_{z,red} = \frac{M_z\,\eta_p}{i}\ \text{(zátěž pohání)}\]</td><td>Redukce zátěžného momentu přes převod i = Ω_m/Ω_z s účinností η_p.</td></tr>
+<tr><td>\[t_r = J\int_{\Omega_1}^{\Omega_2}\frac{\mathrm d\Omega}{M - M_z}\]</td><td>Doba rozběhu; pro stálý dynamický moment t_r = JΔΩ/(M − M_z).</td></tr>
+<tr><td>\[\frac{\mathrm dM}{\mathrm d\Omega} < \frac{\mathrm dM_z}{\mathrm d\Omega}\]</td><td>Podmínka statické stability pracovního bodu.</td></tr>
+</tbody></table></article>
+
+<article id="v3"><h3>Stejnosměrný stroj</h3><figure class="sch" data-fig="dcekv"></figure>
+<table class="vz"><tbody>
+<tr><td>\[U_i = c\,\Phi\,\Omega,\qquad c = \frac{p\,N}{2\pi a}\]</td><td>Indukované napětí (N vodičů kotvy, p pólových dvojic, a paralelních větví ve dvojicích). Ve skriptech ZPO ξ = cΦ.</td></tr>
+<tr><td>\[M = c\,\Phi\,I\]</td><td>Elektromagnetický moment, stejná konstanta jako u napětí.</td></tr>
+<tr><td>\[u = R\,i + L\frac{\mathrm di}{\mathrm dt} + u_i\ (+\Delta U_k)\]</td><td>Napěťová rovnice kotvy motoru (ΔU_k ≈ 2 V na kartáčích). Dynamo: U = U_i − R I.</td></tr>
+<tr><td>\[u_f = R_f i_f + L_f\frac{\mathrm di_f}{\mathrm dt},\qquad \Phi = f(i_f)\]</td><td>Rovnice budicího obvodu (cize buzený stroj).</td></tr>
+<tr><td>\[\Omega = \frac{U}{c\Phi} - \frac{R}{(c\Phi)^2}M\]</td><td>Mechanická charakteristika: přímka, rychlost naprázdno U/(cΦ), sklon úměrný R.</td></tr>
+<tr><td>\[\tau_d = \frac{L}{R},\qquad \tau_m = \frac{J R}{(c\Phi)^2}\]</td><td>Elektrická a elektromechanická časová konstanta; kmitavý rozběh, když τ_m < 4τ_d.</td></tr>
+<tr><td>\[\frac{\Omega(s)}{U(s)} = \frac{1/(c\Phi)}{\tau_m\tau_d s^2 + \tau_m s + 1}\]</td><td>Přenos rychlosti na napětí kotvy (bez zátěže).</td></tr>
+<tr><td>\[M = k\,I^2\ (\text{bez sycení}),\qquad \Omega \approx \frac{U}{\sqrt{k M}} - \frac{R}{k}\]</td><td>Sériový motor: tok úměrný proudu, hyperbolická (měkká) charakteristika, nesmí se odlehčit.</td></tr>
+<tr><td>\[C = \frac{J}{(c\Phi)^2}\]</td><td>Elektrodynamický kondenzátor: setrvačnost viděná z obvodu kotvy.</td></tr>
+</tbody></table></article>
+
+<article id="v4"><h3>Transformátor</h3><figure class="sch" data-fig="trafo"></figure><figure class="sch" data-fig="trafoph"></figure>
+<table class="vz"><tbody>
+<tr><td>\[U = 4{,}44\,f\,N\,\Phi_m = 4{,}44\,f\,N\,B_m S\]</td><td>Efektivní hodnota indukovaného napětí při sinusovém toku.</td></tr>
+<tr><td>\[p = \frac{N_1}{N_2} \approx \frac{U_1}{U_2} \approx \frac{I_2}{I_1}\]</td><td>Převod; proudy v obráceném poměru (zanedbán I_0).</td></tr>
+<tr><td>\[R_2' = p^2 R_2,\quad X_{2\sigma}' = p^2 X_{2\sigma},\quad U_2' = p U_2,\quad I_2' = I_2/p\]</td><td>Přepočet sekundárních veličin na primár.</td></tr>
+<tr><td>\[\hat U_1 = (R_1 + \mathrm jX_{1\sigma})\hat I_1 + \hat U_i,\qquad \hat U_i = (R_2' + \mathrm jX_{2\sigma}')\hat I_2' + \hat U_2'\]</td><td>Napěťové rovnice primáru a sekundáru; \(\hat I_1 = \hat I_0 + \hat I_2'\).</td></tr>
+<tr><td>\[u_k = \frac{U_k}{U_N}\cdot 100\,\%,\qquad Z_k = R_k + \mathrm jX_k\]</td><td>Napětí nakrátko: napětí, při kterém teče I_N při zkratovaném sekundáru.</td></tr>
+<tr><td>\[I_k = I_N\frac{100}{u_k[\%]},\qquad i_{dyn} \approx \sqrt2\,\kappa\,I_k\]</td><td>Ustálený a nárazový zkratový proud (κ podle poměru R/X, až 1,8).</td></tr>
+<tr><td>\[\Delta u \approx \frac{I}{I_N}(u_R\cos\varphi_2 + u_X\sin\varphi_2)\]</td><td>Úbytek napětí; největší při φ₂ = φ_k, při kapacitní zátěži může být záporný.</td></tr>
+<tr><td>\[\eta = \frac{\beta S_N\cos\varphi}{\beta S_N\cos\varphi + P_0 + \beta^2 P_k},\qquad \beta_{opt} = \sqrt{P_0/P_k}\]</td><td>Účinnost při zatížení β = I/I_N; maximum při β²P_k = P_0.</td></tr>
+<tr><td>\[\frac{S_1}{S_2} = \frac{S_{N1}/u_{k1}}{S_{N2}/u_{k2}}\]</td><td>Paralelní chod: víc se zatíží transformátor s menším u_k.</td></tr>
+</tbody></table></article>
+
+<article id="v5"><h3>Střídavá vinutí a točivé pole</h3><figure class="sch" data-fig="tocive"></figure>
+<table class="vz"><tbody>
+<tr><td>\[U_i = 4{,}44\,f\,N\,k_v\,\Phi\]</td><td>Indukované napětí fáze; N závitů v sérii na fázi.</td></tr>
+<tr><td>\[k_v = k_r\,k_y,\quad k_y = \sin\frac{y}{\tau_p}\frac{\pi}{2},\quad k_r = \frac{\sin(q\alpha/2)}{q\sin(\alpha/2)}\]</td><td>Činitel vinutí = činitel rozlohy × činitel kroku; pro ν-tou harmonickou se úhly násobí ν.</td></tr>
+<tr><td>\[n_s = \frac{60 f}{p},\qquad F = \frac{m}{2}F_m\]</td><td>Rychlost točivého pole; amplituda pole m-fázového vinutí (trojfázové: 3/2 amplitudy fáze).</td></tr>
+<tr><td>\[Q = 2p\,m\,q\]</td><td>Počet drážek: q drážek na pól a fázi.</td></tr>
+</tbody></table></article>
+
+<article id="v6"><h3>Asynchronní stroj</h3><figure class="sch" data-fig="tsch"></figure><figure class="sch" data-fig="mschar"></figure>
+<table class="vz"><tbody>
+<tr><td>\[s = \frac{n_s - n}{n_s},\qquad f_2 = s f_1,\qquad n = n_s(1 - s)\]</td><td>Skluz, kmitočet rotoru, otáčky.</td></tr>
+<tr><td>\[\hat U_1 = (R_1 + \mathrm jX_{1\sigma})\hat I_1 + \hat U_i,\qquad \hat U_i = \left(\frac{R_2'}{s} + \mathrm jX_{2\sigma}'\right)\hat I_2'\]</td><td>Napěťové rovnice z T-schématu (rotorový proud orientovaný jako u zátěže, \(\hat I_1 = \hat I_\mu + \hat I_2'\)).</td></tr>
+<tr><td>\[P_\delta = 3 I_2'^2\frac{R_2'}{s},\quad \Delta P_{j2} = s P_\delta,\quad P_{mech} = (1 - s) P_\delta\]</td><td>Výkon ve vzduchové mezeře se dělí na ztráty v rotoru a mechanický výkon.</td></tr>
+<tr><td>\[M = \frac{P_\delta}{\Omega_s} = \frac{3 I_2'^2 R_2'}{s\,\Omega_s},\qquad \Omega_s = \frac{\omega_1}{p}\]</td><td>Elektromagnetický moment.</td></tr>
+<tr><td>\[M = \frac{2 M_{zv}}{\dfrac{s}{s_{zv}} + \dfrac{s_{zv}}{s}}\]</td><td>Klossův vztah (R₁ zanedbán).</td></tr>
+<tr><td>\[s_{zv} = \frac{R_2'}{\sqrt{R_1^2 + X_k^2}},\qquad M_{zv} = \frac{3 U_1^2}{2\Omega_s\left(R_1 + \sqrt{R_1^2 + X_k^2}\right)}\]</td><td>Skluz a moment zvratu (U₁ fázové, X_k = X_{1σ} + X_{2σ}′). M_zv nezávisí na R₂, roste s U².</td></tr>
+<tr><td>\[\frac{U_1}{f_1} = \text{konst.}\ \Rightarrow\ \Phi \approx \text{konst.}\]</td><td>Kmitočtové řízení; při malých f nutná kompenzace úbytku na R₁ (boost).</td></tr>
+<tr><td>\[I_Y = \frac{I_D}{3},\qquad M_Y = \frac{M_D}{3}\]</td><td>Rozběh hvězda–trojúhelník.</td></tr>
+</tbody></table></article>
+
+<article id="v7"><h3>Synchronní stroj</h3><figure class="sch" data-fig="smph"></figure>
+<table class="vz"><tbody>
+<tr><td>\[f = \frac{p\,n}{60}\]</td><td>Kmitočet alternátoru (rotor se točí synchronně).</td></tr>
+<tr><td>\[\hat U_i = \hat U + R\hat I + \mathrm jX_d\hat I\ \ (\text{generátor}),\qquad \hat U = \hat U_i + \mathrm jX_d\hat I\ \ (\text{motor},\ R = 0)\]</td><td>Napěťová rovnice hladkého stroje; X_d = X_σ + X_ad.</td></tr>
+<tr><td>\[\hat U_i = \hat U + \mathrm jX_d\hat I_d + \mathrm jX_q\hat I_q\]</td><td>Stroj s vyniklými póly: proud se rozkládá do os d, q.</td></tr>
+<tr><td>\[P = \frac{3 U U_i}{X_d}\sin\beta + \frac{3U^2}{2}\left(\frac{1}{X_q} - \frac{1}{X_d}\right)\sin 2\beta\]</td><td>Činný výkon; druhý člen je reluktanční (u hladkého stroje nulový). M = P/Ω_s.</td></tr>
+<tr><td>\[P_{max} = \frac{3 U U_i}{X_d}\ (\beta = 90°),\qquad \frac{\mathrm dP}{\mathrm d\beta} > 0\]</td><td>Statická mez stability hladkého stroje; dP/dβ je synchronizační výkon.</td></tr>
+<tr><td>\[k_z = \frac{I_{f0}}{I_{fk}} \approx \frac{1}{x_d}\]</td><td>Zkratový poměr: budicí proud pro U_N naprázdno / pro I_N nakrátko.</td></tr>
+<tr><td>\[Q = \frac{3U(U_i\cos\beta - U)}{X_d}\]</td><td>Jalový výkon hladkého stroje: přebuzený (U_i cos β > U) dodává, podbuzený odebírá.</td></tr>
+</tbody></table></article>
+
+<article id="v8"><h3>Prostorový vektor, model v osách a vektorové řízení</h3>
+<table class="vz"><tbody>
+<tr><td>\[\mathbf i = K\left(i_a + \mathbf a\,i_b + \mathbf a^2 i_c\right),\quad \mathbf a = \mathrm e^{\mathrm j2\pi/3},\quad K = \tfrac23\]</td><td>Clarkova transformace (amplitudově invariantní).</td></tr>
+<tr><td>\[\mathbf i_{dq} = \mathbf i_{\alpha\beta}\,\mathrm e^{-\mathrm j\vartheta_k}\]</td><td>Parkova transformace do souřadnic otáčejících se úhlem ϑ_k.</td></tr>
+<tr><td>\[\mathbf u_1 = R_1\mathbf i_1 + \frac{\mathrm d\boldsymbol\psi_1}{\mathrm dt} + \mathrm j\omega_k\boldsymbol\psi_1,\qquad 0 = R_2\mathbf i_2 + \frac{\mathrm d\boldsymbol\psi_2}{\mathrm dt} + \mathrm j(\omega_k - p\Omega)\boldsymbol\psi_2\]</td><td>Napěťové rovnice asynchronního stroje v obecných osách (rotor nakrátko).</td></tr>
+<tr><td>\[M = \tfrac32\,p\,\mathrm{Im}\{\boldsymbol\psi_1^*\mathbf i_1\} = \tfrac32\,p\frac{L_h}{L_2}\,\psi_2\,i_{1q}\]</td><td>Moment; v osách orientovaných na rotorový tok jako u stejnosměrného stroje.</td></tr>
+<tr><td>\[\tau_2\frac{\mathrm d\psi_2}{\mathrm dt} + \psi_2 = L_h i_{1d},\qquad \omega_2 = \frac{L_h\,i_{1q}}{\tau_2\,\psi_2},\quad \tau_2 = \frac{L_2}{R_2}\]</td><td>Model rotorového toku pro nepřímé vektorové řízení (skluzová frekvence ω₂).</td></tr>
+<tr><td>\[M = \tfrac32\,p\,\psi_m\,i_q\ \ (\text{PMSM},\ L_d = L_q)\]</td><td>Synchronní motor s permanentními magnety; řízení i_d = 0.</td></tr>
+</tbody></table></article>
+
+<article id="v9"><h3>Regulace pohonů</h3><figure class="sch" data-fig="casc"></figure>
+<table class="vz"><tbody>
+<tr><td>\[F_R(s) = K_P\frac{1 + T_I s}{T_I s}\]</td><td>PI regulátor.</td></tr>
+<tr><td>\[T_I = T_1,\qquad K_P = \frac{T_1}{2 K_S\tau_\sigma}\]</td><td>Optimální modul (soustava K_S/((1 + T_1 s)(1 + τ_σ s))): překmit 4,3 %, náhrada uzavřené smyčky 1/(1 + 2τ_σ s).</td></tr>
+<tr><td>\[K_{Pi} = \frac{L_d}{2\tau_\mu},\quad T_{Ii} = \tau_d = \frac{L_d}{R_d}\]</td><td>Proudový regulátor stejnosměrného pohonu podle OM (τ_μ zpoždění měniče).</td></tr>
+<tr><td>\[T_{I\Omega} = 4\tau_{\sigma\Omega},\quad K_{P\Omega} = \frac{J}{2\,c\Phi\,\tau_{\sigma\Omega}},\quad \tau_{\sigma\Omega} = 2\tau_\mu + T_f\]</td><td>Rychlostní regulátor podle symetrického optima: překmit 43 %, s filtrem žádané hodnoty 1/(1 + 4τ_σ s) asi 8 %.</td></tr>
+<tr><td>\[K_P = 0{,}45 K_{krit},\quad T_I = 0{,}83 T_{krit}\]</td><td>Ziegler–Nichols pro PI (z meze stability).</td></tr>
+</tbody></table></article>
+
+<article id="v10"><h3>Ztráty a oteplení</h3>
+<table class="vz"><tbody>
+<tr><td>\[\vartheta = \vartheta_\infty\left(1 - \mathrm e^{-t/\tau_\vartheta}\right) + \vartheta_0\,\mathrm e^{-t/\tau_\vartheta}\]</td><td>Oteplení stroje jako homogenního tělesa; τ_ϑ = C/A (tepelná kapacita / odvod tepla).</td></tr>
+<tr><td>\[p_\vartheta = \frac{1}{1 - \mathrm e^{-t_z/\tau_\vartheta}}\]</td><td>Tepelná přetížitelnost při krátkodobém chodu S2 (ztrátami).</td></tr>
+<tr><td>\[M_{ekv} = \sqrt{\frac{\sum M_k^2 t_k}{\sum t_k}} \le M_N\]</td><td>Ekvivalentní moment při proměnném zatížení (ztráty ~ M²); obdobně I_ekv, P_ekv.</td></tr>
+<tr><td>\[\Delta P_{Fe} = \Delta P_h + \Delta P_v,\quad \Delta P_h \sim f B^2,\quad \Delta P_v \sim f^2 B^2\]</td><td>Ztráty v železe: hysterezní a vířivými proudy.</td></tr>
+</tbody></table></article>
+
+</div></div></template>

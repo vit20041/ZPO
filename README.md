@@ -1,6 +1,8 @@
 # Simulátor pohonů ZPO
 
-Interaktivní simulace a opakování k předmětu B1B14ZPO (ČVUT FEL): stejnosměrné, sériové, asynchronní, synchronní a speciální motory, regulace, mechanika a oteplení, schémata a průřezy, kartičky k opakování.
+Interaktivní simulace a opakování k předmětu B1B14ZPO (ČVUT FEL): stejnosměrné, sériové, asynchronní, synchronní a speciální motory, regulace, mechanika a oteplení; laboratoř s animovaným rozběhem motoru a měřicími přístroji, interaktivní fázorové diagramy, přehled důležitých vztahů, schémata a průřezy, kartičky k opakování a řešené příklady.
+
+Živá stránka: https://vit20041.github.io/ZPO/
 
 - `index.html` je hotová stránka (jeden soubor), otevře se v prohlížeči.
 - `src/` obsahuje zdrojové části; `python3 src/build.py` z nich sestaví `index.html`.

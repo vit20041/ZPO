@@ -673,4 +673,7 @@ ${expI('spec:srv', 'SRM napěťově: velké špičky momentu jen v 15–45°, ER
 /* ======================= Opakování ======================= */
 MODS.opak = { label: 'Opakování ZPO', chap: 'kartičky ze skript', ch: [] };
 MODS.stroje = { label: 'Elektrické stroje', chap: 'Voženílek: opakování', ch: [] };
-const TAB_ORDER = ['uvod', 'mech', 'tep', 'reg', 'dc', 'ser', 'am', 'sm', 'spec', 'opak', 'stroje'];
+MODS.vzt = { label: 'Důležité vztahy', chap: 'přehled vzorců', tpl: 'tpl-vzt', ch: [] };
+MODS.lab = { label: 'Laboratoř', chap: 'rozběh motoru', ch: [] };
+MODS.faz = { label: 'Fázorové diagramy', chap: 'interaktivně', ch: [] };
+const TAB_ORDER = ['uvod', 'vzt', 'mech', 'tep', 'reg', 'dc', 'ser', 'am', 'sm', 'spec', 'lab', 'faz', 'opak', 'stroje'];

@@ -185,11 +185,90 @@ ol.exp button{margin-top:6px}
 .sch .bxm{fill:var(--soft);stroke:var(--ink);stroke-width:2}
 .sch .bxd{fill:none;stroke:var(--mut);stroke-width:1.2;stroke-dasharray:5 4}
 .sch .flux{fill:none;stroke:var(--blu);stroke-width:1.8;stroke-dasharray:7 5}
+.sch .shl{stroke:var(--mut);stroke-width:6;stroke-linecap:round}
+.sch .link{fill:var(--red);stroke:none;opacity:.85}
+.sch .kd{fill:none;stroke:var(--mut);stroke-width:1.2;stroke-dasharray:5 4}
+.sch .kg{fill:none;stroke:var(--mut);stroke-width:1.6}
+.sch .kbl{fill:none;stroke:var(--blu);stroke-width:2}
 .figs{display:grid;gap:4px}
 .seg{display:inline-flex;border:1px solid var(--rule);border-radius:999px;overflow:hidden}
 .seg button{font:500 14px Inter,sans-serif;border:0;background:var(--panel);color:var(--ink);padding:9px 16px;min-height:40px;cursor:pointer}
 .seg button[aria-pressed=true]{background:var(--ink);color:var(--panel)}
 .ex .ans p b{font-variant-numeric:tabular-nums}
+
+/* laboratoř */
+.lbar{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:end;margin:14px 0 10px}
+.lbar label{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--mut)}
+.lbar label b{color:var(--ink);font-weight:600}
+.lbar label.chk{flex-direction:row;align-items:center;min-height:40px}
+.lbar select{font:15px Inter,sans-serif;color:var(--ink);background:var(--panel);border:1px solid var(--rule);border-radius:8px;padding:8px 10px;min-height:40px}
+.lbar input[type=range]{width:150px;min-height:28px;accent-color:var(--red)}
+.lrun{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:6px 0 12px}
+.lrun input[type=range]{flex:1 1 200px;accent-color:var(--red);min-height:28px}
+.lrun .st{font-size:13px;color:var(--mut);font-variant-numeric:tabular-nums;min-width:150px}
+.btn.big{background:var(--ink);color:var(--panel);border-color:var(--ink);font-weight:600;padding:10px 20px}
+.btn.big:hover{opacity:.9}
+.lstage{background:var(--panel);border:1px solid var(--rule);border-radius:12px;padding:8px;overflow-x:auto}
+.bench{display:block;width:100%;height:auto}
+.bench text{stroke:none;font:14px Inter,sans-serif;fill:var(--ink)}
+.bench .lb{font-weight:600}.bench .ls{font-size:12.5px;fill:var(--mut)}.bench .lpole{font:700 18px Inter,sans-serif;fill:var(--panel)}
+.bench .lbx{fill:var(--soft);stroke:var(--ink);stroke-width:1.5}.bench .lkf{fill:var(--ink)}
+.bench .lw{fill:none;stroke:var(--ink);stroke-width:2}.bench .lw2{stroke:var(--ink);stroke-width:3;stroke-linecap:round}
+.bench .lfe{fill:light-dark(#a9b3bc,#4a545c);stroke:var(--ink);stroke-width:1.2}.bench .lfe2{fill:light-dark(#8d99a4,#5d6973);stroke:var(--ink)}
+.bench .lgap{fill:var(--panel);stroke:var(--ink);stroke-width:1}
+.bench .lrot{fill:light-dark(#c5ccd3,#3b444b);stroke:var(--ink);stroke-width:1.2}
+.bench .lal{fill:light-dark(#e4e8eb,#7d8890);stroke:var(--ink);stroke-width:.8}
+.bench .lcu{fill:light-dark(#d99a4e,#a86e2c);stroke:var(--ink);stroke-width:.8}
+.bench .lcomm{fill:light-dark(#e2a868,#b07a3a);stroke:var(--ink)}
+.bench .lmark{fill:#fff;stroke:var(--ink);stroke-width:1}
+.bench .lshaft{fill:light-dark(#5c656d,#8c969e);stroke:var(--ink)}
+.bench .lbrush{fill:var(--ink)}
+.bench .lph0{fill:var(--red)}.bench .lph1{fill:var(--och)}.bench .lph2{fill:var(--blu)}
+.bench .lfld{stroke:var(--red);stroke-width:4;stroke-linecap:round;opacity:.85}
+.bench #lah path{fill:var(--red)}
+.bench .lshl{stroke:var(--mut);stroke-width:10}
+.gauges{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin:12px 0}
+.lcds{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:0 0 12px}
+.meter{background:var(--panel);border:1px solid var(--rule);border-radius:12px;padding:10px 12px}
+.meter p{margin:0 0 4px;font-size:13px;color:var(--mut)}
+.gauge{display:block;width:100%;max-width:240px;margin:0 auto;height:auto}
+.gauge .garc{fill:none;stroke:var(--ink);stroke-width:2}.gauge .gtk{stroke:var(--ink);stroke-width:1.2}
+.gauge .gtx{font:12px Inter,sans-serif;fill:var(--mut);stroke:none}
+.gauge .gz{stroke:var(--blu);stroke-width:2}
+.gauge .gnd{stroke:var(--red);stroke-width:3;stroke-linecap:round}.gauge .gcap{fill:var(--ink)}
+.lcd{display:flex;justify-content:flex-end;align-items:baseline;gap:6px;background:light-dark(#cdd6c1,#16241a);color:light-dark(#1d2a18,#9fe3a4);border-radius:6px;padding:4px 10px;font:600 24px ui-monospace,SFMono-Regular,Menlo,monospace;font-variant-numeric:tabular-nums;box-shadow:inset 0 1px 3px rgba(0,0,0,.25)}
+.lcd small{font:500 13px Inter,sans-serif;opacity:.8}
+.meter.sm .lcd{font-size:20px}
+.lchart{background:var(--panel);border:1px solid var(--rule);border-radius:12px;padding:10px 12px;margin-bottom:12px}
+.lchart canvas{display:block;width:100%;height:200px}
+.k-n{color:var(--blu)}.k-i{color:var(--red)}.k-m{color:var(--och)}
+.cols2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+@media (max-width:760px){.cols2{grid-template-columns:1fr}}
+.lev{margin:0;padding-left:20px;color:var(--mut)}.lev li{margin:4px 0}.lev li.done{color:var(--ink)}.lev li.done b{color:var(--red)}
+
+/* fázorové diagramy */
+.fzgrid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(280px,1fr);gap:16px;align-items:start;margin-top:12px}
+@media (max-width:900px){.fzgrid{grid-template-columns:1fr}}
+.sch.fz{margin:0}.sch.fz svg{min-width:0}
+.sch .fzw{stroke-dasharray:7 4}
+.sch .kor{fill:none;stroke:var(--och);stroke-width:2}
+.fzctl{background:var(--panel);border:1px solid var(--rule);border-radius:12px;padding:14px}
+.fzrows{display:grid;gap:10px}
+.fr{display:flex;flex-direction:column;gap:4px;font-size:14px}
+.fr>span{display:flex;justify-content:space-between;gap:8px;color:var(--mut)}.fr b{color:var(--ink);font-variant-numeric:tabular-nums;font-weight:600}
+.fr input[type=range]{width:100%;accent-color:var(--red);min-height:28px}
+.fr select{font:15px Inter,sans-serif;color:var(--ink);background:var(--panel);border:1px solid var(--rule);border-radius:8px;padding:8px;min-height:40px}
+.fzout{width:100%;border-collapse:collapse;margin:14px 0 6px;font-size:14px}
+.fzout td{padding:5px 0;border-top:1px solid var(--rule);vertical-align:top}.fzout td+td{text-align:right;font-weight:600;font-variant-numeric:tabular-nums;padding-left:10px}
+
+.solh{font-weight:600;margin:0 0 4px}.sol{margin:0 0 10px;padding-left:22px}.sol li{margin:5px 0}.res{margin:6px 0 0;padding-top:8px;border-top:1px solid var(--rule)}
+/* důležité vztahy */
+.arts.one{grid-template-columns:1fr!important;max-width:1000px}
+table.vz{width:100%;border-collapse:collapse;margin:8px 0}
+table.vz td{border-top:1px solid var(--rule);padding:8px 10px;vertical-align:middle}
+table.vz td:first-child{width:52%;overflow-x:auto;max-width:0}
+table.vz td:last-child{color:var(--mut);font-size:14.5px}
+@media (max-width:760px){table.vz td{display:block;width:auto!important;max-width:none}table.vz td:last-child{border-top:0;padding-top:0}}
 </style>
 <script>window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']]},svg:{fontCache:'global'},startup:{typeset:false}};</script>
 <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-svg.js"></script>
