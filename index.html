@@ -316,6 +316,52 @@ table.vz td:last-child{color:var(--mut);font-size:14.5px}
   .seg button{padding:8px 11px;font-size:13.5px}
 }
 @media (max-width:380px){.gauges{grid-template-columns:1fr}}
+
+/* laboratoř: velký řez */
+.bench .lsym{font:700 22px "Inter Tight",Inter,sans-serif;fill:var(--ink)}
+.linside{align-content:start}
+.iwrap{display:flex;justify-content:center}
+.inside{display:block;width:100%;max-width:560px;height:auto}
+.inside text{stroke:none;font:13px Inter,sans-serif;fill:var(--ink)}
+.inside .ilb{font-size:13px;fill:var(--mut)}.inside .lpole{font:700 20px Inter,sans-serif;fill:var(--panel)}
+.inside .iph{font:600 11.5px Inter,sans-serif}.inside .ipa{fill:var(--red)}.inside .ipb{fill:var(--och)}.inside .ipc{fill:var(--blu)}
+.inside .ins{font:800 22px "Inter Tight",Inter,sans-serif}.inside .in{fill:var(--red)}.inside .is{fill:var(--blu)}
+.inside .icn{stroke:var(--ink);stroke-width:1.1;fill:var(--panel)}.inside .icn.pos{fill:var(--red)}.inside .icn.neg{fill:var(--blu)}
+.inside .icd{fill:var(--ink)}.inside .icx{stroke:var(--ink);stroke-width:1.6}
+.inside .igp{stroke:none}.inside .igp.pos{fill:var(--red)}.inside .igp.neg{fill:var(--blu)}
+.inside .iring{fill:none;stroke:light-dark(#9aa4ad,#6b767f);stroke-width:6;opacity:.6}
+.inside .icm{fill:light-dark(#d99a4e,#a86e2c);stroke:var(--ink);stroke-width:1}.inside .icm.on{fill:#ffcf3a}
+.inside .iwire{stroke:var(--mut);stroke-width:1}
+.inside .ineu{stroke:var(--mut);stroke-width:1.2;stroke-dasharray:6 5}
+.inside .lfld{stroke:var(--red);stroke-width:5;stroke-linecap:round}
+.ivw{gap:4px 14px}.ivw .chk{font-size:14px}
+@media (min-width:1200px){.lmain{grid-template-columns:minmax(0,1.15fr) minmax(0,1fr)!important}.lleft{display:grid;gap:12px;align-content:start}.lleft .gauges{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (min-width:1500px){.lleft .gauges{grid-template-columns:repeat(4,minmax(0,1fr))}.lleft .gauge{max-width:170px}}
+@media (max-width:1199px){.lmain{display:grid;gap:12px}.lleft{display:grid;gap:12px}}
+
+.inside .lfe{fill:light-dark(#a9b3bc,#4a545c);stroke:var(--ink);stroke-width:1.2}.inside .lfe2{fill:light-dark(#8d99a4,#5d6973);stroke:var(--ink);stroke-width:1.2}
+.inside .lgap{fill:var(--panel);stroke:var(--ink);stroke-width:1}.inside .lrot{fill:light-dark(#c5ccd3,#3b444b);stroke:var(--ink);stroke-width:1.2}
+.inside .slot{fill:light-dark(#e9edf0,#2a3035);stroke:var(--ink);stroke-width:.8}.inside .lshaft{fill:light-dark(#5c656d,#8c969e);stroke:var(--ink)}
+.inside .lcu{fill:light-dark(#d99a4e,#a86e2c);stroke:var(--ink);stroke-width:.8}.inside .lbrush{fill:var(--ink)}.inside .lmark{fill:#fff;stroke:var(--ink)}
+
+/* točivé pole */
+.pgrid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(300px,1fr);gap:16px;align-items:start;margin-top:12px}
+.pgrid2{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(260px,1fr);gap:16px;align-items:start;margin:16px 0}
+@media (max-width:900px){.pgrid,.pgrid2{grid-template-columns:1fr}}
+.sch.pfig svg,.sch#po-w svg{min-width:0}
+.pfield text,.pwave text{stroke:none}
+.pfield .pfe{fill:light-dark(#c5ccd3,#3b444b);stroke:var(--ink);stroke-width:1.2}.pfield .pgap{fill:var(--panel);stroke:var(--ink);stroke-width:1}
+.pfield .pkf{fill:var(--ink)}.pfield .pkx{stroke:var(--ink);stroke-width:2}
+.pfield .plb{font:700 15px Inter,sans-serif;fill:var(--ink)}.pfield .psm,.pwave .psm{font:12.5px Inter,sans-serif;fill:var(--mut)}
+.pfield .pax{stroke-width:1.2;stroke-dasharray:4 4;opacity:.7}
+.pfield .ptr{fill:none;stroke:var(--mut);stroke-width:1.6;stroke-dasharray:3 3}
+.pfield .pvec{stroke-width:3}.pfield .pres{stroke:var(--ink);stroke-width:5}
+.pfield .pfp,.pfield .pfn{stroke:var(--mut);stroke-width:2.2;stroke-dasharray:7 4}.pfield .pfn{stroke-dasharray:2 4}
+.pwave .pgr{stroke:var(--mut)}.pwave .pgr2{stroke:var(--grid)}.pwave .pwv{fill:none;stroke-width:2.2}.pwave .pcur{stroke:var(--ink);stroke-width:1.2}
+.pwave .plb{font:700 13px Inter,sans-serif}
+.peq{font-size:16px;overflow-x:auto}
+.pseg{flex-wrap:wrap}
+@media (max-width:600px){.pseg{border-radius:12px}.pseg button{flex:1 1 45%}}
 </style>
 <script>window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']]},svg:{fontCache:'global'},startup:{typeset:false}};</script>
 <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-svg.js"></script>
@@ -3313,7 +3359,8 @@ MODS.stroje = { label: 'Elektrické stroje', chap: 'Voženílek: opakování', c
 MODS.vzt = { label: 'Důležité vztahy', chap: 'přehled vzorců', tpl: 'tpl-vzt', ch: [] };
 MODS.lab = { label: 'Laboratoř', chap: 'rozběh motoru', ch: [] };
 MODS.faz = { label: 'Fázorové diagramy', chap: 'interaktivně', ch: [] };
-const TAB_ORDER = ['uvod', 'vzt', 'mech', 'tep', 'reg', 'dc', 'ser', 'am', 'sm', 'spec', 'lab', 'faz', 'opak', 'stroje'];
+MODS.pole = { label: 'Točivé pole', chap: 'interaktivně', ch: [] };
+const TAB_ORDER = ['uvod', 'vzt', 'mech', 'tep', 'reg', 'dc', 'ser', 'am', 'sm', 'spec', 'lab', 'pole', 'faz', 'opak', 'stroje'];
 
 /* ===== Laboratoř: stroj simulovaný živě, motor i generátor ===== */
 const LAB = { m: 'am', gen: false, sp: 0.2, J: 1, load: 0, lt: 'react', run: true };
@@ -3553,29 +3600,6 @@ const sResV = (x, y, h, lab, val) => `<rect x="${x - 8}" y="${y}" width="16" hei
 const sCoilV = (x, y, len, n = 4) => { const r = len / n / 2; let d = `M${x} ${y}`; for (let i = 0; i < n; i++) d += `a${r} ${r} 0 0 1 0 ${2 * r}`; return `<path d="${d}" class="lw coil"/>`; };
 const sLamp = (x, y, i) => `<circle cx="${x}" cy="${y}" r="7" class="llamp" id="lab-lamp${i}"/><circle cx="${x}" cy="${y}" r="7" class="lw thin"/><path d="M${x - 5} ${y - 5}l10 10M${x + 5} ${y - 5}l-10 10" class="lw thin"/>`;
 
-function labMachine() {
-  const dc = L.m === 'dc', sm = L.m === 'sm', cx = 455, cy = 140;
-  let g = `<circle cx="${cx}" cy="${cy}" r="128" class="lfe"/><circle cx="${cx}" cy="${cy}" r="${dc ? 96 : 92}" class="lgap"/>`;
-  if (dc) {
-    g += `<path d="M${cx - 30} ${cy - 127}h60v32l14 4a92 92 0 0 0 -88 0l14 -4z" class="lfe2"/><path d="M${cx - 30} ${cy + 127}h60v-32l14 -4a92 92 0 0 1 -88 0l14 4z" class="lfe2"/>`;
-    g += `<text x="${cx}" y="${cy - 102}" text-anchor="middle" class="lpole">N</text><text x="${cx}" y="${cy + 114}" text-anchor="middle" class="lpole">S</text>`;
-  } else for (let i = 0; i < 24; i++) g += `<g transform="rotate(${i * 15 + 7.5} ${cx} ${cy})"><rect x="${cx - 5}" y="${cy - 122}" width="10" height="26" rx="2" class="lph${Math.floor(i / 2) % 3}"/></g>`;
-  let rot;
-  if (sm) {
-    rot = `<circle cx="${cx}" cy="${cy}" r="44" class="lrot"/>`;
-    for (let k = 0; k < 4; k++) rot += `<g transform="rotate(${k * 90} ${cx} ${cy})"><path d="M${cx - 20} ${cy - 40}h40v-26l16 -6a88 88 0 0 0 -72 0l16 6z" class="lfe2"/><rect x="${cx - 32}" y="${cy - 62}" width="12" height="22" rx="2" class="lcu"/><rect x="${cx + 20}" y="${cy - 62}" width="12" height="22" rx="2" class="lcu"/><text x="${cx}" y="${cy - 58}" text-anchor="middle" class="lpole">${k % 2 ? 'S' : 'N'}</text></g>`;
-    rot += `<circle cx="${cx}" cy="${cy}" r="18" class="lshaft"/>`;
-  } else {
-    rot = `<circle cx="${cx}" cy="${cy}" r="${dc ? 90 : 86}" class="lrot"/>`; const nb = dc ? 16 : 22;
-    for (let i = 0; i < nb; i++) rot += `<g transform="rotate(${i * 360 / nb} ${cx} ${cy})"><rect x="${cx - 4}" y="${cy - (dc ? 86 : 80)}" width="8" height="${dc ? 18 : 12}" rx="2" class="${dc ? 'lcu' : 'lal'}"/></g>`;
-    if (dc) rot += `<circle cx="${cx}" cy="${cy}" r="40" class="lcomm"/>` + Array.from({ length: 16 }, (_, i) => `<line x1="${cx}" y1="${cy - 40}" x2="${cx}" y2="${cy - 26}" transform="rotate(${i * 22.5} ${cx} ${cy})" class="lw"/>`).join('');
-    rot += `<rect x="${cx - 3}" y="${cy - 84}" width="6" height="60" rx="3" class="lmark"/><circle cx="${cx}" cy="${cy}" r="18" class="lshaft"/>`;
-  }
-  g += `<g id="lab-rot">${rot}</g>`;
-  if (dc) g += `<rect x="${cx - 52}" y="${cy - 9}" width="14" height="18" rx="2" class="lbrush"/><rect x="${cx + 38}" y="${cy - 9}" width="14" height="18" rx="2" class="lbrush"/>`;
-  g += `<g id="lab-fld"><line x1="${cx}" y1="${dc ? cy - 66 : cy + 66}" x2="${cx}" y2="${dc ? cy + 70 : cy - 84}" class="lfld" marker-end="url(#lah)"/></g>`;
-  return `<g transform="translate(78 28) scale(0.9)">${g}</g>`;           /* střed (487,154), poloměr 115 */
-}
 function labBench() {
   const dc = L.m === 'dc', sm = L.m === 'sm', gen = L.gen, A = LAB_AM, C = LAB_DC;
   let g = `<defs><marker id="lah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" style="fill:var(--red)"/></marker><marker id="lahr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" style="fill:var(--red)"/></marker></defs>`;
@@ -3590,7 +3614,6 @@ function labBench() {
     g += sW('M330 62V80M330 106V124') + sMeter(330, 93, 'V', 13) + sDot(330, 62) + sDot(330, 124);
     g += sT(T - 4, 54, 'A1', 'end', 'lsb') + sT(T - 4, 116, 'A2', 'end', 'lsb') + sT(T - 4, 148, 'kotva', 'end');
     g += sBox(8, 196, 96, 84, 'Budicí zdroj', 'U_f = ' + Math.round(L.P.UfN * C.kf / 100) + ' V') + sW('M104 214H250M104 268H250') + sCoilV(250, 214, 54) + sT(262, 236, 'budicí vinutí', 'start', 'lsb') + sT(262, 254, 'I_f = 0 A', 'start', 'ls', 'lab-if');
-    g += `<path d="M300 280H392" class="lw dash"/>` + sT(346, 298, 'na póly N, S', 'middle');
   } else if (dc && gen) {
     const G = G_DC;
     g += sResV(40, 72, 44, 'zátěž', 'R_z = ' + G.Rz + ' Ω') + sW(`M40 62V72M40 116V124M40 62H96M124 62H178M208 62H${T}M40 124H${T}`) + sKnife(96, 62, G.on) + sT(110, 40, 'vypínač zátěže', 'middle');
@@ -3598,7 +3621,6 @@ function labBench() {
     g += sT(T - 4, 54, 'A1', 'end', 'lsb') + sT(T - 4, 116, 'A2', 'end', 'lsb') + sT(T - 4, 148, 'kotva', 'end');
     if (G.exc === 'cizi') g += sBox(8, 196, 96, 84, 'Budicí zdroj', 'U_f = ' + Math.round(L.P.UfN * G.kf / 100) + ' V') + sW('M104 214H250M104 268H250') + sCoilV(250, 214, 54) + sT(262, 236, 'budicí vinutí', 'start', 'lsb') + sT(262, 254, 'I_f = 0 A', 'start', 'ls', 'lab-if');
     else g += sDot(290, 62) + sDot(270, 124) + sW('M290 62V214H232M180 214H140') + sRes(180, 214, 52, 'R_reg', G.Rreg + ' Ω', false) + sCoilV(140, 214, 54) + sW('M140 268H270V124') + sT(150, 290, 'derivační budicí vinutí', 'start', 'lsb') + sT(20, 236, 'I_f = 0 A', 'start', 'ls', 'lab-if') + sT(20, 254, 'samobuzení', 'start');
-    g += `<path d="M300 280H392" class="lw dash"/>` + sT(346, 298, 'na póly N, S', 'middle');
   } else {
     const ys = [52, 78, 104], src = sm ? ['Síť', 'tvrdá, 50 Hz'] : gen ? ['Síť', '400 V, 50 Hz'] : A.dcb ? ['Ss zdroj', 'brzdění 40 V'] : A.src === 'sit' ? ['Síť', '400 V, 50 Hz'] : ['Měnič', 'f = ' + fmt(L.f || 0, 0) + ' Hz'];
     g += sBox(8, 30, 92, 96, src[0], src[1], 'lab-srcv');
@@ -3625,11 +3647,17 @@ function labBench() {
     } else if (!gen) g += sT(20, 200, 'rotor nakrátko', 'start', 'lsb') + sT(20, 218, '(klec, nebo kroužky spojené nakrátko)', 'start');
     if (!gen && !sm && A.dcb) g += sT(20, 250, 'stejnosměrné brzdění: do vinutí', 'start', 'lsr') + sT(20, 268, 'teče stejnosměrný proud', 'start', 'lsr');
   }
-  g += labMachine();
+  /* značka stroje, hřídel a mechanická strana */
+  const MX = 440, MY = 92, MR = 44, edge = y => MX - Math.sqrt(Math.max(0, MR * MR - (y - MY) ** 2));
+  g += (dc ? [62, 124] : [60, 78, 96]).map(y => sW(`M${T} ${y}H${edge(y).toFixed(1)}`)).join('');
+  if (dc) g += `<path d="M300 280H${MX}V${MY + MR}" class="lw dash"/>` + sT(366, 296, 'na póly N, S', 'middle');
+  if (sm) g += `<path d="M352 241H${MX}V${MY + MR}" class="lw dash"/>`;
+  const sym = (dc ? (gen ? 'G' : 'M') : sm ? (gen ? 'SG' : 'SM') : gen ? 'G' : 'M'), sub2 = dc ? '=' : '3~';
+  g += `<circle cx="${MX}" cy="${MY}" r="${MR}" class="lmeter"/>` + sT(MX, MY + 2, sym, 'middle', 'lsym') + sT(MX, MY + 24, sub2, 'middle', 'lb');
   const right = gen ? (dc && G_DC.drv === 'asm' ? 'Asynchronní motor' : 'Turbína') : 'Zátěž (brzda)';
-  g += `<path d="M602 154H640" class="lshl"/><rect x="640" y="104" width="150" height="100" rx="10" class="lbx"/>` + sT(715, 128, right, 'middle', 'lb') + sT(715, 152, 'M_z = 0', 'middle', 'ls', 'lab-mz') + sT(715, 174, '', 'middle', 'ls', 'lab-st');
-  if (sm && gen) g += sT(715, 236, '', 'middle', 'lsb', 'lab-syn') + sT(715, 256, '', 'middle', 'ls', 'lab-syn2');
-  return `<svg viewBox="0 0 800 310" class="bench" role="img" aria-label="Schéma zapojení laboratoře">${g}</svg>`;
+  g += `<path d="M${MX + MR} ${MY}H530" class="lshl"/><rect x="530" y="42" width="150" height="100" rx="10" class="lbx"/>` + sT(605, 66, right, 'middle', 'lb') + sT(605, 90, 'M_z = 0', 'middle', 'ls', 'lab-mz') + sT(605, 112, '', 'middle', 'ls', 'lab-st');
+  if (sm && gen) g += sT(605, 176, '', 'middle', 'lsb', 'lab-syn') + sT(605, 196, '', 'middle', 'ls', 'lab-syn2');
+  return `<svg viewBox="0 0 690 310" class="bench" role="img" aria-label="Schéma zapojení laboratoře">${g}</svg>`;
 }
 
 /* ---------- ovládací panel ---------- */
@@ -3698,14 +3726,14 @@ function renderLab(el) {
 <div class="lbar">
 <label>Stroj<select id="lb-m">${[['am', 'asynchronní 400 V'], ['dc', 'stejnosměrný 440 V'], ['sm', 'synchronní s vyniklými póly']].map(([k, t]) => `<option value="${k}"${L.m === k ? ' selected' : ''}>${t}</option>`).join('')}</select></label>
 <label>Režim<span class="seg">${[['mot', 'motor'], ['gen', L.m === 'dc' ? 'dynamo' : 'generátor']].map(([k, t]) => `<button type="button" data-lgen="${k}" aria-pressed="${(k === 'gen') === L.gen}">${t}</button>`).join('')}</span></label>
-<label>Zpomalení<select id="lb-sp">${[[1, 'skutečný čas'], [0.5, '2×'], [0.2, '5×'], [0.1, '10×'], [0.05, '20×'], [0.02, '50×']].map(([v, t]) => `<option value="${v}"${+v === LAB.sp ? ' selected' : ''}>${t}</option>`).join('')}</select></label>
+<label>Zpomalení<select id="lb-sp">${[[1, 'skutečný čas'], [0.5, '2×'], [0.2, '5×'], [0.1, '10×'], [0.05, '20×'], [0.02, '50×'], [0.01, '100×'], [0.005, '200×'], [0.002, '500×']].map(([v, t]) => `<option value="${v}"${+v === LAB.sp ? ' selected' : ''}>${t}</option>`).join('')}</select></label>
 <label>Setrvačnost<select id="lb-J">${[0.5, 1, 2, 4].map(v => `<option value="${v}"${v === LAB.J ? ' selected' : ''}>${fmt(v, 1)}× J</option>`).join('')}</select></label>
 <span class="lrun"><button type="button" class="btn big" id="lb-go">${LAB.run ? '❚❚ Pozastavit' : '▶ Pokračovat'}</button><button type="button" class="btn" id="lb-re">↺ Znovu (stroj v klidu)</button></span>
 </div>
 <div id="lb-scnp" class="lgrp lscnp">${labScnHTML()}</div>
 <div class="lctl"><div id="lb-ctl">${labCtlHTML()}</div><div id="lb-load">${labLoadHTML()}</div></div>
-<div class="lmain"><div class="lstage">${labBench()}</div>
-<div class="gauges">${meters.map(([k, t, u]) => `<div class="meter"><p>${t}</p><div id="gw-${k}">${gaugeSVG(k, ...labGR[k])}</div><div class="lcd"><span id="lcd-${k}">0</span><small>${u}</small></div></div>`).join('')}</div></div>
+<div class="lmain"><div class="lleft"><div class="lstage">${labBench()}</div>
+<div class="gauges">${meters.map(([k, t, u]) => `<div class="meter"><p>${t}</p><div id="gw-${k}">${gaugeSVG(k, ...labGR[k])}</div><div class="lcd"><span id="lcd-${k}">0</span><small>${u}</small></div></div>`).join('')}</div></div><div class="lgrp linside" id="lb-inside">${labInsideHTML()}</div></div>
 <div class="lcds">${extra.map(([k, t, u]) => `<div class="meter sm"><p>${sub(t)}</p><div class="lcd"><span id="lcx-${k}">0</span><small>${u}</small></div></div>`).join('')}</div>
 <div class="lchart"><canvas id="lb-cv" aria-label="Průběh otáček, proudu a momentu za poslední 3 sekundy"></canvas><p class="note">Poslední 3 s simulace: <span class="k-n">■ otáčky</span> <span class="k-i">■ proud</span> <span class="k-m">■ moment</span> (každá veličina ve stupnici svého měřáku)</p></div>
 <div class="cols2"><div><h3>Co zkusit</h3>${labTips()}</div><div><h3>Záznam</h3><ol id="lb-ev" class="lev"></ol></div></div></div>`;
@@ -3731,11 +3759,8 @@ function labDraw() {
   else if (dc) { set('lcx-x1', m.x1, 0); set('lcx-x2', m.x2, 2); set('lcx-x3', m.x3, 1); set('lcx-Mp', m.Mp, 0); }
   else { set('lcx-x1', m.x1, 1); set('lcx-x2', m.x2, 1); set('lcx-x3', m.x3, 1); set('lcx-pg', -(m.p || 0) / 1e3, 1); set('lcx-qg', (m.q || 0) / 1e3, 1); set('lcx-Mp', m.Mp, 1); }
   set('lcx-t', L.t, 1);
-  $('#lab-rot').setAttribute('transform', `rotate(${(-L.thv * 180 / Math.PI % 360).toFixed(2)} 455 140)`);
-  const fl = $('#lab-fld');
-  if (dc) fl.style.opacity = clamp(g ? xiSat(L.d, L.s[2]) / L.d.xiN : L.s[2] / L.d.ifN, 0.05, 1).toFixed(2);
-  else if (sm) { const on = g ? G_SM.on : LAB_SM.on; fl.setAttribute('transform', `rotate(${(-L.fang * 180 / Math.PI % 360).toFixed(2)} 455 140)`); fl.style.opacity = on ? 1 : 0.12; }
-  else { fl.setAttribute('transform', `rotate(${(-L.fang * 180 / Math.PI % 360 + 90).toFixed(2)} 455 140)`); fl.style.opacity = Math.min(1, (L.fmag || 0) / 0.9).toFixed(2); }
+  $('#lab-rot').setAttribute('transform', `rotate(${(-L.thv * 180 / Math.PI % 360).toFixed(2)} 260 260)`);
+  labInsideUpdate();
   if (dc) txt('lab-if', 'I_f = ' + fmt(L.s[2], 2) + ' A');
   if (!dc && !sm && !g && LAB_AM.src === 'mf' && !LAB_AM.dcb) txt('lab-srcv', 'f = ' + fmt(L.f, 0) + ' Hz');
   const W = dc ? L.s[1] : sm ? L.nu * L.ws : L.s[4];
@@ -4035,6 +4060,140 @@ document.addEventListener('click', e => {
   if (e.target.id === 'lb-scn-stop') { SCN = null; const p = $('#lb-scnp'); if (p) p.innerHTML = labScnHTML(); }
 });
 
+/* ===== Laboratoř: velký řez strojem – pole v mezeře, proudy v drážkách, klec, kotva a komutátor ===== */
+const IV = { fld: true, ist: true, irt: true, lbl: true };
+const ICX = 260, ICY = 260, DEGR = Math.PI / 180;
+const ip = (r, th) => [ICX + r * Math.cos(th), ICY - r * Math.sin(th)];       /* matematický úhel, proti směru hodinových ručiček */
+const f2 = v => v.toFixed(1);
+const iSector = (r1, r2, a0, a1) => { const [x1, y1] = ip(r2, a0), [x2, y2] = ip(r2, a1), [x3, y3] = ip(r1, a1), [x4, y4] = ip(r1, a0), lg = a1 - a0 > Math.PI ? 1 : 0;
+  return `M${f2(x1)} ${f2(y1)}A${r2} ${r2} 0 ${lg} 0 ${f2(x2)} ${f2(y2)}L${f2(x3)} ${f2(y3)}A${r1} ${r1} 0 ${lg} 1 ${f2(x4)} ${f2(y4)}Z`; };
+/* vodič s proudem: kruh + tečka (⊙ proud k nám) + křížek (⊗ od nás); barvy a znak mění iCond */
+const iCondSVG = (id, x, y, r) => `<g id="${id}"><circle cx="${f2(x)}" cy="${f2(y)}" r="${r}" class="icn"/><circle cx="${f2(x)}" cy="${f2(y)}" r="${(r * 0.28).toFixed(1)}" class="icd"/><path d="M${f2(x - r * .5)} ${f2(y - r * .5)}l${f2(r)} ${f2(r)}M${f2(x + r * .5)} ${f2(y - r * .5)}l${f2(-r)} ${f2(r)}" class="icx"/></g>`;
+const icache = {};
+function iCond(id, v) {                                                    /* v = poměrný proud −1…1 */
+  let e = icache[id]; if (!e || !e.g.isConnected) { const g = document.getElementById(id); if (!g) return; e = icache[id] = { g, c: g.children[0], d: g.children[1], x: g.children[2] }; }
+  const a = Math.min(1, Math.abs(v)), show = IV.ist || IV.irt;
+  e.c.setAttribute('class', 'icn ' + (v >= 0 ? 'pos' : 'neg')); e.c.style.fillOpacity = (0.12 + 0.88 * a).toFixed(2);
+  e.d.style.display = v > 0.08 ? '' : 'none'; e.x.style.display = v < -0.08 ? '' : 'none';
+}
+function iSet(id, op) { const e = document.getElementById(id); if (e) e.style.opacity = op; }
+/* fázové pásy trojfázového vinutí (60°): −b, +a, −c, +b, −a, +c se středy 30°, 90°, …, 330° el. */
+const BELT = [['b', -1], ['a', 1], ['c', -1], ['b', 1], ['a', -1], ['c', 1]];
+const beltOf = eps => BELT[Math.floor((((eps / DEGR) % 360) + 360) % 360 / 60)];
+const NS = 24, NB = 28;
+
+function labInsideSVG() {
+  const m = L.m; let g = `<defs><marker id="iah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0L10 5L0 10z" style="fill:var(--red)"/></marker></defs>`;
+  /* vzduchová mezera: barevný prstenec s rozložením indukce */
+  const gap = (r1, r2) => { let s = `<g id="igap">`; for (let k = 0; k < 72; k++) s += `<path d="${iSector(r1, r2, k * 5 * DEGR, (k + 1) * 5 * DEGR)}" id="igp${k}" class="igp"/>`; return s + '</g>'; };
+  if (m === 'dc') {
+    g += `<circle cx="${ICX}" cy="${ICY}" r="248" class="lfe"/><circle cx="${ICX}" cy="${ICY}" r="212" class="lgap"/>`;
+    for (const top of [1, -1]) {                                           /* hlavní póly nahoře (N) a dole (S) */
+      const yb = ICY - top * 212, yt = ICY - top * 180;
+      g += `<path d="M${ICX - 36} ${yb}L${ICX + 36} ${yb}L${ICX + 36} ${yt}L${ICX - 36} ${yt}Z" class="lfe2"/><path d="${iSector(166, 182, top > 0 ? 35 * DEGR : 215 * DEGR, top > 0 ? 145 * DEGR : 325 * DEGR)}" class="lfe2"/>`;
+      g += `<text x="${ICX}" y="${ICY - top * 194 + 7}" text-anchor="middle" class="lpole">${top > 0 ? 'N' : 'S'}</text>`;
+      for (const sx of [-1, 1]) { const cx = ICX + sx * 49, cy = ICY - top * 196; g += `<rect x="${cx - 12}" y="${cy - 12}" width="24" height="24" rx="4" class="lcu"/>` + iCondSVG(`ifc${top > 0 ? 0 : 1}${sx > 0 ? 1 : 0}`, cx, cy, 8); }
+    }
+    g += gap(152, 165);
+    g += `<line x1="${ICX - 252}" y1="${ICY}" x2="${ICX + 252}" y2="${ICY}" class="ineu"/>` + `<text x="${ICX}" y="${ICY + 278}" text-anchor="middle" class="ilb">čárkovaně geometrická neutrála; uprostřed komutátor, černě kartáče</text>`;
+    let rot = `<circle cx="${ICX}" cy="${ICY}" r="150" class="lrot"/>`;
+    for (let k = 0; k < NS; k++) { const a = (k + 0.5) * 2 * Math.PI / NS, [x, y] = ip(133, a), [x2, y2] = ip(108, a); rot += `<line x1="${f2(x)}" y1="${f2(y)}" x2="${f2(x2)}" y2="${f2(y2)}" class="iwire"/>` + iCondSVG('ia' + k, x, y, 9); }
+    for (let k = 0; k < NS; k++) { const a0 = k * 2 * Math.PI / NS + 0.01, a1 = (k + 1) * 2 * Math.PI / NS - 0.01; rot += `<path d="${iSector(62, 92, a0, a1)}" id="icm${k}" class="icm"/>`; }
+    rot += `<circle cx="${ICX}" cy="${ICY}" r="24" class="lshaft"/>`;
+    g += `<g id="lab-rot">${rot}</g>`;
+    g += `<rect x="${ICX - 112}" y="${ICY - 11}" width="22" height="22" rx="3" class="lbrush"/><rect x="${ICX + 90}" y="${ICY - 11}" width="22" height="22" rx="3" class="lbrush"/>`;
+    g += `<g id="lab-fld"><line x1="${ICX}" y1="${ICY}" x2="${ICX}" y2="${ICY + 120}" class="lfld" marker-end="url(#iah)"/></g>`;
+  } else {
+    g += `<circle cx="${ICX}" cy="${ICY}" r="248" class="lfe"/><circle cx="${ICX}" cy="${ICY}" r="168" class="lgap"/>`;
+    for (let k = 0; k < NS; k++) {
+      const a = (k + 0.5) * 2 * Math.PI / NS, deg = 90 - a / DEGR, [x, y] = ip(196, a), [bx, by] = ip(232, a), [ph, sg] = beltOf(2 * a);
+      g += `<g transform="rotate(${f2(deg)} ${ICX} ${ICY})"><rect x="${ICX - 11}" y="${ICY - 226}" width="22" height="56" rx="3" class="slot"/></g>` + iCondSVG('is' + k, x, y, 10);
+      g += `<text x="${f2(bx)}" y="${f2(by + 4)}" text-anchor="middle" class="iph ip${ph}">${sg < 0 ? '−' : ''}${ph.toUpperCase()}</text>`;
+    }
+    g += gap(152, 166);
+    let rot;
+    if (m === 'am') {
+      rot = `<circle cx="${ICX}" cy="${ICY}" r="150" class="lrot"/><circle cx="${ICX}" cy="${ICY}" r="122" class="iring"/>`;
+      for (let k = 0; k < NB; k++) { const a = k * 2 * Math.PI / NB, [x, y] = ip(136, a); rot += iCondSVG('ib' + k, x, y, 8.5); }
+      rot += `<rect x="${ICX - 3}" y="${ICY - 112}" width="6" height="70" rx="3" class="lmark"/><circle cx="${ICX}" cy="${ICY}" r="26" class="lshaft"/>`;
+    } else {
+      rot = `<circle cx="${ICX}" cy="${ICY}" r="62" class="lrot"/>`;
+      for (let k = 0; k < 4; k++) {                                         /* vyniklé póly s budicím vinutím */
+        const a = k * Math.PI / 2, deg = 90 - a / DEGR;
+        rot += `<g transform="rotate(${f2(deg)} ${ICX} ${ICY})"><path d="M${ICX - 24} ${ICY - 60}L${ICX + 24} ${ICY - 60}L${ICX + 24} ${ICY - 118}L${ICX - 24} ${ICY - 118}Z" class="lfe2"/><path d="${iSector(118, 150, (90 - 34) * DEGR, (90 + 34) * DEGR)}" class="lfe2"/><text x="${ICX}" y="${ICY - 128}" text-anchor="middle" class="lpole">${k % 2 ? 'S' : 'N'}</text></g>`;
+        for (const sx of [-1, 1]) { const [x, y] = ip(90, a + sx * 0.36); rot += iCondSVG(`irc${k}${sx > 0 ? 1 : 0}`, x, y, 9); }
+      }
+      rot += `<circle cx="${ICX}" cy="${ICY}" r="24" class="lshaft"/>`;
+    }
+    g += `<g id="lab-rot">${rot}</g>`;
+    g += `<g id="lab-fld">${[0, 1, 2, 3].map(k => { const a = k * Math.PI / 2, [x, y] = ip(262, a); return `<text x="${f2(x)}" y="${f2(y + 7)}" text-anchor="middle" class="ins ${k % 2 ? 'in' : 'is'}">${k % 2 ? 'N' : 'S'}</text>`; }).join('')}</g>`;
+  }
+  return `<svg viewBox="-24 -24 568 568" class="inside" role="img" aria-label="Řez strojem s proudy a magnetickým polem">${g}</svg>`;
+}
+function labInsideHTML() {
+  const m = L.m, lab = m === 'dc' ? [['fld', 'pole v mezeře'], ['ist', 'proudy v budicím vinutí'], ['irt', 'proudy v kotvě a komutátor']] : m === 'am' ? [['fld', 'pole v mezeře, póly N/S'], ['ist', 'proudy v drážkách statoru'], ['irt', 'proudy v tyčích klece']] : [['fld', 'pole v mezeře, póly N/S'], ['ist', 'proudy v drážkách statoru'], ['irt', 'budicí vinutí rotoru']];
+  const note = m === 'dc' ? 'Vodiče pod pólem N mají jeden smysl proudu, pod S opačný. Rozložení proudů v kotvě stojí v prostoru, i když se kotva točí: obstarává to komutátor. Ve vodičích u neutrály se proud právě obrací (komutace, zlatě zvýrazněné lamely pod kartáči). Šipka ukazuje výsledné pole; s proudem kotvy se stáčí (reakce kotvy) a prstenec ukazuje posunutí neutrály.'
+    : m === 'am' ? 'Drážky statoru jsou obarvené podle okamžitého proudu ve fázi (červená ⊙ k nám, modrá ⊗ od nás); písmena u drážek jsou fázové pásy A, B, C. Pás proudů se posouvá a s ním se otáčí pole ve vzduchové mezeře (červená = indukce ze statoru do rotoru, póly N/S). V tyčích klece se indukuje proud úměrný skluzu; jeho rozložení se vůči rotoru posouvá s kmitočtem f₂ = s f₁. Pro sledování proudů nastavte zpomalení 100× až 500×.'
+    : 'Stator je stejný jako u asynchronního stroje. Rotor nese stejnosměrné budicí vinutí, takže jeho póly N/S jsou pevně spojené s rotorem. V synchronizmu se rotor točí stejně rychle jako pole statoru (písmena N/S po obvodu) a zaostává za ním o zátěžný úhel β/p.';
+  return `<div class="lgh">Uvnitř stroje</div><div class="lrow ivw">${lab.map(([k, t]) => `<label class="chk"><input type="checkbox" data-iv="${k}"${IV[k] ? ' checked' : ''}><span>${t}</span></label>`).join('')}</div>
+<div class="iwrap">${labInsideSVG()}</div><p class="note">${sub(note)}</p>`;
+}
+const iRun = { n1: 1, n2: 1, nb: 1 };
+function iNorm(key, v, floor) { const k = iRun[key + 'k'] = Math.max(Math.abs(v), (iRun[key + 'k'] || floor) * 0.985, floor); return k; }
+function labInsideUpdate() {
+  if (!document.getElementById('igap')) return;
+  const m = L.m;
+  iSet('igap', IV.fld ? 1 : 0); iSet('lab-fld', IV.fld ? 1 : 0);
+  const gapCol = (B) => { for (let k = 0; k < 72; k++) { const e = document.getElementById('igp' + k); if (!e) continue; const b = B((k + 0.5) * 5 * DEGR); e.setAttribute('class', 'igp ' + (b >= 0 ? 'pos' : 'neg')); e.style.fillOpacity = Math.min(1, Math.abs(b)).toFixed(2); } };
+  if (m === 'am') {
+    const { Lh, L1, L2, D } = L.d, s = L.s, pp = L.P.pp;
+    const i1 = [(L2 * s[0] - Lh * s[2]) / D, (L2 * s[1] - Lh * s[3]) / D], i2 = [(L1 * s[2] - Lh * s[0]) / D, (L1 * s[3] - Lh * s[1]) / D];
+    const pm = [Lh * (i1[0] + i2[0]), Lh * (i1[1] + i2[1])], pN = L.d.psiNat || 0.9;
+    const kv = !L.gen && LAB_AM.src === 'sit' && LAB_AM.yd === 'Y' ? 1 / SQ3 : 1;
+    const ph = { a: i1[0], b: -i1[0] / 2 + SQ3 / 2 * i1[1], c: -i1[0] / 2 - SQ3 / 2 * i1[1] };
+    const n1 = iNorm('s', Math.hypot(...i1), 8), n2 = iNorm('r', Math.hypot(...i2), 8);
+    for (let k = 0; k < NS; k++) { const a = (k + 0.5) * 2 * Math.PI / NS, [p, sg] = beltOf(pp * a); iCond('is' + k, IV.ist ? sg * ph[p] / n1 : 0); iSet('is' + k, IV.ist ? 1 : 0.25); }
+    for (let k = 0; k < NB; k++) { const e = pp * (L.thv + k * 2 * Math.PI / NB) - Math.PI / 2; iCond('ib' + k, IV.irt ? (i2[0] * Math.cos(e) + i2[1] * Math.sin(e)) / n2 : 0); iSet('ib' + k, IV.irt ? 1 : 0.25); }
+    gapCol(th => -(pm[0] * Math.cos(pp * th) + pm[1] * Math.sin(pp * th)) / pN);   /* červeně: tok ze statoru do rotoru (pól N statoru) */
+    const fa = Math.atan2(pm[1], pm[0]) / pp; document.getElementById('lab-fld').setAttribute('transform', `rotate(${f2(-fa / DEGR)} ${ICX} ${ICY})`);
+    iSet('lab-fld', IV.fld ? Math.min(1, Math.hypot(...pm) / pN * 1.2).toFixed(2) : 0);
+  } else if (m === 'dc') {
+    const s = L.s, d = L.d, ia = s[0], flux = (L.gen ? xiSat(d, s[2]) : d.xiN * s[2] / d.ifN) / d.xiN, IN = L.P.IN, w = 10 * DEGR;
+    for (let t = 0; t < 2; t++) for (let x = 0; x < 2; x++) iCond(`ifc${t}${x}`, IV.ist ? (x ? 1 : -1) * Math.min(1, s[2] / d.ifN) : 0);
+    for (let k = 0; k < NS; k++) {
+      const a = L.thv + (k + 0.5) * 2 * Math.PI / NS, sn = Math.sin(a), dist = Math.asin(Math.min(1, Math.abs(sn)));   /* vzdálenost od neutrály */
+      const v = IV.irt ? -Math.sign(sn) * Math.min(1, dist / w) * ia / (1.2 * IN) : 0;
+      iCond('ia' + k, v);
+      const c0 = (k * 2 * Math.PI / NS + L.thv), cm = c0 + Math.PI / NS, under = Math.abs(Math.sin(cm)) < Math.sin(9 * DEGR);
+      const ce = document.getElementById('icm' + k); if (ce) ce.setAttribute('class', 'icm' + (under && IV.irt ? ' on' : ''));
+    }
+    const kr = 0.35 * ia / IN;                                              /* reakce kotvy */
+    gapCol(th => { const fromTop = Math.abs(((th - Math.PI / 2 + Math.PI) % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI) - Math.PI), fromBot = Math.PI - fromTop;
+      const shape = fromTop < 55 * DEGR ? 1 : fromTop < 65 * DEGR ? (65 * DEGR - fromTop) / (10 * DEGR) : fromBot < 55 * DEGR ? -1 : fromBot < 65 * DEGR ? -(65 * DEGR - fromBot) / (10 * DEGR) : 0;
+      const tri = 1 - 2 * Math.abs(Math.atan2(Math.sin(th), Math.cos(th))) / Math.PI;
+      return flux * shape - kr * tri * (0.35 + 0.65 * Math.abs(shape)); });
+    const ang = Math.atan2(-flux, -kr); document.getElementById('lab-fld').setAttribute('transform', `rotate(${f2(90 - ang / DEGR - 180)} ${ICX} ${ICY})`);
+    iSet('lab-fld', IV.fld ? Math.min(1, Math.hypot(flux, kr) + 0.1).toFixed(2) : 0);
+  } else {
+    const gen = L.gen, S = gen ? G_SM : LAB_SM, on = S.on, exc = gen ? S.exc : S.on && S.exc, P = L.P, pp = P.pp;
+    const b = Math.atan2(Math.sin(pp * (L.fang - L.thv)), Math.cos(pp * (L.fang - L.thv)));
+    let iv = [0, 0];
+    if (on) { const c = smCurV(P, b, exc ? S.Ui : 0), th = pp * L.fang + Math.PI / 2 + c.arg; iv = [c.I * Math.cos(th), c.I * Math.sin(th)]; }
+    const ph = { a: iv[0], b: -iv[0] / 2 + SQ3 / 2 * iv[1], c: -iv[0] / 2 - SQ3 / 2 * iv[1] }, n1 = iNorm('s', Math.hypot(...iv), 1);
+    for (let k = 0; k < NS; k++) { const a = (k + 0.5) * 2 * Math.PI / NS, [p, sg] = beltOf(pp * a); iCond('is' + k, IV.ist ? sg * ph[p] / n1 : 0); iSet('is' + k, IV.ist ? 1 : 0.25); }
+    for (let k = 0; k < 4; k++) for (let x = 0; x < 2; x++) iCond(`irc${k}${x}`, IV.irt && exc ? ((k % 2 ? -1 : 1) * (x ? 1 : -1)) : 0);
+    const fa = on ? pp * L.fang : pp * L.thv, mag = on ? 1 : exc ? Math.min(1, S.Ui * L.nu) : 0;
+    gapCol(th => -mag * Math.cos(pp * th - fa));
+    document.getElementById('lab-fld').setAttribute('transform', `rotate(${f2(-(fa / pp) / DEGR)} ${ICX} ${ICY})`); iSet('lab-fld', IV.fld ? mag.toFixed(2) : 0);
+  }
+}
+function smCurV(P, b, Ui) {                                                /* proud motoru jako fázor vůči napětí sítě */
+  const Iq = -P.U * Math.sin(b) / P.Xq, Id = (Ui - P.U * Math.cos(b)) / P.Xd;
+  const Ir = Id * Math.cos(-b - Math.PI / 2) + Iq * Math.cos(-b), Ii = Id * Math.sin(-b - Math.PI / 2) + Iq * Math.sin(-b);
+  return { I: Math.hypot(Ir, Ii), arg: Math.atan2(-Ii, -Ir) };
+}
+document.addEventListener('change', e => { const k = e.target.dataset && e.target.dataset.iv; if (k) { IV[k] = e.target.checked; } });
+
 /* ===== Interaktivní fázorové diagramy ===== */
 const Cx = (re, im = 0) => ({ re, im });
 const cadd = (a, b) => Cx(a.re + b.re, a.im + b.im), csub = (a, b) => Cx(a.re - b.re, a.im - b.im);
@@ -4170,6 +4329,119 @@ document.addEventListener('input', e => {
   fazDraw();
 });
 document.addEventListener('change', e => { const id = e.target.dataset && e.target.dataset.fz; if (id && e.target.tagName === 'SELECT') { fazV[fazK][id] = e.target.value; fazDraw(); } });
+
+/* ===== Záložka Točivé pole ===== */
+const PO = { wt: 0, play: true, spd: 90, I: [1, 1, 1], ph: [0, -120, 120], geo: '3f', vec: true, seq: true, trail: true, pre: 'sym' };
+const PO_PRE = {
+  sym: { n: 'Souměrné 3f', I: [1, 1, 1], ph: [0, -120, 120], geo: '3f', t: 'Souměrné trojfázové proudy ve vinutí posunutém o 120°: výsledné pole má stálou velikost 3/2 amplitudy jedné fáze a otáčí se rovnoměrně (kruhové pole). Zpětná složka je nulová.' },
+  rev: { n: 'Opačný sled', I: [1, 1, 1], ph: [0, 120, -120], geo: '3f', t: 'Přehozením dvou fází se obrátí sled proudů a pole se točí opačně: na tom je založena reverzace asynchronního motoru a brzdění protiproudem.' },
+  unb: { n: 'Nesouměrné', I: [1, 0.5, 1], ph: [0, -120, 120], geo: '3f', t: 'Nesouměrné proudy: kromě sousledné složky vznikne i zpětná, která se točí opačně. Jejich součet opisuje elipsu (eliptické pole). Zpětné pole v motoru brzdí a zvyšuje ztráty.' },
+  one: { n: 'Jedna fáze', I: [1, 0, 0], ph: [0, -120, 120], geo: '3f', t: 'Jen jedna cívka: pole pulzuje na místě (mění velikost i smysl, ale neotáčí se). Podle Leblancova teorému je to součet dvou stejně velkých protiběžných točivých polí poloviční amplitudy – proto jednofázový motor nemá záběrný moment.' },
+  loss: { n: 'Výpadek fáze', I: [1, 1, 0], ph: [0, 180, 0], geo: '3f', t: 'Přerušená fáze L3 u motoru do hvězdy: zbylé dvě fáze jsou v sérii a teče jimi týž proud opačného smyslu (i_b = −i_a). Pole pulzuje v ose mezi cívkami a a b, motor se z klidu nerozběhne a běžící motor se přetěžuje.' },
+  two: { n: 'Dvoufázové 90°', I: [1, 1, 0], ph: [0, -90, 0], geo: '2f', t: 'Dvě cívky posunuté o 90° napájené proudy posunutými o 90°: opět kruhové točivé pole, tentokrát s amplitudou jedné fáze. Tak pracuje jednofázový motor s pomocnou fází a kondenzátorem.' },
+  twou: { n: 'Dvoufázové nesouměrné', I: [1, 0.73, 0], ph: [0, -90, 0], geo: '2f', t: 'Příklad z knihy: fáze se 110 a 80 závity posunuté o 90°. Amplitudy mmn jsou různé, pole je točivé eliptické.' }
+};
+const PCOL = ['var(--red)', 'var(--och)', 'var(--blu)'];
+let poRaf = 0, poLast = 0;
+const poAx = () => PO.geo === '2f' ? [0, 90] : [0, 120, 240];
+function poState(wtDeg) {
+  const ax = poAx(), r = Math.PI / 180, wt = wtDeg * r; let Fx = 0, Fy = 0; const ph = [];
+  ax.forEach((a, k) => { const i = PO.I[k] * Math.cos(wt + PO.ph[k] * r); ph.push(i); Fx += i * Math.cos(a * r); Fy += i * Math.sin(a * r); });
+  /* rozklad: F = F₊ e^{jωt} + F₋ e^{−jωt} */
+  let pr = 0, pi_ = 0, nr = 0, ni = 0;
+  ax.forEach((a, k) => { const I2 = PO.I[k] / 2; pr += I2 * Math.cos((PO.ph[k] + a) * r); pi_ += I2 * Math.sin((PO.ph[k] + a) * r); nr += I2 * Math.cos((a - PO.ph[k]) * r); ni += I2 * Math.sin((a - PO.ph[k]) * r); });
+  const Fp = [pr * Math.cos(wt) - pi_ * Math.sin(wt), pr * Math.sin(wt) + pi_ * Math.cos(wt)], Fn = [nr * Math.cos(-wt) - ni * Math.sin(-wt), nr * Math.sin(-wt) + ni * Math.cos(-wt)];
+  return { ax, ph, F: [Fx, Fy], Fp, Fn, ap: Math.hypot(pr, pi_), an: Math.hypot(nr, ni) };
+}
+function poField() {
+  const S = poState(PO.wt), W = 460, cx = 230, cy = 230, R = 200, rb = 140, sc = 82, r = Math.PI / 180;
+  const P = (x, y) => [cx + x * sc, cy - y * sc];
+  let g = `<defs>${['k', 'r', 'o', 'b', 'g'].map((k, i) => `<marker id="pm${k}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" style="fill:${['var(--ink)', 'var(--red)', 'var(--och)', 'var(--blu)', 'var(--mut)'][i]}"/></marker>`).join('')}</defs>`;
+  g += `<circle cx="${cx}" cy="${cy}" r="${R}" class="pfe"/><circle cx="${cx}" cy="${cy}" r="${rb + 18}" class="pgap"/>`;
+  S.ax.forEach((a, k) => {
+    const i = S.ph[k], amp = Math.max(1e-6, Math.max(...PO.I));
+    for (const sd of [1, -1]) {                                            /* strany cívky: ⊙ na a+90°, ⊗ na a−90° */
+      const t = (a + sd * 90) * r, x = cx + (rb + 30) * Math.cos(t), y = cy - (rb + 30) * Math.sin(t), v = sd * i / amp, al = Math.min(1, Math.abs(v));
+      g += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="13" style="fill:${v >= 0 ? 'var(--red)' : 'var(--blu)'};fill-opacity:${(0.1 + 0.9 * al).toFixed(2)};stroke:${PCOL[k]};stroke-width:3"/>`;
+      if (v > 0.06) g += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3.5" class="pkf"/>`; else if (v < -0.06) g += `<path d="M${(x - 6).toFixed(1)} ${(y - 6).toFixed(1)}l12 12M${(x + 6).toFixed(1)} ${(y - 6).toFixed(1)}l-12 12" class="pkx"/>`;
+      const lx = cx + (R + 14) * Math.cos(t), ly = cy - (R + 14) * Math.sin(t);
+      g += `<text x="${lx.toFixed(1)}" y="${(ly + 5).toFixed(1)}" text-anchor="middle" class="plb" style="fill:${PCOL[k]}">${sd > 0 ? '' : '−'}${'abc'[k]}</text>`;
+    }
+    const [ex, ey] = P(1.65 * Math.cos(a * r), 1.65 * Math.sin(a * r)); g += `<line x1="${cx}" y1="${cy}" x2="${ex.toFixed(1)}" y2="${ey.toFixed(1)}" class="pax" style="stroke:${PCOL[k]}"/><text x="${ex.toFixed(1)}" y="${(ey - 4).toFixed(1)}" class="psm" style="fill:${PCOL[k]}">osa ${'abc'[k]}</text>`;
+  });
+  if (PO.trail) { let d = ''; for (let k = 0; k <= 120; k++) { const s = poState(k * 3), [x, y] = P(s.F[0], s.F[1]); d += (k ? 'L' : 'M') + x.toFixed(1) + ' ' + y.toFixed(1); } g += `<path d="${d}" class="ptr"/>`; }
+  if (PO.vec) {                                                            /* příspěvky fází řetězeně */
+    let x0 = 0, y0 = 0;
+    S.ax.forEach((a, k) => { const x1 = x0 + S.ph[k] * Math.cos(a * r), y1 = y0 + S.ph[k] * Math.sin(a * r), [sx, sy] = P(x0, y0), [tx, ty] = P(x1, y1); if (Math.hypot(tx - sx, ty - sy) > 2) g += `<line x1="${sx.toFixed(1)}" y1="${sy.toFixed(1)}" x2="${tx.toFixed(1)}" y2="${ty.toFixed(1)}" class="pvec" style="stroke:${PCOL[k]}" marker-end="url(#pm${'rob'[k]})"/>`; x0 = x1; y0 = y1; });
+  }
+  if (PO.seq) for (const [v, cl, nm] of [[S.Fp, 'pfp', 'F₊'], [S.Fn, 'pfn', 'F₋']]) { const [x, y] = P(v[0], v[1]); if (Math.hypot(v[0], v[1]) > 0.02) g += `<line x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" class="${cl}" marker-end="url(#pmg)"/><text x="${(x + 6).toFixed(1)}" y="${(y - 6).toFixed(1)}" class="psm">${nm}</text>`; }
+  const [fx, fy] = P(S.F[0], S.F[1]);
+  if (Math.hypot(S.F[0], S.F[1]) > 0.02) g += `<line x1="${cx}" y1="${cy}" x2="${fx.toFixed(1)}" y2="${fy.toFixed(1)}" class="pres" marker-end="url(#pmk)"/><text x="${(fx + 8).toFixed(1)}" y="${(fy + 16).toFixed(1)}" class="plb">F</text>`;
+  g += `<circle cx="${cx}" cy="${cy}" r="4" class="pkf"/>`;
+  return [`<svg viewBox="-10 -10 ${W + 20} ${W + 20}" class="pfield" role="img" aria-label="Točivé magnetické pole">${g}</svg>`, S];
+}
+function poWave(S) {
+  const W = 520, H = 230, X = a => 40 + (W - 50) * a / 360, A = Math.max(1, ...PO.I), Y = v => H / 2 - v / A * (H / 2 - 22), r = Math.PI / 180;
+  let g = `<line x1="40" x2="${W - 10}" y1="${Y(0)}" y2="${Y(0)}" class="pgr"/>`;
+  for (const a of [0, 90, 180, 270, 360]) g += `<text x="${X(a)}" y="${H - 4}" text-anchor="middle" class="psm">${a}°</text><line x1="${X(a)}" x2="${X(a)}" y1="14" y2="${H - 20}" class="pgr2"/>`;
+  S.ax.forEach((_, k) => { if (!PO.I[k]) return; let d = ''; for (let a = 0; a <= 360; a += 4) d += (a ? 'L' : 'M') + X(a).toFixed(1) + ' ' + Y(PO.I[k] * Math.cos((a + PO.ph[k]) * r)).toFixed(1); g += `<path d="${d}" class="pwv" style="stroke:${PCOL[k]}"/><circle cx="${X(PO.wt % 360).toFixed(1)}" cy="${Y(S.ph[k]).toFixed(1)}" r="5" style="fill:${PCOL[k]}"/><text x="${(X(PO.wt % 360) + 8).toFixed(1)}" y="${(Y(S.ph[k]) + 4).toFixed(1)}" class="plb" style="fill:${PCOL[k]}">i${'abc'[k]}</text>`; });
+  g += `<line x1="${X(PO.wt % 360)}" x2="${X(PO.wt % 360)}" y1="10" y2="${H - 20}" class="pcur"/>`;
+  return `<svg viewBox="0 0 ${W} ${H}" class="pwave" role="img" aria-label="Průběhy fázových proudů">${g}</svg>`;
+}
+function poInfo(S) {
+  const ap = S.ap, an = S.an, typ = an < 0.02 * Math.max(ap, 1e-9) ? 'kruhové točivé' : Math.abs(ap - an) < 0.02 * Math.max(ap, an, 1e-9) ? 'pulzující (neotáčí se)' : 'eliptické točivé';
+  const dir = ap > an + 1e-6 ? 'proti směru hodinových ručiček (a → b → c)' : an > ap + 1e-6 ? 'po směru hodinových ručiček (opačný sled)' : '–';
+  return `<table class="fzout"><tbody><tr><td>Druh pole</td><td>${typ}</td></tr><tr><td>Smysl otáčení</td><td>${dir}</td></tr><tr><td>|F| v tomto okamžiku</td><td>${fmt(Math.hypot(...S.F), 2)}</td></tr><tr><td>Sousledná složka |F₊|</td><td>${fmt(ap, 3)}</td></tr><tr><td>Zpětná složka |F₋|</td><td>${fmt(an, 3)}</td></tr><tr><td>Poloosy elipsy |F₊| ± |F₋|</td><td>${fmt(ap + an, 2)} / ${fmt(Math.abs(ap - an), 2)}</td></tr></tbody></table>`;
+}
+const poSl = (id, l, min, max, st, v, u) => `<label class="fr"><span><span>${l}</span> <b id="pov-${id}">${fmt(v, st < 1 ? 2 : 0)} ${u}</b></span><input type="range" data-po="${id}" min="${min}" max="${max}" step="${st}" value="${v}"></label>`;
+function renderPole(el) {
+  const pre = PO_PRE[PO.pre];
+  el.innerHTML = `<div class="wrap"><h2>Točivé magnetické pole</h2><p class="lead">Tři cívky posunuté o 120° (nebo dvě o 90°) a jejich proudy. Barevné šipky jsou příspěvky jednotlivých fází, černá šipka výsledné magnetomotorické napětí F, šedá čára jeho dráha za periodu. Čárkovaně rozklad na sousledné a zpětné točivé pole.</p>
+<div class="cbar"><span class="seg pseg">${Object.entries(PO_PRE).map(([k, p]) => `<button type="button" data-pop="${k}" aria-pressed="${PO.pre === k}">${p.n}</button>`).join('')}</span></div>
+<div class="pgrid"><figure class="sch pfig" id="po-f"></figure><div class="pside"><div class="fzctl"><div class="lrow"><button type="button" class="btn big" id="po-go">${PO.play ? '❚❚ Zastavit' : '▶ Spustit'}</button><label class="chk"><input type="checkbox" data-poc="vec"${PO.vec ? ' checked' : ''}><span>příspěvky fází</span></label><label class="chk"><input type="checkbox" data-poc="seq"${PO.seq ? ' checked' : ''}><span>F₊ a F₋</span></label><label class="chk"><input type="checkbox" data-poc="trail"${PO.trail ? ' checked' : ''}><span>dráha</span></label></div>
+<div class="fzrows">${poSl('wt', 'ωt', 0, 360, 1, Math.round(PO.wt % 360), '°')}${poSl('spd', 'Rychlost animace', 10, 360, 10, PO.spd, '°/s')}
+${[0, 1, 2].filter(k => PO.geo === '3f' || k < 2).map(k => poSl('I' + k, `Amplituda i<sub>${'abc'[k]}</sub>`, 0, 1.5, 0.05, PO.I[k], '')).join('')}
+${[1, 2].filter(k => PO.geo === '3f' || k < 2).map(k => poSl('p' + k, `Fáze i<sub>${'abc'[k]}</sub> vůči i<sub>a</sub>`, -180, 180, 5, PO.ph[k], '°')).join('')}</div>
+<div id="po-info"></div></div></div></div>
+<div class="pgrid2"><figure class="sch" id="po-w"></figure><div><h3>Co ukázka ukazuje</h3><p id="po-txt">${sub(pre ? pre.t : 'Vlastní nastavení.')}</p></div></div>
+<div class="arts one"><article><h3>Jak pole vzniká</h3>
+<p>Cívka fáze k s osou natočenou o úhel α<sub>k</sub> vytváří pulzující magnetomotorické napětí ve směru své osy: F<sub>k</sub> = N i<sub>k</sub>(t) e<sup>jα<sub>k</sub></sup>. Výsledné pole je jejich vektorový součet. Pro proudy i<sub>k</sub> = I<sub>k</sub> cos(ωt + φ<sub>k</sub>) platí</p>
+<p class="peq">F(t) = F₊ e<sup>jωt</sup> + F₋ e<sup>−jωt</sup>, &nbsp; F₊ = ½ Σ I<sub>k</sub> e<sup>j(α<sub>k</sub> + φ<sub>k</sub>)</sup>, &nbsp; F₋ = ½ Σ I<sub>k</sub> e<sup>j(α<sub>k</sub> − φ<sub>k</sub>)</sup>.</p>
+<p>Sousledná složka F₊ se točí ve smyslu sledu fází, zpětná F₋ opačně. U souměrného trojfázového vinutí (α = 0°, 120°, 240°) se souměrnými proudy (φ = 0°, −120°, +120°) je F₋ = 0 a |F₊| = 3/2 I: pole je kruhové a točí se synchronní rychlostí n<sub>s</sub> = 60 f/p. Pro p pólových dvojic se pole za jednu periodu otočí jen o 1/p otáčky.</p>
+<p>Jakákoli nesouměrnost dá nenulovou F₋ a pole je eliptické; když |F₊| = |F₋|, pole jen pulzuje (jednofázové vinutí, výpadek fáze). V laboratoři totéž uvidíte uvnitř asynchronního motoru: drážky statoru obarvené podle proudu a pole ve vzduchové mezeře.</p></article></div></div>`;
+  poDraw(); poStart();
+}
+function poDraw() {
+  const f = $('#po-f'); if (!f) return;
+  const [svg, S] = poField(); f.innerHTML = svg; $('#po-w').innerHTML = poWave(S); $('#po-info').innerHTML = poInfo(S);
+  const w = document.querySelector('[data-po="wt"]'); if (w && document.activeElement !== w) { w.value = Math.round(PO.wt % 360); $('#pov-wt').textContent = Math.round(PO.wt % 360) + ' °'; }
+}
+function poLoop(ts) {
+  poRaf = 0; if (tab !== 'pole' || !$('#po-f')) { poLast = 0; return; }
+  const dt = poLast ? Math.min(0.05, (ts - poLast) / 1000) : 0; poLast = ts;
+  if (PO.play) { PO.wt = (PO.wt + PO.spd * dt) % 360; poDraw(); }
+  poRaf = requestAnimationFrame(poLoop);
+}
+function poStart() { if (!poRaf) { poLast = 0; poRaf = requestAnimationFrame(poLoop); } }
+document.addEventListener('click', e => {
+  if (tab !== 'pole') return;
+  const b = e.target.closest('[data-pop]');
+  if (b) { const p = PO_PRE[b.dataset.pop]; Object.assign(PO, { I: [...p.I], ph: [...p.ph], geo: p.geo, pre: b.dataset.pop }); renderPole($('#cards')); return; }
+  if (e.target.id === 'po-go') { PO.play = !PO.play; e.target.textContent = PO.play ? '❚❚ Zastavit' : '▶ Spustit'; }
+});
+document.addEventListener('input', e => {
+  if (tab !== 'pole') return;
+  const k = e.target.dataset && e.target.dataset.po; if (!k) return;
+  const v = +e.target.value;
+  if (k === 'wt') { PO.wt = v; PO.play = false; const g = $('#po-go'); if (g) g.textContent = '▶ Spustit'; }
+  else if (k === 'spd') PO.spd = v;
+  else if (k[0] === 'I') { PO.I[+k[1]] = v; PO.pre = null; }
+  else if (k[0] === 'p') { PO.ph[+k[1]] = v; PO.pre = null; }
+  const o = document.getElementById('pov-' + k); if (o) o.textContent = fmt(v, +e.target.step < 1 ? 2 : 0) + (k === 'wt' || k[0] === 'p' ? ' °' : k === 'spd' ? ' °/s' : '');
+  if (!PO.pre) { document.querySelectorAll('[data-pop]').forEach(x => x.setAttribute('aria-pressed', 'false')); const t = $('#po-txt'); if (t) t.textContent = 'Vlastní nastavení: sledujte, jak se mění velikost zpětné složky F₋ a tvar dráhy.'; }
+  poDraw();
+});
+document.addEventListener('change', e => { if (tab !== 'pole') return; const k = e.target.dataset && e.target.dataset.poc; if (k) { PO[k] = e.target.checked; poDraw(); } });
 
 /* ===== Motor stránky: záložky, ovládání, grafy, výklad, kartičky ===== */
 let tab = 'dc', RES = null, GHOST = null, cursor = null, timer = 0, plotSig = '', statusText = '', PL = [];
@@ -4430,6 +4702,7 @@ function renderCards() {
   if (tab === 'stroje') { renderStroje(el); return; }
   if (tab === 'lab') { renderLab(el); return; }
   if (tab === 'faz' && typeof renderFaz === 'function') { renderFaz(el); return; }
+  if (tab === 'pole') { renderPole(el); return; }
   const list = CARDS.map((c, i) => [c, i]).filter(([c]) => m.ch.includes(c[0]));
   el.innerHTML = list.length ? `<div class="wrap"><h2>Otázky k ověření (kap. ${m.chap})</h2><div class="qgrid">${list.map(([c, i]) => cardHTML(c, i)).join('')}</div></div>` : '';
 }

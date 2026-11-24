@@ -236,29 +236,6 @@ const sResV = (x, y, h, lab, val) => `<rect x="${x - 8}" y="${y}" width="16" hei
 const sCoilV = (x, y, len, n = 4) => { const r = len / n / 2; let d = `M${x} ${y}`; for (let i = 0; i < n; i++) d += `a${r} ${r} 0 0 1 0 ${2 * r}`; return `<path d="${d}" class="lw coil"/>`; };
 const sLamp = (x, y, i) => `<circle cx="${x}" cy="${y}" r="7" class="llamp" id="lab-lamp${i}"/><circle cx="${x}" cy="${y}" r="7" class="lw thin"/><path d="M${x - 5} ${y - 5}l10 10M${x + 5} ${y - 5}l-10 10" class="lw thin"/>`;
 
-function labMachine() {
-  const dc = L.m === 'dc', sm = L.m === 'sm', cx = 455, cy = 140;
-  let g = `<circle cx="${cx}" cy="${cy}" r="128" class="lfe"/><circle cx="${cx}" cy="${cy}" r="${dc ? 96 : 92}" class="lgap"/>`;
-  if (dc) {
-    g += `<path d="M${cx - 30} ${cy - 127}h60v32l14 4a92 92 0 0 0 -88 0l14 -4z" class="lfe2"/><path d="M${cx - 30} ${cy + 127}h60v-32l14 -4a92 92 0 0 1 -88 0l14 4z" class="lfe2"/>`;
-    g += `<text x="${cx}" y="${cy - 102}" text-anchor="middle" class="lpole">N</text><text x="${cx}" y="${cy + 114}" text-anchor="middle" class="lpole">S</text>`;
-  } else for (let i = 0; i < 24; i++) g += `<g transform="rotate(${i * 15 + 7.5} ${cx} ${cy})"><rect x="${cx - 5}" y="${cy - 122}" width="10" height="26" rx="2" class="lph${Math.floor(i / 2) % 3}"/></g>`;
-  let rot;
-  if (sm) {
-    rot = `<circle cx="${cx}" cy="${cy}" r="44" class="lrot"/>`;
-    for (let k = 0; k < 4; k++) rot += `<g transform="rotate(${k * 90} ${cx} ${cy})"><path d="M${cx - 20} ${cy - 40}h40v-26l16 -6a88 88 0 0 0 -72 0l16 6z" class="lfe2"/><rect x="${cx - 32}" y="${cy - 62}" width="12" height="22" rx="2" class="lcu"/><rect x="${cx + 20}" y="${cy - 62}" width="12" height="22" rx="2" class="lcu"/><text x="${cx}" y="${cy - 58}" text-anchor="middle" class="lpole">${k % 2 ? 'S' : 'N'}</text></g>`;
-    rot += `<circle cx="${cx}" cy="${cy}" r="18" class="lshaft"/>`;
-  } else {
-    rot = `<circle cx="${cx}" cy="${cy}" r="${dc ? 90 : 86}" class="lrot"/>`; const nb = dc ? 16 : 22;
-    for (let i = 0; i < nb; i++) rot += `<g transform="rotate(${i * 360 / nb} ${cx} ${cy})"><rect x="${cx - 4}" y="${cy - (dc ? 86 : 80)}" width="8" height="${dc ? 18 : 12}" rx="2" class="${dc ? 'lcu' : 'lal'}"/></g>`;
-    if (dc) rot += `<circle cx="${cx}" cy="${cy}" r="40" class="lcomm"/>` + Array.from({ length: 16 }, (_, i) => `<line x1="${cx}" y1="${cy - 40}" x2="${cx}" y2="${cy - 26}" transform="rotate(${i * 22.5} ${cx} ${cy})" class="lw"/>`).join('');
-    rot += `<rect x="${cx - 3}" y="${cy - 84}" width="6" height="60" rx="3" class="lmark"/><circle cx="${cx}" cy="${cy}" r="18" class="lshaft"/>`;
-  }
-  g += `<g id="lab-rot">${rot}</g>`;
-  if (dc) g += `<rect x="${cx - 52}" y="${cy - 9}" width="14" height="18" rx="2" class="lbrush"/><rect x="${cx + 38}" y="${cy - 9}" width="14" height="18" rx="2" class="lbrush"/>`;
-  g += `<g id="lab-fld"><line x1="${cx}" y1="${dc ? cy - 66 : cy + 66}" x2="${cx}" y2="${dc ? cy + 70 : cy - 84}" class="lfld" marker-end="url(#lah)"/></g>`;
-  return `<g transform="translate(78 28) scale(0.9)">${g}</g>`;           /* střed (487,154), poloměr 115 */
-}
 function labBench() {
   const dc = L.m === 'dc', sm = L.m === 'sm', gen = L.gen, A = LAB_AM, C = LAB_DC;
   let g = `<defs><marker id="lah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" style="fill:var(--red)"/></marker><marker id="lahr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" style="fill:var(--red)"/></marker></defs>`;
@@ -273,7 +250,6 @@ function labBench() {
     g += sW('M330 62V80M330 106V124') + sMeter(330, 93, 'V', 13) + sDot(330, 62) + sDot(330, 124);
     g += sT(T - 4, 54, 'A1', 'end', 'lsb') + sT(T - 4, 116, 'A2', 'end', 'lsb') + sT(T - 4, 148, 'kotva', 'end');
     g += sBox(8, 196, 96, 84, 'Budicí zdroj', 'U_f = ' + Math.round(L.P.UfN * C.kf / 100) + ' V') + sW('M104 214H250M104 268H250') + sCoilV(250, 214, 54) + sT(262, 236, 'budicí vinutí', 'start', 'lsb') + sT(262, 254, 'I_f = 0 A', 'start', 'ls', 'lab-if');
-    g += `<path d="M300 280H392" class="lw dash"/>` + sT(346, 298, 'na póly N, S', 'middle');
   } else if (dc && gen) {
     const G = G_DC;
     g += sResV(40, 72, 44, 'zátěž', 'R_z = ' + G.Rz + ' Ω') + sW(`M40 62V72M40 116V124M40 62H96M124 62H178M208 62H${T}M40 124H${T}`) + sKnife(96, 62, G.on) + sT(110, 40, 'vypínač zátěže', 'middle');
@@ -281,7 +257,6 @@ function labBench() {
     g += sT(T - 4, 54, 'A1', 'end', 'lsb') + sT(T - 4, 116, 'A2', 'end', 'lsb') + sT(T - 4, 148, 'kotva', 'end');
     if (G.exc === 'cizi') g += sBox(8, 196, 96, 84, 'Budicí zdroj', 'U_f = ' + Math.round(L.P.UfN * G.kf / 100) + ' V') + sW('M104 214H250M104 268H250') + sCoilV(250, 214, 54) + sT(262, 236, 'budicí vinutí', 'start', 'lsb') + sT(262, 254, 'I_f = 0 A', 'start', 'ls', 'lab-if');
     else g += sDot(290, 62) + sDot(270, 124) + sW('M290 62V214H232M180 214H140') + sRes(180, 214, 52, 'R_reg', G.Rreg + ' Ω', false) + sCoilV(140, 214, 54) + sW('M140 268H270V124') + sT(150, 290, 'derivační budicí vinutí', 'start', 'lsb') + sT(20, 236, 'I_f = 0 A', 'start', 'ls', 'lab-if') + sT(20, 254, 'samobuzení', 'start');
-    g += `<path d="M300 280H392" class="lw dash"/>` + sT(346, 298, 'na póly N, S', 'middle');
   } else {
     const ys = [52, 78, 104], src = sm ? ['Síť', 'tvrdá, 50 Hz'] : gen ? ['Síť', '400 V, 50 Hz'] : A.dcb ? ['Ss zdroj', 'brzdění 40 V'] : A.src === 'sit' ? ['Síť', '400 V, 50 Hz'] : ['Měnič', 'f = ' + fmt(L.f || 0, 0) + ' Hz'];
     g += sBox(8, 30, 92, 96, src[0], src[1], 'lab-srcv');
@@ -308,11 +283,17 @@ function labBench() {
     } else if (!gen) g += sT(20, 200, 'rotor nakrátko', 'start', 'lsb') + sT(20, 218, '(klec, nebo kroužky spojené nakrátko)', 'start');
     if (!gen && !sm && A.dcb) g += sT(20, 250, 'stejnosměrné brzdění: do vinutí', 'start', 'lsr') + sT(20, 268, 'teče stejnosměrný proud', 'start', 'lsr');
   }
-  g += labMachine();
+  /* značka stroje, hřídel a mechanická strana */
+  const MX = 440, MY = 92, MR = 44, edge = y => MX - Math.sqrt(Math.max(0, MR * MR - (y - MY) ** 2));
+  g += (dc ? [62, 124] : [60, 78, 96]).map(y => sW(`M${T} ${y}H${edge(y).toFixed(1)}`)).join('');
+  if (dc) g += `<path d="M300 280H${MX}V${MY + MR}" class="lw dash"/>` + sT(366, 296, 'na póly N, S', 'middle');
+  if (sm) g += `<path d="M352 241H${MX}V${MY + MR}" class="lw dash"/>`;
+  const sym = (dc ? (gen ? 'G' : 'M') : sm ? (gen ? 'SG' : 'SM') : gen ? 'G' : 'M'), sub2 = dc ? '=' : '3~';
+  g += `<circle cx="${MX}" cy="${MY}" r="${MR}" class="lmeter"/>` + sT(MX, MY + 2, sym, 'middle', 'lsym') + sT(MX, MY + 24, sub2, 'middle', 'lb');
   const right = gen ? (dc && G_DC.drv === 'asm' ? 'Asynchronní motor' : 'Turbína') : 'Zátěž (brzda)';
-  g += `<path d="M602 154H640" class="lshl"/><rect x="640" y="104" width="150" height="100" rx="10" class="lbx"/>` + sT(715, 128, right, 'middle', 'lb') + sT(715, 152, 'M_z = 0', 'middle', 'ls', 'lab-mz') + sT(715, 174, '', 'middle', 'ls', 'lab-st');
-  if (sm && gen) g += sT(715, 236, '', 'middle', 'lsb', 'lab-syn') + sT(715, 256, '', 'middle', 'ls', 'lab-syn2');
-  return `<svg viewBox="0 0 800 310" class="bench" role="img" aria-label="Schéma zapojení laboratoře">${g}</svg>`;
+  g += `<path d="M${MX + MR} ${MY}H530" class="lshl"/><rect x="530" y="42" width="150" height="100" rx="10" class="lbx"/>` + sT(605, 66, right, 'middle', 'lb') + sT(605, 90, 'M_z = 0', 'middle', 'ls', 'lab-mz') + sT(605, 112, '', 'middle', 'ls', 'lab-st');
+  if (sm && gen) g += sT(605, 176, '', 'middle', 'lsb', 'lab-syn') + sT(605, 196, '', 'middle', 'ls', 'lab-syn2');
+  return `<svg viewBox="0 0 690 310" class="bench" role="img" aria-label="Schéma zapojení laboratoře">${g}</svg>`;
 }
 
 /* ---------- ovládací panel ---------- */
@@ -381,14 +362,14 @@ function renderLab(el) {
 <div class="lbar">
 <label>Stroj<select id="lb-m">${[['am', 'asynchronní 400 V'], ['dc', 'stejnosměrný 440 V'], ['sm', 'synchronní s vyniklými póly']].map(([k, t]) => `<option value="${k}"${L.m === k ? ' selected' : ''}>${t}</option>`).join('')}</select></label>
 <label>Režim<span class="seg">${[['mot', 'motor'], ['gen', L.m === 'dc' ? 'dynamo' : 'generátor']].map(([k, t]) => `<button type="button" data-lgen="${k}" aria-pressed="${(k === 'gen') === L.gen}">${t}</button>`).join('')}</span></label>
-<label>Zpomalení<select id="lb-sp">${[[1, 'skutečný čas'], [0.5, '2×'], [0.2, '5×'], [0.1, '10×'], [0.05, '20×'], [0.02, '50×']].map(([v, t]) => `<option value="${v}"${+v === LAB.sp ? ' selected' : ''}>${t}</option>`).join('')}</select></label>
+<label>Zpomalení<select id="lb-sp">${[[1, 'skutečný čas'], [0.5, '2×'], [0.2, '5×'], [0.1, '10×'], [0.05, '20×'], [0.02, '50×'], [0.01, '100×'], [0.005, '200×'], [0.002, '500×']].map(([v, t]) => `<option value="${v}"${+v === LAB.sp ? ' selected' : ''}>${t}</option>`).join('')}</select></label>
 <label>Setrvačnost<select id="lb-J">${[0.5, 1, 2, 4].map(v => `<option value="${v}"${v === LAB.J ? ' selected' : ''}>${fmt(v, 1)}× J</option>`).join('')}</select></label>
 <span class="lrun"><button type="button" class="btn big" id="lb-go">${LAB.run ? '❚❚ Pozastavit' : '▶ Pokračovat'}</button><button type="button" class="btn" id="lb-re">↺ Znovu (stroj v klidu)</button></span>
 </div>
 <div id="lb-scnp" class="lgrp lscnp">${labScnHTML()}</div>
 <div class="lctl"><div id="lb-ctl">${labCtlHTML()}</div><div id="lb-load">${labLoadHTML()}</div></div>
-<div class="lmain"><div class="lstage">${labBench()}</div>
-<div class="gauges">${meters.map(([k, t, u]) => `<div class="meter"><p>${t}</p><div id="gw-${k}">${gaugeSVG(k, ...labGR[k])}</div><div class="lcd"><span id="lcd-${k}">0</span><small>${u}</small></div></div>`).join('')}</div></div>
+<div class="lmain"><div class="lleft"><div class="lstage">${labBench()}</div>
+<div class="gauges">${meters.map(([k, t, u]) => `<div class="meter"><p>${t}</p><div id="gw-${k}">${gaugeSVG(k, ...labGR[k])}</div><div class="lcd"><span id="lcd-${k}">0</span><small>${u}</small></div></div>`).join('')}</div></div><div class="lgrp linside" id="lb-inside">${labInsideHTML()}</div></div>
 <div class="lcds">${extra.map(([k, t, u]) => `<div class="meter sm"><p>${sub(t)}</p><div class="lcd"><span id="lcx-${k}">0</span><small>${u}</small></div></div>`).join('')}</div>
 <div class="lchart"><canvas id="lb-cv" aria-label="Průběh otáček, proudu a momentu za poslední 3 sekundy"></canvas><p class="note">Poslední 3 s simulace: <span class="k-n">■ otáčky</span> <span class="k-i">■ proud</span> <span class="k-m">■ moment</span> (každá veličina ve stupnici svého měřáku)</p></div>
 <div class="cols2"><div><h3>Co zkusit</h3>${labTips()}</div><div><h3>Záznam</h3><ol id="lb-ev" class="lev"></ol></div></div></div>`;
@@ -414,11 +395,8 @@ function labDraw() {
   else if (dc) { set('lcx-x1', m.x1, 0); set('lcx-x2', m.x2, 2); set('lcx-x3', m.x3, 1); set('lcx-Mp', m.Mp, 0); }
   else { set('lcx-x1', m.x1, 1); set('lcx-x2', m.x2, 1); set('lcx-x3', m.x3, 1); set('lcx-pg', -(m.p || 0) / 1e3, 1); set('lcx-qg', (m.q || 0) / 1e3, 1); set('lcx-Mp', m.Mp, 1); }
   set('lcx-t', L.t, 1);
-  $('#lab-rot').setAttribute('transform', `rotate(${(-L.thv * 180 / Math.PI % 360).toFixed(2)} 455 140)`);
-  const fl = $('#lab-fld');
-  if (dc) fl.style.opacity = clamp(g ? xiSat(L.d, L.s[2]) / L.d.xiN : L.s[2] / L.d.ifN, 0.05, 1).toFixed(2);
-  else if (sm) { const on = g ? G_SM.on : LAB_SM.on; fl.setAttribute('transform', `rotate(${(-L.fang * 180 / Math.PI % 360).toFixed(2)} 455 140)`); fl.style.opacity = on ? 1 : 0.12; }
-  else { fl.setAttribute('transform', `rotate(${(-L.fang * 180 / Math.PI % 360 + 90).toFixed(2)} 455 140)`); fl.style.opacity = Math.min(1, (L.fmag || 0) / 0.9).toFixed(2); }
+  $('#lab-rot').setAttribute('transform', `rotate(${(-L.thv * 180 / Math.PI % 360).toFixed(2)} 260 260)`);
+  labInsideUpdate();
   if (dc) txt('lab-if', 'I_f = ' + fmt(L.s[2], 2) + ' A');
   if (!dc && !sm && !g && LAB_AM.src === 'mf' && !LAB_AM.dcb) txt('lab-srcv', 'f = ' + fmt(L.f, 0) + ' Hz');
   const W = dc ? L.s[1] : sm ? L.nu * L.ws : L.s[4];
