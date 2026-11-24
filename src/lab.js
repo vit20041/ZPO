@@ -71,8 +71,8 @@ function stepAM(dt) {
   if (mode === 'ac') {
     L.th += TAU * L.f * dt;
     const U = gen || A.src === 'sit' ? d.Um * kv : Math.min(P.Udc / SQ3, P.U0 + (d.Um - P.U0) * Math.min(Math.abs(L.f), P.fN) / P.fN);
-    ua = U * Math.cos(L.th); ub = U * Math.sin(L.th);
-  }
+    ua = U * Math.cos(L.th); ub = U * Math.sin(L.th); L.uamp = U;
+  } else L.uamp = 0;
   const Mz0 = LAB.load / 100 * L.MN;
   if (mode === 'off') {                                                  /* odpojeno: i₁ = 0, rotorový tok doznívá */
     const W = s[4], tau = L2 / R2, w = pp * W, a = s[2], b = s[3];
@@ -157,7 +157,7 @@ function stepSM(dt) {
 }
 function labAdvance(simT) {
   const dt = L.m === 'am' ? 5e-5 : L.m === 'dc' ? 2e-5 : 1e-4, cap = L.m === 'am' ? 3000 : 6000;
-  const n = Math.min(Math.round(simT / dt), cap); let r = null;
+  L.acc = (L.acc || 0) + simT; const n = Math.min(Math.floor(L.acc / dt), cap); L.acc = n === cap ? 0 : L.acc - n * dt; let r = null;
   for (let k = 0; k < n; k++) {
     r = L.m === 'am' ? stepAM(dt) : L.m === 'dc' ? (L.gen ? stepDCgen(dt) : stepDC(dt)) : stepSM(dt);
     const W = L.m === 'am' ? L.s[4] : L.m === 'dc' ? L.s[1] : L.nu * L.ws;
@@ -370,6 +370,7 @@ function renderLab(el) {
 <div class="lctl"><div id="lb-ctl">${labCtlHTML()}</div><div id="lb-load">${labLoadHTML()}</div></div>
 <div class="lmain"><div class="lleft"><div class="lstage">${labBench()}</div>
 <div class="gauges">${meters.map(([k, t, u]) => `<div class="meter"><p>${t}</p><div id="gw-${k}">${gaugeSVG(k, ...labGR[k])}</div><div class="lcd"><span id="lcd-${k}">0</span><small>${u}</small></div></div>`).join('')}</div></div><div class="lgrp linside" id="lb-inside">${labInsideHTML()}</div></div>
+<div class="ldiag" id="lb-diag">${labDiagHTML()}</div>
 <div class="lcds">${extra.map(([k, t, u]) => `<div class="meter sm"><p>${sub(t)}</p><div class="lcd"><span id="lcx-${k}">0</span><small>${u}</small></div></div>`).join('')}</div>
 <div class="lchart"><canvas id="lb-cv" aria-label="Průběh otáček, proudu a momentu za poslední 3 sekundy"></canvas><p class="note">Poslední 3 s simulace: <span class="k-n">■ otáčky</span> <span class="k-i">■ proud</span> <span class="k-m">■ moment</span> (každá veličina ve stupnici svého měřáku)</p></div>
 <div class="cols2"><div><h3>Co zkusit</h3>${labTips()}</div><div><h3>Záznam</h3><ol id="lb-ev" class="lev"></ol></div></div></div>`;
@@ -396,7 +397,7 @@ function labDraw() {
   else { set('lcx-x1', m.x1, 1); set('lcx-x2', m.x2, 1); set('lcx-x3', m.x3, 1); set('lcx-pg', -(m.p || 0) / 1e3, 1); set('lcx-qg', (m.q || 0) / 1e3, 1); set('lcx-Mp', m.Mp, 1); }
   set('lcx-t', L.t, 1);
   $('#lab-rot').setAttribute('transform', `rotate(${(-L.thv * 180 / Math.PI % 360).toFixed(2)} 260 260)`);
-  labInsideUpdate();
+  labInsideUpdate(); labDiagUpdate();
   if (dc) txt('lab-if', 'I_f = ' + fmt(L.s[2], 2) + ' A');
   if (!dc && !sm && !g && LAB_AM.src === 'mf' && !LAB_AM.dcb) txt('lab-srcv', 'f = ' + fmt(L.f, 0) + ' Hz');
   const W = dc ? L.s[1] : sm ? L.nu * L.ws : L.s[4];
