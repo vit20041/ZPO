@@ -349,7 +349,7 @@ function labLoadHTML() {
 ${turb ? vSl + `<p class="note">${note}</p>` : `<div class="lrow">${tg('drv', G_DC.drvOn, G_DC.drvOn ? 'Vypnout pohonný motor' : 'Zapnout pohonný motor')}${seg('data-lns', String(G_DC.ns), [['1000', 'n_s 1000'], ['1500', '1500'], ['3000', '3000 ot/min']])}</div><p class="note">Asynchronní motor má tvrdou charakteristiku: se zatížením dynama otáčky klesnou jen o skluz.</p>`}</div>`;
     return `<div class="lgrp"><p class="lgh">Turbína</p>${vSl}<p class="note">${note}</p></div>`;
   }
-  return `<div class="lgrp"><p class="lgh">Zátěž</p><div class="lrow">${seg('data-llt', LAB.lt, [['react', 'tření (pasivní)'], ['pot', 'jeřáb (aktivní)'], ['fan', 'ventilátor']])}</div>${sl('load', 'Zátěžný moment', 0, 150, 5, LAB.load, '% M_N')}</div>`;
+  return `<div class="lgrp"><p class="lgh">Zátěž</p><div class="lrow">${seg('data-llt', LAB.lt, [['react', 'tření (pasivní)'], ['pot', 'jeřáb (aktivní)'], ['fan', 'ventilátor']])}</div>${sl('load', 'Zátěžný moment', 0, 300, 5, LAB.load, '% M_N')}</div>`;
 }
 function labTips() {
   const li = a => `<ul class="ltips">${a.map(x => `<li>${sub(x)}</li>`).join('')}</ul>`;
@@ -385,6 +385,7 @@ function renderLab(el) {
 <label>Setrvačnost<select id="lb-J">${[0.5, 1, 2, 4].map(v => `<option value="${v}"${v === LAB.J ? ' selected' : ''}>${fmt(v, 1)}× J</option>`).join('')}</select></label>
 <span class="lrun"><button type="button" class="btn big" id="lb-go">${LAB.run ? '❚❚ Pozastavit' : '▶ Pokračovat'}</button><button type="button" class="btn" id="lb-re">↺ Znovu (stroj v klidu)</button></span>
 </div>
+<div id="lb-scnp" class="lgrp lscnp">${labScnHTML()}</div>
 <div class="lctl"><div id="lb-ctl">${labCtlHTML()}</div><div id="lb-load">${labLoadHTML()}</div></div>
 <div class="lstage">${labBench()}</div>
 <div class="gauges">${meters.map(([k, t, u]) => `<div class="meter"><p>${t}</p><div id="gw-${k}">${gaugeSVG(k, ...labGR[k])}</div><div class="lcd"><span id="lcd-${k}">0</span><small>${u}</small></div></div>`).join('')}</div>
@@ -424,8 +425,8 @@ function labDraw() {
   if (g) {
     if (dc) { txt('lab-mz', G_DC.drv === 'asm' ? (G_DC.drvOn ? 'zapnut, n_s = ' + G_DC.ns : 'vypnut') : 'ventil ' + fmt(G_DC.v, 1) + ' %'); txt('lab-st', 'M_p = ' + fmt(m.Mp, 0) + ' N·m'); }
     else if (sm) {
-      txt('lab-mz', 'ventil ' + fmt(G_SM.v, 1) + ' %, M_t = ' + fmt(m.Mp, 2) + ' p.j.'); txt('lab-st', G_SM.on ? (Math.abs(m.sl) < 2e-3 ? 'v synchronizmu' : 'mimo synchronizmus!') : 'n = ' + fmt(m.n, 0) + ' ot/min');
-      txt('lab-syn', G_SM.on ? '' : 'Δf = ' + fmt(m.df, 2) + ' Hz, Δφ = ' + fmt(m.dphi, 0) + '°'); txt('lab-syn2', G_SM.on ? '' : 'U_gen = ' + fmt(m.Ug, 2) + ' p.j. (síť 1)');
+      txt('lab-mz', 'ventil ' + fmt(G_SM.v, 1) + ' %'); txt('lab-st', 'M_t = ' + fmt(m.Mp, 2) + ' p.j.');
+      txt('lab-syn', G_SM.on ? (Math.abs(m.sl) < 2e-3 ? 'v synchronizmu' : 'mimo synchronizmus!') : 'Δf = ' + fmt(m.df, 2) + ' Hz, Δφ = ' + fmt(m.dphi, 0) + '°'); txt('lab-syn2', G_SM.on ? '' : 'U_gen = ' + fmt(m.Ug, 2) + ' p.j. (síť 1)');
       for (let k = 0; k < 3; k++) { const e = document.getElementById('lab-lamp' + k); if (e) e.style.opacity = G_SM.on ? 0.05 : clamp(m.dU / 2, 0.05, 1).toFixed(2); }
     } else { txt('lab-mz', 'ventil ' + fmt(G_AM.v, 1) + ' %'); txt('lab-st', 'M_t = ' + fmt(m.Mp, 1) + ' N·m'); }
   } else {
@@ -457,7 +458,7 @@ function labLoop(ts) {
   labRaf = 0;
   if (tab !== 'lab' || !L || !$('#lab-rot')) { labLast = 0; return; }
   const dt = labLast ? Math.min(0.05, (ts - labLast) / 1000) : 0; labLast = ts;
-  if (LAB.run && dt > 0) labAdvance(dt * LAB.sp);
+  if (LAB.run && dt > 0) { labAdvance(dt * LAB.sp); labScnTick(); }
   labDraw();
   labRaf = requestAnimationFrame(labLoop);
 }
@@ -469,8 +470,8 @@ document.addEventListener('click', e => {
   if (tab !== 'lab' || !L) return;
   const t = e.target.closest('button'); if (!t) return;
   if (t.id === 'lb-go') { LAB.run = !LAB.run; t.textContent = LAB.run ? '❚❚ Pozastavit' : '▶ Pokračovat'; return; }
-  if (t.id === 'lb-re') { L = null; Object.assign(LAB_AM, { on: false, rev: false, dcb: false }); LAB_DC.on = false; Object.assign(LAB_SM, { on: false, exc: false }); G_DC.on = false; G_DC.drvOn = false; G_AM.on = false; G_SM.on = false; G_DC.v = G_AM.v = G_SM.v = 0; renderLab($('#cards')); return; }
-  if (t.dataset.lgen) { LAB.gen = t.dataset.lgen === 'gen'; if (LAB.gen) LAB.sp = 1; L = null; renderLab($('#cards')); return; }
+  if (t.id === 'lb-re') { SCN = null; L = null; Object.assign(LAB_AM, { on: false, rev: false, dcb: false }); LAB_DC.on = false; Object.assign(LAB_SM, { on: false, exc: false }); G_DC.on = false; G_DC.drvOn = false; G_AM.on = false; G_SM.on = false; G_DC.v = G_AM.v = G_SM.v = 0; renderLab($('#cards')); return; }
+  if (t.dataset.lgen) { SCN = null; LAB.gen = t.dataset.lgen === 'gen'; if (LAB.gen) LAB.sp = 1; L = null; renderLab($('#cards')); return; }
   const A = LAB_AM, C = LAB_DC, S = LAB_SM;
   if (t.dataset.lsrc) { A.src = t.dataset.lsrc; if (A.src === 'mf') A.yd = 'D'; labLogAdd(A.src === 'sit' ? 'napájení ze sítě' : 'napájení z měniče frekvence'); }
   else if (t.dataset.lmode) { C.mode = t.dataset.lmode; L.ci.x = 0; L.cw.x = 0; L.nr = L.s[1]; L.s[3] = C.mode === 'reg' && C.on ? C.U : 0; labLogAdd(C.mode === 'u' ? 'ruční zdroj napětí' : 'regulace rychlosti'); }
@@ -519,8 +520,200 @@ document.addEventListener('change', e => {
     const names = { load: 'zátěž', fset: 'žádaná frekvence', ramp: 'rampa', Rp: 'odpor R_p', U: 'napětí', nset: 'otáčky', Imax: 'omezení proudu', kf: 'buzení', Ui: 'buzení U_i', Rz: 'zátěžný odpor', Rreg: 'R_reg', v: 'ventil turbíny' };
     labLogAdd(sub(names[k]) + ' ' + e.target.value); $('.lstage').innerHTML = labBench(); return;
   }
-  if (id === 'lb-m') { LAB.m = e.target.value; L = null; renderLab($('#cards')); }
+  if (id === 'lb-m') { SCN = null; LAB.m = e.target.value; L = null; renderLab($('#cards')); }
   else if (id === 'lb-sp') LAB.sp = +e.target.value;
   else if (id === 'lb-J') { LAB.J = +e.target.value; L = null; renderLab($('#cards')); labLogAdd('setrvačnost ' + fmt(LAB.J, 1) + '× (začíná se znovu)'); }
 });
 window.addEventListener('resize', () => { if (tab === 'lab' && L) labChart(); });
+
+/* ===== Scénáře: řízený průběh pokusu s komentářem ===== */
+const LAB_DEF = JSON.parse(JSON.stringify({ LAB, LAB_AM, LAB_DC, LAB_SM, G_DC, G_AM, G_SM }));
+function labResetAll() {
+  const D = JSON.parse(JSON.stringify(LAB_DEF));
+  Object.assign(LAB, D.LAB, { run: true }); Object.assign(LAB_AM, D.LAB_AM); Object.assign(LAB_DC, D.LAB_DC); Object.assign(LAB_SM, D.LAB_SM);
+  Object.assign(G_DC, D.G_DC); Object.assign(G_AM, D.G_AM); Object.assign(G_SM, D.G_SM);
+}
+const mN = () => L.meas.n, mS = () => L.meas.sl;
+/* krok: t = prodleva po předchozím kroku [s simulace], w = podmínka, a = akce, s = komentář */
+const LAB_SCN = [
+  { g: 'Asynchronní motor', id: 'am-dol', n: 'Přímý rozběh a zatížení', m: 'am', sp: 0.2, steps: [
+    { t: 0.3, a: () => { LAB_AM.on = true; }, s: 'Stykač sepnut. Proud skočí na 5–7násobek I_N a moment v prvních periodách kmitá: v toku jsou stejnosměrné složky, které doznívají.' },
+    { w: () => mN() > 1480, t: 0.3, s: 'Motor je rozběhnutý naprázdno: skluz pod 1 %, ampérmetr ukazuje už jen magnetizační proud.' },
+    { t: 0.2, a: () => { LAB.load = 100; }, s: 'Připojena jmenovitá zátěž: otáčky klesnou asi na 1450 ot/min (skluz kolem 3 %) a proud vzroste na jmenovitý.' },
+    { t: 1.5, a: () => { LAB.load = 0; }, s: 'Odlehčení: motor se vrátí těsně pod synchronní otáčky.' },
+    { t: 1, s: 'Konec scénáře. Zkuste si zátěž a stykač dál ovládat sami.' }] },
+  { g: 'Asynchronní motor', id: 'am-yd', n: 'Rozběh hvězda–trojúhelník', m: 'am', sp: 0.2, init: () => { LAB_AM.yd = 'Y'; LAB.lt = 'fan'; LAB.load = 80; }, steps: [
+    { t: 0.3, a: () => { LAB_AM.on = true; }, s: 'Zapnuto ve hvězdě: na vinutí je U/√3, proud ze sítě i moment jsou třetinové proti přímému připojení.' },
+    { w: () => mN() > 1300, t: 0.5, s: 'Motor se rozběhl do ustálených otáček ve hvězdě (ventilátorová zátěž roste s n²).' },
+    { t: 0.1, a: () => { LAB_AM.yd = 'D'; }, s: 'Přepnuto na trojúhelník: druhý proudový ráz, ale menší než při přímém rozběhu, protože motor už běží.' },
+    { t: 1.5, s: 'Motor pracuje v trojúhelníku s plným napětím: skluz se zmenšil. Konec scénáře.' }] },
+  { g: 'Asynchronní motor', id: 'am-rp', n: 'Kroužkový motor: odstupňovaný rotorový odpor', m: 'am', sp: 0.2, init: () => { LAB_AM.Rp = 2.5; LAB.load = 100; }, steps: [
+    { t: 0.3, a: () => { LAB_AM.on = true; }, s: 'Rozběh s odporem 2,5 Ω v rotoru: záběrný proud je menší a moment větší (moment zvratu se posunul k malým otáčkám).' },
+    { w: () => mN() > 600, t: 0, a: () => { LAB_AM.Rp = 1.2; }, s: 'První stupeň vyřazen (1,2 Ω): proud i moment krátce vyskočí, motor zrychlí.' },
+    { w: () => mN() > 1050, t: 0, a: () => { LAB_AM.Rp = 0.4; }, s: 'Druhý stupeň (0,4 Ω).' },
+    { w: () => mN() > 1300, t: 0, a: () => { LAB_AM.Rp = 0; }, s: 'Rotor nakrátko: motor jede na přirozené charakteristice se skluzem kolem 3 %.' },
+    { t: 1.5, s: 'Konec scénáře. Se stálým odporem v rotoru by motor jel s velkým skluzem a ztrátami v odporníku.' }] },
+  { g: 'Asynchronní motor', id: 'am-plug', n: 'Brzdění protiproudem', m: 'am', sp: 0.2, init: () => { LAB.load = 30; }, steps: [
+    { t: 0.3, a: () => { LAB_AM.on = true; }, s: 'Rozběh.' },
+    { w: () => mN() > 1440, t: 0.5, a: () => { LAB_AM.rev = true; }, s: 'Přehozeny dvě fáze: pole se točí opačně, skluz je téměř 2. Proud je velký (jako při záběru) a moment brzdí.' },
+    { w: () => mN() < 20, t: 0, a: () => { LAB_AM.on = false; LAB_AM.rev = false; }, s: 'V nule je nutné motor odpojit (to dělá čidlo nulových otáček), jinak by se rozběhl opačně.' },
+    { t: 1, s: 'Konec scénáře. Zkuste reverzaci bez vypnutí: motor se rozběhne na opačnou stranu.' }] },
+  { g: 'Asynchronní motor', id: 'am-dcb', n: 'Stejnosměrné (dynamické) brzdění', m: 'am', sp: 0.2, steps: [
+    { t: 0.3, a: () => { LAB_AM.on = true; }, s: 'Rozběh.' },
+    { w: () => mN() > 1480, t: 0.5, a: () => { LAB_AM.dcb = true; }, s: 'Stator odpojen od sítě a napájen stejnosměrným proudem: pole stojí (šipka se nehýbe), rotor v něm pracuje jako generátor do vlastního odporu a brzdí.' },
+    { w: () => Math.abs(mN()) < 10, t: 0.2, a: () => { LAB_AM.dcb = false; LAB_AM.on = false; }, s: 'Motor stojí, brzdění vypnuto. Na rozdíl od protiproudu se motor sám nerozběhne opačně.' }] },
+  { g: 'Asynchronní motor', id: 'am-over', n: 'Přetížení nad moment zvratu', m: 'am', sp: 0.2, init: () => { LAB.lt = 'pot'; }, steps: [
+    { t: 0.3, a: () => { LAB_AM.on = true; }, s: 'Rozběh naprázdno.' },
+    { w: () => mN() > 1480, t: 0.3, a: () => { LAB.load = 100; }, s: 'Zátěž 100 % M_N (aktivní, např. zdvih).' },
+    { t: 1.2, a: () => { LAB.load = 180; }, s: '180 % M_N: skluz roste, motor se blíží momentu zvratu (u tohoto motoru asi 2,5 M_N).' },
+    { t: 1.2, a: () => { LAB.load = 240; }, s: '240 % M_N: těsně pod momentem zvratu, skluz je kolem 15 %.' },
+    { t: 1.2, a: () => { LAB.load = 270; }, s: '270 % M_N: zátěž je větší než moment zvratu. Motor se zastaví a aktivní zátěž ho roztočí opačně (břemeno padá).' },
+    { t: 1.2, a: () => { LAB_AM.on = false; LAB.lt = 'react'; LAB.load = 100; }, s: 'Vypnuto a zabrzděno mechanickou brzdou. Proto se u zdvihů hlídá přetížení a vždy je tam brzda.' }] },
+  { g: 'Asynchronní motor', id: 'am-uf', n: 'Měnič U/f: rampa, zpomalení, reverzace', m: 'am', sp: 0.2, init: () => { LAB_AM.src = 'mf'; LAB_AM.fset = 50; LAB_AM.ramp = 25; }, steps: [
+    { t: 0.3, a: () => { LAB_AM.on = true; }, s: 'Měnič zvyšuje frekvenci rampou 25 Hz/s a napětí úměrně (U/f = konst., při malých f s kompenzací R₁). Proud zůstává malý, motor sleduje točivé pole se skluzem.' },
+    { w: () => mN() > 1480, t: 0.3, a: () => { LAB.load = 100; }, s: 'Jmenovitá zátěž při 50 Hz.' },
+    { t: 1.2, a: () => { LAB_AM.fset = 25; }, s: 'Snížení na 25 Hz: pole zpomaluje rychleji než rotor, motor je chvíli nad synchronními otáčkami a brzdí generátorově (moment záporný).' },
+    { t: 2.5, a: () => { LAB_AM.rev = true; LAB.load = 50; }, s: 'Reverzace: frekvence projde nulou a pole se roztočí opačně; plynulý přechod bez proudového rázu.' },
+    { t: 4, s: 'Konec scénáře.' }] },
+  { g: 'Stejnosměrný motor', id: 'dc-rp', n: 'Rozběh s odstupňovaným předřadným odporem', m: 'dc', sp: 0.2, init: () => { LAB_DC.Rp = 2.5; LAB.load = 100; }, steps: [
+    { t: 0.3, a: () => { LAB_DC.on = true; }, s: 'Zapnuto přes R_p = 2,5 Ω: v záběru je U_i = 0 a proud omezí jen odpor, I ≈ 440/2,7 ≈ 163 A. S rostoucími otáčkami roste U_i a proud klesá.' },
+    { w: () => mN() > 450, t: 0, a: () => { LAB_DC.Rp = 1.0; }, s: 'Vyřazen první stupeň (zbývá 1,0 Ω): proud skočí nahoru a motor zrychlí.' },
+    { w: () => mN() > 1000, t: 0, a: () => { LAB_DC.Rp = 0.4; }, s: 'Druhý stupeň (zbývá 0,4 Ω).' },
+    { w: () => mN() > 1300, t: 0, a: () => { LAB_DC.Rp = 0; }, s: 'Odpor vyřazen úplně: motor na přirozené charakteristice.' },
+    { t: 1.5, s: 'Konec scénáře. Pro porovnání: přímé zapnutí bez odporu by dalo proud přes 2000 A.' }] },
+  { g: 'Stejnosměrný motor', id: 'dc-fw', n: 'Odbuzování (zeslabení toku)', m: 'dc', sp: 0.2, init: () => { LAB_DC.Rp = 2; LAB.load = 50; }, steps: [
+    { t: 0.3, a: () => { LAB_DC.on = true; }, s: 'Rozběh přes předřadný odpor.' },
+    { w: () => mN() > 1100, t: 0, a: () => { LAB_DC.Rp = 0; }, s: 'Odpor vyřazen.' },
+    { t: 1.5, a: () => { LAB_DC.kf = 70; }, s: 'Budicí napětí na 70 %: tok klesá s časovou konstantou buzení (1 s), indukované napětí klesne, proud vzroste a motor zrychlí nad jmenovité otáčky.' },
+    { t: 3, a: () => { LAB_DC.kf = 50; }, s: '50 %: rychlost ještě vzroste, ale pro stejný moment je potřeba větší proud (M = cΦI).' },
+    { t: 3, a: () => { LAB_DC.kf = 100; }, s: 'Plné buzení: motor zpomalí a krátce brzdí (proud se obrátí).' },
+    { t: 3, s: 'Konec scénáře.' }] },
+  { g: 'Stejnosměrný motor', id: 'dc-reg', n: 'Rekuperační brzdění snížením napětí', m: 'dc', sp: 0.2, init: () => { LAB_DC.Rp = 2; }, steps: [
+    { t: 0.3, a: () => { LAB_DC.on = true; }, s: 'Rozběh.' },
+    { w: () => mN() > 1300, t: 0, a: () => { LAB_DC.Rp = 0; }, s: 'Odpor vyřazen, motor běží naprázdno při 440 V.' },
+    { t: 1, a: () => { LAB_DC.U = 300; }, s: 'Napětí sníženo na 300 V: indukované napětí je větší než napětí zdroje, proud i moment změní smysl a motor vrací energii do zdroje (rekuperace, II. kvadrant).' },
+    { t: 2.5, a: () => { LAB_DC.U = 150; }, s: 'Další snížení: znovu brzdný proud a pokles rychlosti.' },
+    { t: 2.5, a: () => { LAB_DC.U = 440; }, s: 'Zpět na 440 V: motor zrychlí (I. kvadrant).' },
+    { t: 2, s: 'Konec scénáře. Zdroj musí umět přijmout proud opačného smyslu (např. reverzační usměrňovač).' }] },
+  { g: 'Stejnosměrný motor', id: 'dc-casc', n: 'Kaskádní regulace: rozběh, zatížení, reverzace', m: 'dc', sp: 0.2, init: () => { LAB_DC.mode = 'reg'; LAB_DC.nset = 1500; }, steps: [
+    { t: 0.3, a: () => { LAB_DC.on = true; }, s: 'Žádaná rychlost 1500 ot/min s rampou: regulátor rychlosti žádá proud až do omezení I_max = 200 A, regulátor proudu ho drží. Rozběh je rychlý a bez proudového rázu.' },
+    { w: () => mN() > 1490, t: 0.5, a: () => { LAB.load = 100; }, s: 'Jmenovitá zátěž: rychlost krátce poklesne a PI regulátor ji vrátí na žádanou hodnotu (žádná trvalá odchylka).' },
+    { t: 1.5, a: () => { LAB_DC.nset = -1500; }, s: 'Reverzace na −1500 ot/min: motor brzdí rekuperačně s omezeným proudem, projde nulou a rozběhne se opačně (čtyřkvadrantový pohon).' },
+    { t: 3, s: 'Konec scénáře.' }] },
+  { g: 'Synchronní motor', id: 'sm-start', n: 'Asynchronní rozběh a vtažení do synchronizmu', m: 'sm', sp: 0.5, init: () => { LAB.load = 30; LAB_SM.Ui = 1.2; }, steps: [
+    { t: 0.3, a: () => { LAB_SM.on = true; }, s: 'Připojeno na síť bez buzení: moment dává tlumicí (rozběhová) klec jako u asynchronního motoru. Proud kolísá s rozdílovým kmitočtem.' },
+    { w: () => mS() < 0.05, t: 0.5, s: 'Motor se rozběhl těsně pod synchronní otáčky; skluz je několik procent.' },
+    { t: 0.1, a: () => { LAB_SM.exc = true; }, s: 'Zapnuto buzení: rotor se „vtáhne“ do synchronizmu (zaskočí), skluz je nula a zátěžný úhel β se ustálí po tlumeném kývání.' },
+    { t: 3, s: 'Motor běží synchronně. Konec scénáře.' }] },
+  { g: 'Synchronní motor', id: 'sm-pullout', n: 'Vypadnutí ze synchronizmu přetížením', m: 'sm', sp: 0.5, init: () => { LAB.load = 30; LAB_SM.Ui = 1.2; LAB.lt = 'pot'; }, steps: [
+    { t: 0.3, a: () => { LAB_SM.on = true; }, s: 'Asynchronní rozběh.' },
+    { w: () => mS() < 0.05, t: 0.3, a: () => { LAB_SM.exc = true; }, s: 'Buzení zapnuto, motor v synchronizmu.' },
+    { t: 2.5, a: () => { LAB.load = 80; }, s: 'Zátěž 0,8 p.j.: zátěžný úhel β vzroste.' },
+    { t: 2.5, a: () => { LAB.load = 115; }, s: '1,15 p.j.: β se blíží statické mezi (u U_i = 1,2 je největší moment asi 1,27 p.j.).' },
+    { t: 2.5, a: () => { LAB.load = 140; }, s: '1,4 p.j.: zátěž je nad statickou mezí. Motor vypadne ze synchronizmu: β roste nad 180°, moment i proud prudce kmitají, rotor prokluzuje.' },
+    { t: 3, a: () => { LAB.load = 30; }, s: 'Odlehčení: tlumič a moment stroje ho mohou znovu vtáhnout do synchronizmu.' },
+    { t: 3, s: 'Konec scénáře. V provozu by ochrana při ztrátě synchronizmu motor odpojila.' }] },
+  { g: 'Synchronní motor', id: 'sm-v', n: 'V-křivka: změna buzení při stálé zátěži', m: 'sm', sp: 0.5, init: () => { LAB.load = 50; LAB_SM.Ui = 1.0; }, steps: [
+    { t: 0.3, a: () => { LAB_SM.on = true; }, s: 'Asynchronní rozběh.' },
+    { w: () => mS() < 0.05, t: 0.3, a: () => { LAB_SM.exc = true; }, s: 'Buzení zapnuto (U_i = 1,0), motor v synchronizmu se zátěží 0,5 p.j.' },
+    { t: 2.5, a: () => { LAB_SM.Ui = 0.7; }, s: 'Podbuzení (U_i = 0,7): motor odebírá jalový výkon (Q > 0), proud vzroste, účiník je induktivní. Zátěžný úhel se zvětšil.' },
+    { t: 2.5, a: () => { LAB_SM.Ui = 1.15; }, s: 'U_i ≈ 1,15: blízko minima proudu, cos φ ≈ 1 (dno V-křivky).' },
+    { t: 2.5, a: () => { LAB_SM.Ui = 1.7; }, s: 'Přebuzení (U_i = 1,7): motor dodává jalový výkon (Q < 0), chová se jako kondenzátor a může kompenzovat účiník továrny. Proud zase roste.' },
+    { t: 2.5, s: 'Činný výkon se celou dobu neměnil, buzení mění jen jalový výkon. Konec scénáře.' }] },
+  { g: 'Synchronní motor', id: 'sm-noexc', n: 'Ztráta buzení za chodu', m: 'sm', sp: 0.5, init: () => { LAB.load = 20; LAB_SM.Ui = 1.2; }, steps: [
+    { t: 0.3, a: () => { LAB_SM.on = true; }, s: 'Asynchronní rozběh s malou zátěží.' },
+    { w: () => mS() < 0.05, t: 0.3, a: () => { LAB_SM.exc = true; }, s: 'Buzení zapnuto, motor v synchronizmu.' },
+    { t: 2, a: () => { LAB.load = 60; }, s: 'Zátěž zvýšena na 0,6 p.j.' },
+    { t: 2.5, a: () => { LAB_SM.exc = false; }, s: 'Výpadek buzení: zbývá jen reluktanční moment (vyniklé póly) a ten na zátěž nestačí. Motor vypadne ze synchronizmu a běží asynchronně na tlumiči s velkým proudem.' },
+    { t: 4, a: () => { LAB_SM.exc = true; }, s: 'Buzení obnoveno: motor se znovu vtáhne do synchronizmu.' },
+    { t: 3, s: 'Konec scénáře.' }] },
+  { g: 'Synchronní generátor', id: 'sg-sync', n: 'Fázování na síť a dodávka výkonu', m: 'sm', gen: true, sp: 1, init: () => { G_SM.exc = true; G_SM.Ui = 1.0; }, steps: [
+    { t: 0.2, a: () => { G_SM.v = 40; }, s: 'Ventil turbíny otevřen na 40 %: soustrojí se rozbíhá. Buzení je zapnuté, napětí generátoru roste s otáčkami.' },
+    { w: () => mN() > 1450, t: 0, a: () => { G_SM.v = 10.2; }, s: 'Ventil přivřen na 10,2 %: otáčky se ustalují těsně nad 1500 ot/min. Žárovky synchronoskopu blikají s rozdílovým kmitočtem Δf.' },
+    { w: () => { const m = L.meas; return Math.abs(m.df) < 0.4 && Math.abs(m.dphi) < 8; }, t: 0, a: () => { G_SM.on = true; }, s: 'Podmínky splněny: stejný sled fází, napětí, kmitočet a fáze (žárovky zhasly). Vypínač sepnut: téměř bez rázu.' },
+    { t: 2, a: () => { G_SM.v = 40; }, s: 'Ventil 40 %: zátěžný úhel β roste a generátor dodává činný výkon do sítě. Otáčky drží síť.' },
+    { t: 3, a: () => { G_SM.v = 80; }, s: 'Ventil 80 %: výkon asi 0,7 p.j.' },
+    { t: 3, a: () => { G_SM.Ui = 1.6; }, s: 'Přibuzení: generátor dodává do sítě i jalový výkon (Q > 0), zátěžný úhel se zmenší. Činný výkon se nezměnil.' },
+    { t: 3, s: 'Konec scénáře.' }] },
+  { g: 'Synchronní generátor', id: 'sg-bad', n: 'Chybné fázování mimo fázi', m: 'sm', gen: true, sp: 1, init: () => { G_SM.exc = true; G_SM.Ui = 1.0; }, steps: [
+    { t: 0.2, a: () => { G_SM.v = 40; }, s: 'Rozběh turbínou.' },
+    { w: () => mN() > 1450, t: 0, a: () => { G_SM.v = 10.4; }, s: 'Otáčky se ustalují kolem 1500 ot/min.' },
+    { w: () => { const m = L.meas; return Math.abs(m.df) < 0.8 && Math.abs(m.dphi) > 120 && Math.abs(m.dphi) < 150; }, t: 0, a: () => { G_SM.on = true; }, s: 'Sepnuto při fázovém rozdílu přes 120° (žárovky svítí naplno). Napětí generátoru a sítě jsou téměř proti sobě: velký proudový i momentový ráz, rotor se prudce kývá. Ve skutečnosti hrozí poškození hřídele a vinutí.' },
+    { t: 4, s: 'Stroj se po kývání stáhl do synchronizmu díky tlumiči. Konec scénáře.' }] },
+  { g: 'Synchronní generátor', id: 'sg-under', n: 'Odbuzení generátoru na síti', m: 'sm', gen: true, sp: 1, init: () => { G_SM.exc = true; G_SM.Ui = 1.0; }, steps: [
+    { t: 0.2, a: () => { G_SM.v = 40; }, s: 'Rozběh turbínou.' },
+    { w: () => mN() > 1450, t: 0, a: () => { G_SM.v = 10.2; }, s: 'Dolaďování otáček.' },
+    { w: () => { const m = L.meas; return Math.abs(m.df) < 0.4 && Math.abs(m.dphi) < 8; }, t: 0, a: () => { G_SM.on = true; }, s: 'Nafázováno.' },
+    { t: 1.5, a: () => { G_SM.v = 60; }, s: 'Výkon asi 0,5 p.j.' },
+    { t: 3, a: () => { G_SM.Ui = 0.7; }, s: 'Podbuzení (U_i = 0,7): generátor odebírá jalový výkon ze sítě, zátěžný úhel β se zvětší.' },
+    { t: 3, a: () => { G_SM.Ui = 0.45; }, s: 'U_i = 0,45: β se blíží mezi stability.' },
+    { t: 3, a: () => { G_SM.Ui = 0.25; }, s: 'U_i = 0,25: maximální výkon stroje je menší než výkon turbíny. Generátor vypadne ze synchronizmu a prokluzuje (asynchronní chod nad synchronními otáčkami).' },
+    { t: 3, a: () => { G_SM.v = 0; G_SM.on = false; }, s: 'Ochrana odpojila generátor a zavřela ventil. Proto má buzení dolní mez (omezovač podbuzení).' }] },
+  { g: 'Synchronní generátor', id: 'sg-trip', n: 'Odpojení zatíženého generátoru a přeběh turbíny', m: 'sm', gen: true, sp: 1, init: () => { G_SM.exc = true; G_SM.Ui = 1.2; }, steps: [
+    { t: 0.2, a: () => { G_SM.v = 40; }, s: 'Rozběh turbínou.' },
+    { w: () => mN() > 1450, t: 0, a: () => { G_SM.v = 10.2; }, s: 'Dolaďování otáček.' },
+    { w: () => { const m = L.meas; return Math.abs(m.df) < 0.4 && Math.abs(m.dphi) < 8; }, t: 0, a: () => { G_SM.on = true; }, s: 'Nafázováno.' },
+    { t: 1.5, a: () => { G_SM.v = 80; }, s: 'Plný výkon.' },
+    { t: 3, a: () => { G_SM.on = false; }, s: 'Vypínač vypnul (porucha v síti). Turbína má stále otevřený ventil a nic ji nebrzdí: otáčky prudce rostou (přeběh).' },
+    { t: 2.5, a: () => { G_SM.v = 0; }, s: 'Rychlouzávěr zavřel ventil, turbína dobíhá. V reálu hlídá přeběh ochrana a regulátor otáček.' },
+    { t: 4, s: 'Konec scénáře.' }] },
+  { g: 'Asynchronní generátor', id: 'ag', n: 'Připojení na síť a dodávka výkonu', m: 'am', gen: true, sp: 1, steps: [
+    { t: 0.2, a: () => { G_AM.v = 30; }, s: 'Ventil 30 %: turbína roztáčí stroj (zatím odpojený, bez buzení).' },
+    { w: () => mN() > 1460, t: 0, a: () => { G_AM.v = 11; G_AM.on = true; }, s: 'Připojeno na síť blízko synchronních otáček: stroj se vybudí ze sítě a odebírá jalový (magnetizační) proud. Synchronizace není potřeba.' },
+    { t: 2, a: () => { G_AM.v = 50; }, s: 'Ventil 50 %: otáčky stoupnou nad synchronní (záporný skluz kolem 1 %) a činný výkon teče do sítě. Jalový výkon stroj dál odebírá.' },
+    { t: 3, a: () => { G_AM.v = 90; }, s: 'Ventil 90 %: větší výkon a větší záporný skluz.' },
+    { t: 3, a: () => { G_AM.v = 0; }, s: 'Ventil zavřen: stroj přejde do motorického chodu a pohání turbínu (bere činný výkon ze sítě).' },
+    { t: 3, a: () => { G_AM.on = false; }, s: 'Odpojeno. Konec scénáře.' }] },
+  { g: 'Dynamo', id: 'dg-self', n: 'Samobuzení derivačního dynama a kritický odpor', m: 'dc', gen: true, sp: 1, init: () => { G_DC.exc = 'der'; G_DC.Rreg = 60; }, steps: [
+    { t: 0.2, a: () => { G_DC.drvOn = true; }, s: 'Pohonný asynchronní motor roztáčí dynamo. Na kotvě je zpočátku jen malé napětí z remanence.' },
+    { t: 3, s: 'Remanentní napětí protlačí budicím obvodem proud, který tok zesílí: napětí roste, až se ustálí v průsečíku magnetizační křivky s odporovou přímkou (R_f + R_reg).' },
+    { t: 5, a: () => { G_DC.Rreg = 170; }, s: 'R_reg = 170 Ω: odporová přímka je strmější, průsečík leží níž, napětí klesne.' },
+    { t: 5, a: () => { G_DC.Rreg = 260; }, s: 'R_reg = 260 Ω: odpor budicího obvodu je nad kritickým (asi 290 Ω celkem). Dynamo se odbudí, zbude jen remanentní napětí.' },
+    { t: 6, a: () => { G_DC.Rreg = 60; }, s: 'Zpět na 60 Ω: dynamo se znovu nabudí.' },
+    { t: 6, a: () => { G_DC.ns = 1000; }, s: 'Pohonný motor 1000 ot/min: při menších otáčkách je kritický odpor menší a napětí klesne víc než úměrně otáčkám.' },
+    { t: 5, s: 'Konec scénáře.' }] },
+  { g: 'Dynamo', id: 'dg-ext', n: 'Vnější (zatěžovací) charakteristika', m: 'dc', gen: true, sp: 1, init: () => { G_DC.exc = 'cizi'; G_DC.Rz = 60; }, steps: [
+    { t: 0.2, a: () => { G_DC.drvOn = true; }, s: 'Pohonný motor zapnut, dynamo s cizím buzením běží naprázdno: U = U_i.' },
+    { t: 5, a: () => { G_DC.on = true; }, s: 'Zátěž 60 Ω: teče proud, svorkové napětí klesne o úbytek R_a I, pohonný motor musí dodat moment.' },
+    { t: 2, a: () => { G_DC.Rz = 20; }, s: 'R_z = 20 Ω: větší proud, větší úbytek napětí. Pohonný motor trochu zpomalí (skluz).' },
+    { t: 2, a: () => { G_DC.Rz = 8; }, s: 'R_z = 8 Ω: přetížení; napětí dál klesá.' },
+    { t: 2, a: () => { G_DC.exc = 'der'; G_DC.Rreg = 60; }, s: 'Přepnuto na derivační buzení se stejnou zátěží: s poklesem napětí klesá i budicí proud, takže napětí klesá výrazněji (měkčí charakteristika).' },
+    { t: 4, a: () => { G_DC.on = false; }, s: 'Zátěž odpojena. Konec scénáře.' }] }
+];
+let SCN = null;
+function labScnStart(id) {
+  const sc = LAB_SCN.find(x => x.id === id); if (!sc) return;
+  labResetAll(); LAB.m = sc.m; LAB.gen = !!sc.gen; LAB.sp = sc.sp || 0.2;
+  if (sc.init) sc.init();
+  L = null; SCN = { sc, i: 0, t0: 0 }; renderLab($('#cards'));
+  SCN.t0 = L.t; labLogAdd('scénář: ' + sc.n);
+}
+function labScnTick() {
+  if (!SCN || !L) return;
+  let changed = false;
+  while (SCN.i < SCN.sc.steps.length) {
+    const st = SCN.sc.steps[SCN.i];
+    if (st.w && !SCN.wok) { if (!st.w()) break; SCN.wok = true; SCN.t0 = L.t; }
+    if (L.t - SCN.t0 < (st.t || 0)) break;
+    if (st.a) st.a();
+    labLogAdd(st.s.length > 70 ? st.s.slice(0, 68).replace(/\s\S*$/, '') + '…' : st.s);
+    SCN.i++; SCN.t0 = L.t; SCN.wok = false; changed = true; SCN.last = st.s;
+  }
+  if (changed) { labRefresh(); $('#lb-load').innerHTML = labLoadHTML(); labScnDraw(); }
+}
+function labScnHTML() {
+  const groups = [...new Set(LAB_SCN.map(x => x.g))];
+  return `<div class="lscn"><label>Scénář<select id="lb-scn"><option value="">vyberte…</option>${groups.map(g => `<optgroup label="${g}">${LAB_SCN.filter(x => x.g === g).map(x => `<option value="${x.id}"${SCN && SCN.sc.id === x.id ? ' selected' : ''}>${x.n}</option>`).join('')}</optgroup>`).join('')}</select></label>
+<button type="button" class="btn big" id="lb-scn-go">▶ Spustit scénář</button>${SCN ? '<button type="button" class="btn" id="lb-scn-stop">Ukončit scénář</button>' : ''}</div><div id="lb-scn-box">${labScnBox()}</div>`;
+}
+function labScnBox() {
+  if (!SCN) return '';
+  const sc = SCN.sc, done = SCN.i >= sc.steps.length;
+  return `<div class="lnow"><p class="lgh">${sc.n}${done ? ' (dokončeno)' : ''}</p><p class="lnowt">${sub(SCN.last || 'Připravuji…')}</p><ol class="lsteps">${sc.steps.map((s, k) => `<li class="${k < SCN.i ? 'done' : k === SCN.i ? 'cur' : ''}">${sub(s.s.split(':')[0].split('.')[0])}</li>`).join('')}</ol></div>`;
+}
+function labScnDraw() { const b = $('#lb-scn-box'); if (b) b.innerHTML = labScnBox(); }
+document.addEventListener('click', e => {
+  if (tab !== 'lab') return;
+  if (e.target.id === 'lb-scn-go') { const v = $('#lb-scn').value; if (v) labScnStart(v); }
+  if (e.target.id === 'lb-scn-stop') { SCN = null; const p = $('#lb-scnp'); if (p) p.innerHTML = labScnHTML(); }
+});
