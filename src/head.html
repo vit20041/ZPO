@@ -111,7 +111,7 @@ ol.exp button{margin-top:6px}
 [hidden]{display:none!important}
 .deriv{background:var(--panel);border-top:1px solid var(--rule)}
 .deriv h2,.cardsec h2,.theory h2{font-size:clamp(24px,3vw,32px);margin-bottom:6px}
-.toc{display:flex;gap:6px;margin:10px 0 18px;padding-bottom:4px}
+.toc{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 18px;padding-bottom:4px}
 .toc a{flex:none;font-size:14px;color:var(--ink);text-decoration:none;border:1px solid var(--rule);border-radius:999px;padding:7px 12px;white-space:nowrap}
 .toc a:hover{border-color:var(--ink)}
 .arts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px 32px}
@@ -298,6 +298,24 @@ table.vz td:last-child{color:var(--mut);font-size:14.5px}
 .lnowt{margin:4px 0 8px;font-size:16px;line-height:1.5;background:var(--soft);border-left:4px solid var(--red);padding:8px 12px;border-radius:0 8px 8px 0}
 .lsteps{margin:0;padding-left:22px;color:var(--mut);font-size:14px;columns:2 260px;column-gap:28px}
 .lsteps li{margin:3px 0;break-inside:avoid}.lsteps li.done{color:var(--ink)}.lsteps li.cur{color:var(--red);font-weight:600}
+
+/* responzivita: velké monitory, nízké notebooky, telefony */
+@media (max-width:1200px){.arts{grid-template-columns:1fr}}
+@media (min-width:1800px){.wrap,.hd{max-width:1720px}.fig{height:165px}.fig.mn{height:400px}.lead{max-width:80ch}}
+@media (min-width:2400px){.wrap,.hd{max-width:2080px}.fig{height:190px}}
+@media (min-width:901px) and (max-height:880px){.band.top{padding-top:18px}h1{font-size:34px}.lead{font-size:15px;margin-top:6px}.tabs{margin-top:12px}.tabs a{min-height:44px;padding:5px 10px}.presets{margin-top:12px}.presets button{min-height:36px;padding:7px 12px}}
+@media (min-width:1200px){.lmain{display:grid;grid-template-columns:minmax(0,2fr) minmax(300px,1fr);gap:12px;align-items:start;margin-bottom:12px}.lmain .gauges{grid-template-columns:1fr 1fr;margin:0}.lmain .meter{padding:8px 10px}.lmain .gauge{max-width:180px}.lmain .lcd{font-size:21px}}
+@media (min-width:1200px) and (max-height:880px){.lab .lead{display:none}}
+@media (max-width:600px){
+  .tabs{display:flex;overflow-x:auto;scroll-snap-type:x proximity;gap:6px;padding:0 16px 8px;margin:14px -16px 0;scrollbar-width:thin}
+  .tabs a{flex:none;min-width:9em;min-height:48px;scroll-snap-align:start}
+  h1{font-size:30px}.lead{font-size:15px}.top .lead{display:none}
+  .lbar{gap:8px 12px}.lbar label{flex:1 1 140px}.lbar select{width:100%}
+  .gauges{grid-template-columns:1fr 1fr;gap:8px}.meter{padding:8px}.lcd{font-size:19px;padding:3px 8px}.meter p{font-size:12px}
+  .lcds{grid-template-columns:1fr 1fr;gap:8px}
+  .seg button{padding:8px 11px;font-size:13.5px}
+}
+@media (max-width:380px){.gauges{grid-template-columns:1fr}}
 </style>
 <script>window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']]},svg:{fontCache:'global'},startup:{typeset:false}};</script>
 <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-svg.js"></script>
@@ -305,7 +323,7 @@ table.vz td:last-child{color:var(--mut);font-size:14.5px}
 <body>
 <header class="band top"><div class="wrap">
   <div class="hd"><h1>Simulátor elektrických pohonů</h1>
-  <p class="lead">Celá skripta Kobrle–Pavelka (B1B14ZPO) po kapitolách: simulace s připravenými scénáři, výklad s odvozeními a otázky k ověření. Změňte libovolný parametr a simulace se sama přepočítá; najetím na graf odečtete hodnoty v čase.</p></div>
+  <p class="lead">Skripta Kobrle–Pavelka (B1B14ZPO) po kapitolách: simulace s připravenými scénáři, výklad s odvozeními a otázky k ověření; k tomu laboratoř se strojem naživo, fázorové diagramy, přehled vztahů a opakování z knihy Elektrické stroje. Změňte libovolný parametr a simulace se sama přepočítá.</p></div>
   <nav class="tabs" id="tabs" role="tablist" aria-label="Kapitoly"></nav>
   <div id="presetsWrap"><div class="presets" id="presets" aria-label="Připravené scénáře"></div></div>
 </div></header>

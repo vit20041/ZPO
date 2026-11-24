@@ -15,6 +15,7 @@ $('#tabs').innerHTML = TAB_ORDER.map(k => `<a href="#${k}" id="tab-${k}" role="t
 function setTab(t) {
   tab = MODS[t] ? t : 'dc'; GHOST = null; cursor = null; plotSig = ''; RES = null;
   for (const k of TAB_ORDER) $('#tab-' + k).setAttribute('aria-selected', k === tab);
+  { const n = $('#tabs'), a = $('#tab-' + tab); if (n.scrollWidth > n.clientWidth + 2) n.scrollLeft = a.offsetLeft - n.offsetLeft - n.clientWidth / 2 + a.offsetWidth / 2; }
   const m = mod(), hasSim = !!m.sim;
   $('#work').hidden = !hasSim; $('#theory').hidden = !hasSim; $('#presetsWrap').hidden = !hasSim;
   $('#unhold').hidden = true;
