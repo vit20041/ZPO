@@ -1,11 +1,15 @@
-/* ===== Laboratoř: motor simulovaný živě, bez časového omezení ===== */
-const LAB = { m: 'am', sp: 0.2, J: 1, load: 0, lt: 'react', run: true };
+/* ===== Laboratoř: stroj simulovaný živě, motor i generátor ===== */
+const LAB = { m: 'am', gen: false, sp: 0.2, J: 1, load: 0, lt: 'react', run: true };
 const LAB_AM = { src: 'sit', on: false, yd: 'D', rev: false, dcb: false, Rp: 0, fset: 50, ramp: 25 };
 const LAB_DC = { mode: 'u', on: false, U: 440, Rp: 0, kf: 100, nset: 1500, Imax: 200 };
 const LAB_SM = { on: false, exc: false, Ui: 1.2 };
+const G_DC = { on: false, Rz: 20, exc: 'cizi', kf: 100, Rreg: 60, nset: 1500 };
+const G_AM = { on: false, nset: 1500, Mt: 50 };
+const G_SM = { on: false, exc: true, Ui: 1.0, nset: 1480, Mt: 0.5 };
 let L = null, labRaf = 0, labLast = 0, labCol = null, labGR = {}, labLog = [];
 
 function niceUp(v) { if (!(v > 0)) return 1; const e = Math.pow(10, Math.floor(Math.log10(v))), m = v / e; return (m <= 1 ? 1 : m <= 2 ? 2 : m <= 2.5 ? 2.5 : m <= 5 ? 5 : 10) * e; }
+const lsub = s => String(s).replace(/([A-Za-zΦΩβ])_([A-Za-z0-9]+)/g, '$1<tspan baseline-shift="sub" font-size="72%">$2</tspan>');
 
 /* ---------- modely ---------- */
 function labInit() {
@@ -17,25 +21,25 @@ function labInit() {
     const P = { ...MODS.dc.def, mode: 'casc' }; P.J = MODS.dc.def.J * LAB.J; Object.assign(P, MODS.dc.autotune(P));
     const d = dcDerived(P);
     L = { m: 'dc', P, d, s: new Float64Array(4), nr: 0, MN: d.MN, ci: mkPI(P.Kpi, P.Tii / 1e3), cw: mkPI(P.Kpw, P.Tiw / 1e3) };
-    L.s[2] = d.ifN;                                                     /* buzení je nabuzené od začátku */
+    L.s[2] = LAB.gen ? 0 : d.ifN;                                          /* motor nabuzený; dynamo začíná bez buzení */
   } else {
-    /* synchronní motor s vyniklými póly a tlumičem, poměrné jednotky, 4 póly, 50 Hz */
     const P = { U: 1, Xd: 1.0, Xq: 0.7, TN: 1.5 * LAB.J, MD: 1.5, sD: 0.3, f: 50, pp: 2 };
     L = { m: 'sm', P, s: new Float64Array(1), nu: 0, MN: 1, ws: TAU * P.f / P.pp };
   }
-  Object.assign(L, { t: 0, thv: 0, fang: 0, fmag: 0, NB, bi: 0, bn: 0, nextS: 0 });
+  Object.assign(L, { gen: LAB.gen, t: 0, thv: 0, fang: 0, fmag: 0, NB, bi: 0, bn: 0, nextS: 0, Mp: 0 });
   L.buf = { t: new Float64Array(NB), n: new Float64Array(NB), I: new Float64Array(NB), M: new Float64Array(NB) };
   L.meas = { U: 0, I: 0, n: 0, M: 0, b: 0, x1: 0, x2: 0, x3: 0, x4: 0 };
   L.K = [0, 1, 2, 3].map(() => new Float64Array(L.s.length)); L.tmp = new Float64Array(L.s.length);
   labLog = [];
 }
 const labWb = () => L.m === 'am' ? L.d.Ws : L.m === 'dc' ? L.d.Wn : L.ws;
-function labMz(W) {                                                      /* aktivní a ventilátorová zátěž; pasivní = null */
+function labMz(W) {                                                      /* zátěž motoru; u generátoru turbína = záporná zátěž */
+  if (L.gen) { if (L.m === 'am') return -G_AM.Mt / 100 * L.MN; if (L.m === 'sm') return -G_SM.Mt; return 0; }
   const M0 = LAB.load / 100 * L.MN, Wb = labWb();
   if (!M0) return 0;
   if (LAB.lt === 'fan') return M0 * (W / Wb) * Math.abs(W / Wb);
   if (LAB.lt === 'pot') return M0;
-  return null;
+  return null;                                                            /* pasivní tření */
 }
 function passive(Mm, W, M0) { if (Math.abs(W) > 1e-3 * labWb()) return M0 * Math.sign(W); return clamp(Mm, -M0, M0); }
 function rk4s(s, dt, fn, K, tmp) {
@@ -45,26 +49,28 @@ function rk4s(s, dt, fn, K, tmp) {
   for (let i = 0; i < n; i++) tmp[i] = s[i] + dt * K[2][i]; fn(tmp, K[3]);
   for (let i = 0; i < n; i++) s[i] += dt / 6 * (K[0][i] + 2 * K[1][i] + 2 * K[2][i] + K[3][i]);
 }
+const speedGov = (W, Wt, dt, tau) => W + (Wt - W) * Math.min(1, dt / tau);   /* pohon s regulací otáček */
 
 function stepAM(dt) {
-  const P = L.P, d = L.d, s = L.s, A = LAB_AM, pp = P.pp, R1 = P.R1, R2 = P.R2 + A.Rp, { Lh, L1, L2, D } = d;
+  const P = L.P, d = L.d, s = L.s, A = LAB_AM, G = G_AM, gen = L.gen, pp = P.pp, R1 = P.R1, R2 = P.R2 + (gen ? 0 : A.Rp), { Lh, L1, L2, D } = d;
   let ua = 0, ub = 0, mode = 'off', kv = 1;
-  if (A.on && A.dcb) { mode = 'dc'; ua = 40; L.f = 0; }
+  if (gen) { if (G.on) { mode = 'ac'; L.f = P.fN; } }
+  else if (A.on && A.dcb) { mode = 'dc'; ua = 40; L.f = 0; }
   else if (A.on && A.src === 'sit') { mode = 'ac'; kv = A.yd === 'Y' ? 1 / SQ3 : 1; L.f = A.rev ? -P.fN : P.fN; }
   else if (A.on) { mode = 'ac'; const r = A.ramp * dt, tg = A.rev ? -A.fset : A.fset; L.f += clamp(tg - L.f, -r, r); }
   else if (A.src === 'mf') L.f = 0;
   if (mode === 'ac') {
     L.th += TAU * L.f * dt;
-    const U = A.src === 'sit' ? d.Um * kv : Math.min(P.Udc / SQ3, P.U0 + (d.Um - P.U0) * Math.min(Math.abs(L.f), P.fN) / P.fN);
+    const U = gen || A.src === 'sit' ? d.Um * kv : Math.min(P.Udc / SQ3, P.U0 + (d.Um - P.U0) * Math.min(Math.abs(L.f), P.fN) / P.fN);
     ua = U * Math.cos(L.th); ub = U * Math.sin(L.th);
   }
   const Mz0 = LAB.load / 100 * L.MN;
-  if (mode === 'off') {                                                  /* stykač rozepnut: i₁ = 0, rotorový tok doznívá */
+  if (mode === 'off') {                                                  /* odpojeno: i₁ = 0, rotorový tok doznívá */
     const W = s[4], tau = L2 / R2, w = pp * W, a = s[2], b = s[3];
     s[2] += dt * (-a / tau - w * b); s[3] += dt * (-b / tau + w * a); s[0] = Lh / L2 * s[2]; s[1] = Lh / L2 * s[3];
-    let Mz = labMz(W); if (Mz === null) Mz = passive(0, W, Mz0);
-    const Wn = W + dt * (-Mz - P.B * W) / P.J; s[4] = (LAB.lt === 'react' && Mz0 && Math.sign(Wn) !== Math.sign(W)) ? 0 : Wn;
-    return { M: 0, i: 0, u: 0 };
+    if (gen) { const Wn = speedGov(W, toRad(G.nset), dt, 0.5 * LAB.J); L.Mp = P.J * (Wn - W) / dt; s[4] = Wn; }
+    else { let Mz = labMz(W); if (Mz === null) Mz = passive(0, W, Mz0); const Wn = W + dt * (-Mz - P.B * W) / P.J; s[4] = (LAB.lt === 'react' && Mz0 && Math.sign(Wn) !== Math.sign(W)) ? 0 : Wn; }
+    return { M: 0, i: 0, u: 0, p: 0, q: 0 };
   }
   const fn = (y, o) => {
     const i1a = (L2 * y[0] - Lh * y[2]) / D, i1b = (L2 * y[1] - Lh * y[3]) / D, i2a = (L1 * y[2] - Lh * y[0]) / D, i2b = (L1 * y[3] - Lh * y[1]) / D, w = pp * y[4];
@@ -75,7 +81,8 @@ function stepAM(dt) {
   };
   rk4s(s, dt, fn, L.K, L.tmp);
   const i1a = (L2 * s[0] - Lh * s[2]) / D, i1b = (L2 * s[1] - Lh * s[3]) / D;
-  return { M: 1.5 * pp * (s[0] * i1b - s[1] * i1a), i: Math.hypot(i1a, i1b) * kv, u: Math.hypot(ua, ub) / kv };
+  if (gen) L.Mp = G.Mt / 100 * L.MN;
+  return { M: 1.5 * pp * (s[0] * i1b - s[1] * i1a), i: Math.hypot(i1a, i1b) * kv, u: Math.hypot(ua, ub) / kv, p: 1.5 * (ua * i1a + ub * i1b), q: 1.5 * (ub * i1a - ua * i1b) };
 }
 function stepDC(dt) {
   const P = L.P, d = L.d, s = L.s, C = LAB_DC, reg = C.mode === 'reg';    /* s: i, Ω, i_f, u měniče */
@@ -100,21 +107,42 @@ function stepDC(dt) {
   const xi = d.xiN * s[2] / d.ifN, u = reg ? s[3] : ucmd;
   return { M: xi * s[0], i: s[0], u: C.on ? u - (reg ? 0 : C.Rp) * s[0] : 0, ui: xi * s[1], if: s[2] };
 }
-function smCur(P, b, Ui) {                                               /* ustálený fázor proudu (motor, R = 0) */
+/* dynamo: magnetizační křivka s remanencí (3 %) a sycením */
+const xiSat = (d, ifl) => d.xiN * (0.03 + 0.97 * Math.tanh(1.2 * ifl / d.ifN) / Math.tanh(1.2));
+function stepDCgen(dt) {
+  const P = L.P, d = L.d, s = L.s, G = G_DC;                             /* s: i zátěže, Ω, i_f */
+  const Wn = speedGov(s[1], toRad(G.nset), dt, 0.6 * LAB.J), dW = (Wn - s[1]) / dt; s[1] = Wn;
+  const RL = P.Rd + G.Rz, uf = P.UfN * G.kf / 100;
+  const fn = (y, o) => {
+    const xi = xiSat(d, y[2]), Ui = xi * y[1], U = G.on ? G.Rz * y[0] : Ui;
+    o[0] = G.on ? (Ui - RL * y[0]) / d.Ld : 0; o[1] = 0; o[3] = 0;
+    o[2] = G.exc === 'cizi' ? (uf - P.Rf * y[2]) / P.Lf : (U - (P.Rf + G.Rreg) * y[2]) / P.Lf;
+  };
+  if (!G.on) s[0] = 0;
+  rk4s(s, dt, fn, L.K, L.tmp);
+  const xi = xiSat(d, s[2]), Ui = xi * s[1], U = G.on ? G.Rz * s[0] : Ui;
+  L.Mp = P.J * dW + xi * s[0] + P.B * s[1];
+  return { M: -xi * s[0], i: s[0], u: U, ui: Ui, if: s[2] };
+}
+function smCur(P, b, Ui) {                                               /* ustálený fázor proudu, R = 0 */
   const Iq = -P.U * Math.sin(b) / P.Xq, Id = (Ui - P.U * Math.cos(b)) / P.Xd;
   const qr = Math.cos(-b), qi = Math.sin(-b), dr = Math.cos(-b - Math.PI / 2), di = Math.sin(-b - Math.PI / 2);
   const Ir = Id * dr + Iq * qr, Ii = Id * di + Iq * qi;                 /* generátorová konvence */
   return { I: Math.hypot(Ir, Ii), P: -P.U * Ir, Q: P.U * Ii };          /* P, Q odebírané ze sítě */
 }
 function stepSM(dt) {
-  const P = L.P, S = LAB_SM, w1 = TAU * P.f, Ui = S.on && S.exc ? S.Ui : 0, Mz0 = LAB.load / 100;
+  const P = L.P, gen = L.gen, S = gen ? G_SM : LAB_SM, Ui = (gen ? S.exc : S.on && S.exc) ? S.Ui : 0, Mz0 = LAB.load / 100;
   L.fang += L.ws * dt;
   const b = Math.atan2(Math.sin(P.pp * (L.fang - L.thv)), Math.cos(P.pp * (L.fang - L.thv))), sl = 1 - L.nu;
   let M = 0;
   if (S.on) M = smTorque(P, b, Ui) + smDamper(P, sl);
-  let Mz = labMz(L.nu * L.ws); if (Mz === null) Mz = passive(M, L.nu * L.ws, Mz0);
-  const nn = L.nu + dt * (M - Mz) / P.TN;
-  L.nu = (LAB.lt === 'react' && Mz0 && !S.on && Math.sign(nn) !== Math.sign(L.nu)) ? 0 : nn;
+  if (gen && !S.on) { const nn = speedGov(L.nu, S.nset / 1500, dt, 1.0 * LAB.J); L.Mp = P.TN * (nn - L.nu) / dt; L.nu = nn; }
+  else {
+    let Mz = labMz(L.nu * L.ws); if (Mz === null) Mz = passive(M, L.nu * L.ws, Mz0);
+    const nn = L.nu + dt * (M - Mz) / P.TN;
+    L.nu = (!gen && LAB.lt === 'react' && Mz0 && !S.on && Math.sign(nn) !== Math.sign(L.nu)) ? 0 : nn;
+    if (gen) L.Mp = S.Mt;
+  }
   const c = S.on ? smCur(P, b, Ui) : { I: 0, P: 0, Q: 0 };
   return { M, b, Ui, c, sl };
 }
@@ -122,7 +150,7 @@ function labAdvance(simT) {
   const dt = L.m === 'am' ? 5e-5 : L.m === 'dc' ? 2e-5 : 1e-4, cap = L.m === 'am' ? 3000 : 6000;
   const n = Math.min(Math.round(simT / dt), cap); let r = null;
   for (let k = 0; k < n; k++) {
-    r = L.m === 'am' ? stepAM(dt) : L.m === 'dc' ? stepDC(dt) : stepSM(dt);
+    r = L.m === 'am' ? stepAM(dt) : L.m === 'dc' ? (L.gen ? stepDCgen(dt) : stepDC(dt)) : stepSM(dt);
     const W = L.m === 'am' ? L.s[4] : L.m === 'dc' ? L.s[1] : L.nu * L.ws;
     L.thv += W * dt; L.t += dt;
     if (L.m === 'am') { const p = Math.hypot(L.s[0], L.s[1]); if (p > 1e-4) L.fang = Math.atan2(L.s[1], L.s[0]) / L.P.pp; L.fmag = p; }
@@ -134,19 +162,24 @@ function labAdvance(simT) {
   }
   if (!r) return;
   const m = L.meas, W = L.m === 'am' ? L.s[4] : L.m === 'dc' ? L.s[1] : L.nu * L.ws;
-  m.n = toRpm(W); m.M = r.M;
+  m.n = toRpm(W); m.M = r.M; m.Mp = L.Mp;
   if (L.m === 'am') {
     m.U = r.u * Math.sqrt(1.5); m.I = r.i * Math.SQRT1_2; m.x1 = L.f;
-    const ns = 60 * L.f / L.P.pp; m.x2 = Math.abs(ns) > 1 && LAB_AM.on && !LAB_AM.dcb ? (ns - m.n) / ns * 100 : NaN; m.x3 = r.M * W / 1e3;
+    const ns = 60 * L.f / L.P.pp, on = L.gen ? G_AM.on : LAB_AM.on && !LAB_AM.dcb;
+    m.x2 = Math.abs(ns) > 1 && on ? (ns - m.n) / ns * 100 : NaN; m.x3 = r.M * W / 1e3; m.p = r.p; m.q = r.q;
   } else if (L.m === 'dc') { m.U = r.u; m.I = r.i; m.x1 = r.ui; m.x2 = r.if; m.x3 = r.u * r.i / 1e3; }
   else {
-    const syn = LAB_SM.on && Math.abs(r.sl) < 0.01;                       /* fázor platí jen v synchronizmu */
-    m.I = r.c.I; m.b = LAB_SM.on ? r.b * 180 / Math.PI : NaN; m.x1 = r.Ui; m.x2 = syn ? r.c.P : NaN; m.x3 = syn ? r.c.Q : NaN;
-    m.x4 = syn && r.c.I > 0.01 ? r.c.P / Math.hypot(r.c.P, r.c.Q) : NaN; m.sl = r.sl;
+    const on = L.gen ? G_SM.on : LAB_SM.on, syn = on && Math.abs(r.sl) < 0.01, sg = L.gen ? -1 : 1;  /* generátor: P, Q, β dodávané */
+    m.I = r.c.I; m.b = on ? sg * r.b * 180 / Math.PI : NaN; m.x1 = r.Ui; m.x2 = syn ? sg * r.c.P : NaN; m.x3 = syn ? sg * r.c.Q : NaN;
+    m.x4 = syn && r.c.I > 0.01 ? Math.abs(r.c.P) / Math.hypot(r.c.P, r.c.Q) : NaN; m.sl = r.sl;
+    if (L.gen) {                                                         /* synchronoskop: napětí generátoru vůči síti */
+      const bg = -r.b, Ug = r.Ui * L.nu; m.df = 50 * (L.nu - 1); m.dphi = bg * 180 / Math.PI;
+      m.dU = Math.hypot(Ug * Math.cos(bg) - 1, Ug * Math.sin(bg)); m.Ug = Ug;
+    }
   }
 }
 
-/* ---------- kreslení ---------- */
+/* ---------- měřicí přístroje ---------- */
 function gaugeSVG(id, lo, hi) {
   const cx = 110, cy = 112, r = 86, a0 = -125, a1 = 125, A = v => a0 + (v - lo) / (hi - lo) * (a1 - a0);
   const p = (rr, a) => [cx + rr * Math.sin(a * Math.PI / 180), cy - rr * Math.cos(a * Math.PI / 180)];
@@ -163,36 +196,44 @@ function gaugeSVG(id, lo, hi) {
   return `<svg viewBox="0 0 220 166" class="gauge" aria-hidden="true">${g}</svg>`;
 }
 function labGaugeInit() {
-  labGR = L.m === 'am' ? { U: [0, 500], I: [0, 100], n: [-2000, 2000], M: [-100, 200] }
-    : L.m === 'dc' ? { U: [0, 500], I: [-250, 250], n: [-2000, 2000], M: [-500, 500] }
-    : { I: [0, 3], n: [0, 2000], M: [-2, 3], b: [-180, 180] };
+  const g = L.gen;
+  labGR = L.m === 'am' ? { U: [0, 500], I: [0, 100], n: [g ? 0 : -2000, 2000], M: g ? [-200, 100] : [-100, 200] }
+    : L.m === 'dc' ? (g ? { U: [0, 500], I: [0, 50], n: [0, 2000], M: [-500, 100] } : { U: [0, 500], I: [-250, 250], n: [-2000, 2000], M: [-500, 500] })
+    : { I: [0, 3], n: [0, 2000], M: g ? [-3, 2] : [-2, 3], b: [-180, 180] };
 }
 function labNeedle(k, v) {
   let [lo, hi] = labGR[k];
-  if (k !== 'b' && isFinite(v) && (v > hi || v < lo)) {                  /* stupnice se při překročení rozšíří */
+  if (k !== 'b' && isFinite(v) && (v > hi || v < lo)) {
     if (v > hi) hi = niceUp(v * 1.1); if (v < lo) lo = -niceUp(-v * 1.1); labGR[k] = [lo, hi];
     const w = document.getElementById('gw-' + k); if (w) w.innerHTML = gaugeSVG(k, lo, hi);
   }
   const e = document.getElementById('nd-' + k); if (!e) return;
   const a = -125 + ((isFinite(v) ? clamp(v, lo, hi) : lo) - lo) / (hi - lo) * 250; e.setAttribute('transform', `rotate(${a.toFixed(2)} 110 112)`);
 }
-function labBench() {
-  const dc = L.m === 'dc', sm = L.m === 'sm', A = LAB_AM, C = LAB_DC;
-  const src = dc ? (C.mode === 'reg' ? ['Usměrňovač', 'řízený, kaskádní regulace'] : ['Zdroj', 'stejnosměrný 0–500 V']) : sm ? ['Síť', 'tvrdá, 50 Hz'] : (A.src === 'sit' ? ['Síť', '3 × 400 V, 50 Hz'] : ['Měnič', 'frekvence U/f']);
-  let g = `<defs><marker id="lah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" class="lkf"/></marker></defs>`;
-  g += `<rect x="14" y="70" width="110" height="140" rx="10" class="lbx"/><text x="69" y="132" text-anchor="middle" class="lb">${src[0]}</text><text x="69" y="152" text-anchor="middle" class="ls">${src[1]}</text>`;
-  g += `<path d="M124 100H170M206 100H300M124 180H300" class="lw"/>`;
-  g += `<g id="lab-sw"><line x1="170" y1="100" x2="204" y2="84" class="lw2"/></g><circle cx="170" cy="100" r="3.5" class="lkf"/><circle cx="206" cy="100" r="3.5" class="lkf"/><text x="188" y="72" text-anchor="middle" class="ls">${dc ? 'vypínač' : 'stykač'}</text>`;
-  g += `<circle cx="240" cy="100" r="17" class="lbx"/><text x="240" y="106" text-anchor="middle" class="lb">A</text>`;
-  g += `<path d="M272 100V122M272 158V180" class="lw"/><circle cx="272" cy="140" r="17" class="lbx"/><text x="272" y="146" text-anchor="middle" class="lb">V</text>`;
-  g += `<text x="300" y="92" text-anchor="end" class="ls">${dc ? 'kotva' : '3 fáze'}</text>`;
-  const cx = 455, cy = 140;
-  g += `<path d="M300 100H${cx - 128}M300 180H${cx - 128}" class="lw"/>`;
-  g += `<circle cx="${cx}" cy="${cy}" r="128" class="lfe"/><circle cx="${cx}" cy="${cy}" r="${dc ? 96 : 92}" class="lgap"/>`;
+
+/* ---------- schéma zapojení ---------- */
+const sT = (x, y, t, a = 'start', c = 'ls', id = '') => `<text x="${x}" y="${y}" text-anchor="${a}" class="${c}"${id ? ` id="${id}"` : ''}>${lsub(t)}</text>`;
+const sW = d => `<path d="${d}" class="lw"/>`;
+const sBox = (x, y, w, h, t1, t2, id2) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="9" class="lbx"/>` + sT(x + w / 2, y + h / 2 - (t2 ? 4 : -5), t1, 'middle', 'lb') + (t2 ? sT(x + w / 2, y + h / 2 + 15, t2, 'middle', 'ls', id2) : '');
+const sDot = (x, y) => `<circle cx="${x}" cy="${y}" r="3.5" class="lkf"/>`;
+const sKnife = (x, y, on) => `<circle cx="${x}" cy="${y}" r="3" class="lkf"/><circle cx="${x + 28}" cy="${y}" r="3" class="lkf"/>` + (on ? `<line x1="${x}" y1="${y}" x2="${x + 28}" y2="${y}" class="lw2 on"/>` : `<line x1="${x}" y1="${y}" x2="${x + 24}" y2="${y - 14}" class="lw2"/>`);
+const sMeter = (x, y, l, r = 15) => `<circle cx="${x}" cy="${y}" r="${r}" class="lmeter"/>` + sT(x, y + 5, l, 'middle', 'lb');
+function sRes(x, y, w, lab, val, zero) {                                   /* proměnný odpor vodorovně; R = 0 → přemostěn */
+  let g = `<rect x="${x}" y="${y - 8}" width="${w}" height="16" rx="2" class="lres${zero ? ' off' : ''}"/><line x1="${x - 2}" y1="${y + 12}" x2="${x + w + 2}" y2="${y - 12}" class="larr" marker-end="url(#lahr)"/>`;
+  if (zero) g += `<path d="M${x - 6} ${y}v-20h${w + 12}v20" class="lw dash"/>`;
+  return g + sT(x + w / 2, y - (zero ? 26 : 22), lab, 'middle', 'lsb') + sT(x + w / 2, y + 26, val, 'middle', 'ls');
+}
+const sResV = (x, y, h, lab, val) => `<rect x="${x - 8}" y="${y}" width="16" height="${h}" rx="2" class="lres"/><line x1="${x - 16}" y1="${y + h - 4}" x2="${x + 14}" y2="${y + 4}" class="larr" marker-end="url(#lahr)"/>` + sT(x + 20, y + h / 2 - 4, lab, 'start', 'lsb') + sT(x + 20, y + h / 2 + 14, val, 'start', 'ls');
+const sCoilV = (x, y, len, n = 4) => { const r = len / n / 2; let d = `M${x} ${y}`; for (let i = 0; i < n; i++) d += `a${r} ${r} 0 0 1 0 ${2 * r}`; return `<path d="${d}" class="lw coil"/>`; };
+const sLamp = (x, y, i) => `<circle cx="${x}" cy="${y}" r="7" class="llamp" id="lab-lamp${i}"/><circle cx="${x}" cy="${y}" r="7" class="lw thin"/><path d="M${x - 5} ${y - 5}l10 10M${x + 5} ${y - 5}l-10 10" class="lw thin"/>`;
+
+function labMachine() {
+  const dc = L.m === 'dc', sm = L.m === 'sm', cx = 455, cy = 140;
+  let g = `<circle cx="${cx}" cy="${cy}" r="128" class="lfe"/><circle cx="${cx}" cy="${cy}" r="${dc ? 96 : 92}" class="lgap"/>`;
   if (dc) {
     g += `<path d="M${cx - 30} ${cy - 127}h60v32l14 4a92 92 0 0 0 -88 0l14 -4z" class="lfe2"/><path d="M${cx - 30} ${cy + 127}h60v-32l14 -4a92 92 0 0 1 -88 0l14 4z" class="lfe2"/>`;
     g += `<text x="${cx}" y="${cy - 102}" text-anchor="middle" class="lpole">N</text><text x="${cx}" y="${cy + 114}" text-anchor="middle" class="lpole">S</text>`;
-  } else for (let i = 0; i < 24; i++) { const a = i * 15 + 7.5; g += `<g transform="rotate(${a} ${cx} ${cy})"><rect x="${cx - 5}" y="${cy - 122}" width="10" height="26" rx="2" class="lph${Math.floor(i / 2) % 3}"/></g>`; }
+  } else for (let i = 0; i < 24; i++) g += `<g transform="rotate(${i * 15 + 7.5} ${cx} ${cy})"><rect x="${cx - 5}" y="${cy - 122}" width="10" height="26" rx="2" class="lph${Math.floor(i / 2) % 3}"/></g>`;
   let rot;
   if (sm) {
     rot = `<circle cx="${cx}" cy="${cy}" r="44" class="lrot"/>`;
@@ -207,50 +248,129 @@ function labBench() {
   g += `<g id="lab-rot">${rot}</g>`;
   if (dc) g += `<rect x="${cx - 52}" y="${cy - 9}" width="14" height="18" rx="2" class="lbrush"/><rect x="${cx + 38}" y="${cy - 9}" width="14" height="18" rx="2" class="lbrush"/>`;
   g += `<g id="lab-fld"><line x1="${cx}" y1="${dc ? cy - 66 : cy + 66}" x2="${cx}" y2="${dc ? cy + 70 : cy - 84}" class="lfld" marker-end="url(#lah)"/></g>`;
-  g += `<rect x="610" y="92" width="136" height="96" rx="10" class="lbx"/><text x="678" y="116" text-anchor="middle" class="lb">Zátěž (brzda)</text><text x="678" y="140" text-anchor="middle" class="ls" id="lab-mz">M_z = 0</text><text x="678" y="162" text-anchor="middle" class="ls" id="lab-st"></text>`;
-  g += `<path d="M${cx + 128} 140H610" class="lshl"/>`;
-  return `<svg viewBox="0 0 760 280" class="bench" role="img" aria-label="Zkušební stanoviště: zdroj, ${dc ? 'vypínač' : 'stykač'}, ampérmetr, voltmetr, motor v řezu a zátěž">${g}</svg>`;
+  return `<g transform="translate(78 28) scale(0.9)">${g}</g>`;           /* střed (487,154), poloměr 115 */
 }
+function labBench() {
+  const dc = L.m === 'dc', sm = L.m === 'sm', gen = L.gen, A = LAB_AM, C = LAB_DC;
+  let g = `<defs><marker id="lah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" style="fill:var(--red)"/></marker><marker id="lahr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" style="fill:var(--red)"/></marker></defs>`;
+  const T = 372;                                                          /* svorky stroje */
+  if (dc && !gen) {
+    const reg = C.mode === 'reg';
+    g += sBox(8, 40, 96, 104, reg ? 'Usměrňovač' : 'Zdroj', reg ? 'řízený' : 'U = ' + C.U + ' V');
+    g += sW(`M104 62H122M150 62H178M208 62H${reg ? T : 232}M104 124H${T}`) + sKnife(122, 62, C.on) + sT(136, 40, 'vypínač', 'middle');
+    g += sMeter(193, 62, 'A');
+    if (!reg) g += sRes(232, 62, 56, 'předřadný odpor R_p', C.Rp > 0 ? fmt(C.Rp, 1) + ' Ω' : '0 Ω: vyřazen', C.Rp <= 0) + sW(`M288 62H${T}`);
+    else g += sT(280, 46, 'regulátor omezuje proud', 'middle');
+    g += sW('M330 62V80M330 106V124') + sMeter(330, 93, 'V', 13) + sDot(330, 62) + sDot(330, 124);
+    g += sT(T - 4, 54, 'A1', 'end', 'lsb') + sT(T - 4, 116, 'A2', 'end', 'lsb') + sT(T - 4, 148, 'kotva', 'end');
+    g += sBox(8, 196, 96, 84, 'Budicí zdroj', 'U_f = ' + Math.round(L.P.UfN * C.kf / 100) + ' V') + sW('M104 214H250M104 268H250') + sCoilV(250, 214, 54) + sT(262, 236, 'budicí vinutí', 'start', 'lsb') + sT(262, 254, 'I_f = 0 A', 'start', 'ls', 'lab-if');
+    g += `<path d="M300 280H392" class="lw dash"/>` + sT(346, 298, 'na póly N, S', 'middle');
+  } else if (dc && gen) {
+    const G = G_DC;
+    g += sResV(40, 72, 44, 'zátěž', 'R_z = ' + G.Rz + ' Ω') + sW(`M40 62V72M40 116V124M40 62H96M124 62H178M208 62H${T}M40 124H${T}`) + sKnife(96, 62, G.on) + sT(110, 40, 'vypínač zátěže', 'middle');
+    g += sMeter(193, 62, 'A') + sW('M330 62V80M330 106V124') + sMeter(330, 93, 'V', 13) + sDot(330, 62) + sDot(330, 124);
+    g += sT(T - 4, 54, 'A1', 'end', 'lsb') + sT(T - 4, 116, 'A2', 'end', 'lsb') + sT(T - 4, 148, 'kotva', 'end');
+    if (G.exc === 'cizi') g += sBox(8, 196, 96, 84, 'Budicí zdroj', 'U_f = ' + Math.round(L.P.UfN * G.kf / 100) + ' V') + sW('M104 214H250M104 268H250') + sCoilV(250, 214, 54) + sT(262, 236, 'budicí vinutí', 'start', 'lsb') + sT(262, 254, 'I_f = 0 A', 'start', 'ls', 'lab-if');
+    else g += sDot(290, 62) + sDot(270, 124) + sW('M290 62V214H232M180 214H140') + sRes(180, 214, 52, 'R_reg', G.Rreg + ' Ω', false) + sCoilV(140, 214, 54) + sW('M140 268H270V124') + sT(150, 290, 'derivační budicí vinutí', 'start', 'lsb') + sT(20, 236, 'I_f = 0 A', 'start', 'ls', 'lab-if') + sT(20, 254, 'samobuzení', 'start');
+    g += `<path d="M300 280H392" class="lw dash"/>` + sT(346, 298, 'na póly N, S', 'middle');
+  } else {
+    const ys = [52, 78, 104], src = sm ? ['Síť', 'tvrdá, 50 Hz'] : gen ? ['Síť', '400 V, 50 Hz'] : A.dcb ? ['Ss zdroj', 'brzdění 40 V'] : A.src === 'sit' ? ['Síť', '400 V, 50 Hz'] : ['Měnič', 'f = ' + fmt(L.f || 0, 0) + ' Hz'];
+    g += sBox(8, 30, 92, 96, src[0], src[1], 'lab-srcv');
+    const on = sm ? (gen ? G_SM.on : LAB_SM.on) : gen ? G_AM.on : A.on, rev = !gen && !sm && A.rev;
+    ys.forEach((y, k) => { g += sT(104, y - 5, 'L' + (k + 1), 'start', 'lsb') + sW(`M100 ${y}H132M160 ${y}H178`) + sKnife(132, y, on); });
+    g += `<line x1="146" y1="${ys[0] - 22}" x2="146" y2="${ys[2] + 6}" class="lw dash"/>` + sT(146, 22, sm ? 'vypínač' : 'stykač', 'middle');
+    if (sm && gen) { ys.forEach((y, k) => { g += `<path d="M132 ${y}C132 ${y + 8} 136 ${y + 13} 137 ${y + 13}M160 ${y}C160 ${y + 8} 156 ${y + 13} 155 ${y + 13}" class="lw thin"/>` + sLamp(146, y + 13, k); }); g += sT(146, 140, 'synchronoskop', 'middle'); }
+    if (rev) g += sW(`M178 ${ys[0]}H218M178 ${ys[1]}L218 ${ys[2]}M178 ${ys[2]}L218 ${ys[1]}`) + sT(198, 128, 'přehozeny L2, L3', 'middle', 'lsr');
+    else g += sW(ys.map(y => `M178 ${y}H218`).join(''));
+    g += sW(ys.map(y => `M218 ${y}H300`).join('')) + sMeter(240, ys[0], 'A', 12) + `<path d="M268 ${ys[0]}V56M268 ${ys[1]}V74" class="lw thin"/>` + sMeter(268, 65, 'V', 9) + sDot(268, ys[0]) + sDot(268, ys[1]);
+    const yd = !sm && !gen && A.src === 'sit' ? A.yd : 'D';
+    g += `<rect x="300" y="36" width="58" height="84" rx="8" class="lbx"/>` + sT(329, 136, 'svorkovnice', 'middle');
+    if (yd === 'Y') g += `<path d="M329 78L329 56M329 78L310 90M329 78L348 90" class="lw"/><circle cx="329" cy="78" r="3" class="lkf"/>` + sT(329, 112, 'Y', 'middle', 'lb');
+    else g += `<path d="M329 52L348 88L310 88Z" class="lw"/>` + sT(329, 112, 'D', 'middle', 'lb');
+    g += sW(`M358 60H${T}M358 78H${T}M358 96H${T}`);
+    if (sm) {
+      const S = gen ? G_SM : LAB_SM;
+      g += sBox(8, 196, 92, 84, 'Budič', 'U_i = ' + fmt(S.Ui, 2) + ' p.j.') + sW('M100 214H150M178 214H306M100 268H306') + sKnife(150, 214, S.exc) + sT(164, 200, 'buzení', 'middle');
+      g += `<ellipse cx="312" cy="214" rx="6" ry="12" class="lbx"/><ellipse cx="312" cy="268" rx="6" ry="12" class="lbx"/>` + `<path d="M318 214H352V268H318" class="lw dash"/>` + sT(200, 296, 'kroužky → budicí vinutí rotoru', 'middle');
+    } else if (!gen && A.Rp > 0) {
+      g += [0, 1, 2].map(k => { const x = 200 + k * 46; return sW(`M${x} 176V188`) + `<rect x="${x - 7}" y="188" width="14" height="44" rx="2" class="lres"/><line x1="${x - 14}" y1="228" x2="${x + 12}" y2="192" class="larr" marker-end="url(#lahr)"/>` + sW(`M${x} 232V244`); }).join('');
+      g += sW('M200 244H292M200 176H372') + sT(246, 266, 'odporník v rotoru R_p = ' + fmt(A.Rp, 1) + ' Ω', 'middle', 'lsb') + sT(246, 284, 'přes kroužky a kartáče', 'middle');
+      g += [0, 1, 2].map(k => `<ellipse cx="${360 - k * 14}" cy="176" rx="4" ry="9" class="lbx"/>`).join('');
+    } else if (!gen) g += sT(20, 200, 'rotor nakrátko', 'start', 'lsb') + sT(20, 218, '(klec, nebo kroužky spojené nakrátko)', 'start');
+    if (!gen && !sm && A.dcb) g += sT(20, 250, 'stejnosměrné brzdění: do vinutí', 'start', 'lsr') + sT(20, 268, 'teče stejnosměrný proud', 'start', 'lsr');
+  }
+  g += labMachine();
+  const right = gen ? (dc ? 'Pohonný motor' : 'Turbína') : 'Zátěž (brzda)';
+  g += `<path d="M602 154H640" class="lshl"/><rect x="640" y="104" width="150" height="100" rx="10" class="lbx"/>` + sT(715, 128, right, 'middle', 'lb') + sT(715, 152, 'M_z = 0', 'middle', 'ls', 'lab-mz') + sT(715, 174, '', 'middle', 'ls', 'lab-st');
+  if (sm && gen) g += sT(715, 236, '', 'middle', 'lsb', 'lab-syn') + sT(715, 256, '', 'middle', 'ls', 'lab-syn2');
+  return `<svg viewBox="0 0 800 310" class="bench" role="img" aria-label="Schéma zapojení laboratoře">${g}</svg>`;
+}
+
+/* ---------- ovládací panel ---------- */
 const tg = (id, on, t) => `<button type="button" class="btn tgl" data-lt="${id}" aria-pressed="${!!on}">${t}</button>`;
-const sl = (id, l, min, max, st, v, u) => `<label class="lsl"><span><span>${sub(l)}</span> <b id="lv-${id}">${fmt(v, st < 1 ? (st < 0.1 ? 2 : 1) : 0)} ${sub(u)}</b></span><input type="range" data-ls="${id}" min="${min}" max="${max}" step="${st}" value="${v}"></label>`;
+const decOf = st => st < 1 ? (st < 0.1 ? 2 : 1) : 0;
+const sl = (id, l, min, max, st, v, u) => `<label class="lsl"><span><span>${sub(l)}</span> <b id="lv-${id}">${fmt(v, decOf(st))} ${sub(u)}</b></span><input type="range" data-ls="${id}" min="${min}" max="${max}" step="${st}" value="${v}"></label>`;
+const seg = (attr, cur, opts) => `<span class="seg">${opts.map(([k, t]) => `<button type="button" ${attr}="${k}" aria-pressed="${cur === k}">${t}</button>`).join('')}</span>`;
 function labCtlHTML() {
+  if (L.gen) {
+    if (L.m === 'dc') { const G = G_DC; return `<div class="lgrp"><p class="lgh">Dynamo</p><div class="lrow">${seg('data-lexc', G.exc, [['cizi', 'cizí buzení'], ['der', 'derivační (samobuzení)']])}${tg('on', G.on, G.on ? 'Odpojit zátěž' : 'Připojit zátěž')}</div>
+${sl('nset', 'Otáčky pohonného motoru', 0, 2000, 50, G.nset, 'ot/min')}${sl('Rz', 'Zátěžný odpor R_z', 2, 100, 1, G.Rz, 'Ω')}${G.exc === 'cizi' ? sl('kf', 'Budicí napětí', 0, 100, 5, G.kf, '% U_fN') : sl('Rreg', 'Regulační odpor v buzení R_reg', 0, 400, 10, G.Rreg, 'Ω')}</div>`; }
+    if (L.m === 'am') { const G = G_AM; return `<div class="lgrp"><p class="lgh">Asynchronní generátor</p><div class="lrow">${tg('on', G.on, G.on ? 'Odpojit od sítě' : 'Připojit na síť')}</div>
+${sl('nset', 'Otáčky turbíny před připojením', 0, 2000, 10, G.nset, 'ot/min')}${sl('Mt', 'Moment turbíny po připojení', -50, 200, 5, G.Mt, '% M_N')}</div>`; }
+    const G = G_SM; return `<div class="lgrp"><p class="lgh">Synchronní generátor</p><div class="lrow">${tg('on', G.on, G.on ? 'Odpojit od sítě' : 'Fázovat (připojit na síť)')}${tg('exc', G.exc, G.exc ? 'Buzení zapnuto' : 'Buzení vypnuto')}</div>
+${sl('Ui', 'Napětí od buzení U_i (~ I_f)', 0, 2.5, 0.05, G.Ui, 'p.j.')}${sl('nset', 'Otáčky turbíny před fázováním', 1400, 1600, 1, G.nset, 'ot/min')}${sl('Mt', 'Moment turbíny po připojení', 0, 2, 0.05, G.Mt, 'p.j.')}</div>`;
+  }
   if (L.m === 'am') {
     const A = LAB_AM;
-    return `<div class="lgrp"><p class="lgh">Napájení</p><div class="lrow"><span class="seg">${[['sit', 'Síť 400 V'], ['mf', 'Měnič frekvence']].map(([k, t]) => `<button type="button" data-lsrc="${k}" aria-pressed="${A.src === k}">${t}</button>`).join('')}</span></div>
+    return `<div class="lgrp"><p class="lgh">Napájení</p><div class="lrow">${seg('data-lsrc', A.src, [['sit', 'Síť 400 V'], ['mf', 'Měnič frekvence']])}</div>
 <div class="lrow">${tg('on', A.on, A.on ? 'Vypnout stykač' : 'Zapnout stykač')}${A.src === 'sit' ? tg('yd', A.yd === 'Y', A.yd === 'Y' ? 'Hvězda (přepnout na D)' : 'Trojúhelník (přepnout na Y)') : ''}${tg('rev', A.rev, 'Reverzace (2 fáze)')}${tg('dcb', A.dcb, 'Stejnosměrné brzdění')}</div>
 ${A.src === 'mf' ? sl('fset', 'Žádaná frekvence', 0, 80, 1, A.fset, 'Hz') + sl('ramp', 'Rampa frekvence', 5, 200, 5, A.ramp, 'Hz/s') : ''}${sl('Rp', 'Odpor v rotoru R_p (kroužkový motor)', 0, 4, 0.1, A.Rp, 'Ω')}</div>`;
   }
-  if (L.m === 'sm') {
-    const S = LAB_SM;
-    return `<div class="lgrp"><p class="lgh">Napájení a buzení</p><div class="lrow">${tg('on', S.on, S.on ? 'Odpojit od sítě' : 'Připojit na síť')}${tg('exc', S.exc, S.exc ? 'Buzení zapnuto' : 'Buzení vypnuto')}</div>
-${sl('Ui', 'Napětí od buzení U_i (~ I_f)', 0, 2.5, 0.05, S.Ui, 'p.j.')}</div>`;
-  }
+  if (L.m === 'sm') { const S = LAB_SM; return `<div class="lgrp"><p class="lgh">Napájení a buzení</p><div class="lrow">${tg('on', S.on, S.on ? 'Odpojit od sítě' : 'Připojit na síť')}${tg('exc', S.exc, S.exc ? 'Buzení zapnuto' : 'Buzení vypnuto')}</div>${sl('Ui', 'Napětí od buzení U_i (~ I_f)', 0, 2.5, 0.05, S.Ui, 'p.j.')}</div>`; }
   const C = LAB_DC;
-  return `<div class="lgrp"><p class="lgh">Napájení kotvy</p><div class="lrow"><span class="seg">${[['u', 'Zdroj napětí'], ['reg', 'Regulace rychlosti']].map(([k, t]) => `<button type="button" data-lmode="${k}" aria-pressed="${C.mode === k}">${t}</button>`).join('')}</span>${tg('on', C.on, C.on ? 'Vypnout' : 'Zapnout')}</div>
+  return `<div class="lgrp"><p class="lgh">Napájení kotvy</p><div class="lrow">${seg('data-lmode', C.mode, [['u', 'Zdroj napětí'], ['reg', 'Regulace rychlosti']])}${tg('on', C.on, C.on ? 'Vypnout' : 'Zapnout')}</div>
 ${C.mode === 'u' ? sl('U', 'Napětí zdroje U', 0, 500, 5, C.U, 'V') + sl('Rp', 'Předřadný odpor R_p', 0, 5, 0.1, C.Rp, 'Ω') : sl('nset', 'Žádané otáčky n*', -2000, 2000, 50, C.nset, 'ot/min') + sl('Imax', 'Omezení proudu I_max', 50, 300, 10, C.Imax, 'A')}
 ${sl('kf', 'Budicí napětí (buzení)', 0, 100, 5, C.kf, '% U_fN')}</div>`;
 }
+function labLoadHTML() {
+  if (L.gen) return `<div class="lgrp"><p class="lgh">${L.m === 'dc' ? 'Pohonný motor' : 'Turbína'}</p><p class="note">${L.m === 'dc' ? 'Pohonný motor drží nastavené otáčky; displej ukazuje moment, který k tomu potřebuje.' : 'Před připojením turbína drží nastavené otáčky (regulátor otáček). Po připojení dodává nastavený moment; otáčky pak určuje síť a stroj.'}</p></div>`;
+  return `<div class="lgrp"><p class="lgh">Zátěž</p><div class="lrow">${seg('data-llt', LAB.lt, [['react', 'tření (pasivní)'], ['pot', 'jeřáb (aktivní)'], ['fan', 'ventilátor']])}</div>${sl('load', 'Zátěžný moment', 0, 150, 5, LAB.load, '% M_N')}</div>`;
+}
 function labTips() {
-  if (L.m === 'sm') return `<ul class="ltips"><li>Asynchronní rozběh: připojte na síť bez buzení. Moment dává tlumicí klec, motor se rozběhne těsně pod synchronní otáčky.</li><li>Pak zapněte buzení: rotor „zaskočí“ do synchronizmu, skluz je nula a zátěžný úhel β se ustálí.</li><li>Zvyšujte zátěž: roste β (rotor se víc zpožďuje za polem). Nad statickou mezí stroj vypadne ze synchronizmu.</li><li>Měňte buzení: při stejné zátěži se mění proud a účiník (V-křivka); přebuzený motor dodává jalový výkon (Q &lt; 0).</li><li>Skoková změna zátěže vyvolá kývání β, tlumené klecí.</li><li>Šipka ukazuje točivé pole statoru, rotor s póly N/S se točí za ním o β/p.</li></ul>`;
-  return L.m === 'am' ? `<ul class="ltips"><li>Zapněte stykač: proud vyskočí na 5–7× I_N, moment v prvních periodách kmitá, pak se ustálí skluz.</li><li>Přidejte zátěž: skluz a proud rostou. Nad momentem zvratu se motor zastaví.</li><li>Rozběh Y–D: přepněte na hvězdu, zapněte, po rozběhu přepněte na trojúhelník (druhý proudový ráz).</li><li>Reverzace za chodu = brzdění protiproudem; v nule vypněte, jinak se rozběhne opačně.</li><li>Stejnosměrné brzdění: pole stojí (šipka se nehýbe), rotor v něm brzdí.</li><li>Měnič: frekvence roste rampou, pole se točí pomalu a proud zůstává malý.</li></ul>`
-    : `<ul class="ltips"><li>Buzení je od začátku nabuzené. Stáhněte ho na nulu a zpět: budicí proud se mění s časovou konstantou L_f/R_f = 1 s, bez buzení motor nemá moment.</li><li>Zapněte na plné napětí bez odporu: velký proudový ráz. S R_p je menší; po jeho zmenšení proud krátce vyskočí.</li><li>Snižte buzení: motor zrychlí (odbuzování), proud krátce naroste.</li><li>Snižte napětí pod indukované: proud změní smysl a motor brzdí rekuperačně.</li><li>Regulace rychlosti: proud drží omezení, otáčky sledují rampu, po zatížení se vrátí na žádanou hodnotu.</li></ul>`;
+  const li = a => `<ul class="ltips">${a.map(x => `<li>${sub(x)}</li>`).join('')}</ul>`;
+  if (L.gen) {
+    if (L.m === 'dc') return li(['Cizí buzení: voltmetr ukazuje napětí naprázdno U_0 = U_i ~ Φ n. Zkuste měnit otáčky a buzení.', 'Připojte zátěž: teče proud, svorkové napětí klesne o R_a I a pohonný motor musí dodat moment.', 'Derivační buzení: dynamo se nabudí jen z remanence a jen při odporu budicího obvodu menším než kritický. Při R_reg kolem 180–200 Ω se nabudí jen málo nebo vůbec.', 'Snižte otáčky: kritický odpor klesá a derivační dynamo se odbudí.', 'Malý R_z: velký proud; u derivačního dynama napětí může zkolabovat.']);
+    if (L.m === 'am') return li(['Turbína drží asi 1500 ot/min; připojte na síť. Stroj se vybudí ze sítě (odebírá jalový výkon).', 'Zvyšte moment turbíny: otáčky stoupnou nad synchronní, skluz je záporný a činný výkon teče do sítě (P > 0).', 'Jalový výkon Q stroj stále odebírá: asynchronní generátor potřebuje cizí zdroj magnetizace (síť nebo kondenzátory).', 'Moment turbíny nad momentem zvratu: stroj „uteče“, otáčky rostou.', 'Záporný moment turbíny: stroj zase pracuje jako motor.']);
+    return li(['Fázování: buzení zapnuto, U_i ≈ 1, otáčky turbíny blízko 1500 ot/min. Žárovky synchronoskopu blikají s rozdílovým kmitočtem; připojte, když zhasnou (Δφ ≈ 0).', 'Připojení mimo fázi vyvolá velký proudový a momentový ráz a kývání.', 'Po připojení přidávejte moment turbíny: roste zátěžný úhel β a činný výkon P. Nad statickou mezí stroj vypadne ze synchronizmu.', 'Buzení mění jalový výkon: přebuzený generátor dodává Q > 0, podbuzený odebírá. Činný výkon určuje turbína.']);
+  }
+  if (L.m === 'sm') return li(['Asynchronní rozběh: připojte na síť bez buzení. Moment dává tlumicí klec, motor se rozběhne těsně pod synchronní otáčky.', 'Pak zapněte buzení: rotor „zaskočí“ do synchronizmu a zátěžný úhel β se ustálí.', 'Zvyšujte zátěž: roste β. Nad statickou mezí stroj vypadne ze synchronizmu.', 'Měňte buzení: mění se proud a účiník (V-křivka); přebuzený motor dodává jalový výkon (Q < 0).', 'Šipka ukazuje točivé pole statoru, rotor s póly N/S se točí za ním o β/p.']);
+  return L.m === 'am' ? li(['Zapněte stykač: proud vyskočí na 5–7× I_N, moment v prvních periodách kmitá, pak se ustálí skluz.', 'Přidejte zátěž: skluz a proud rostou. Nad momentem zvratu se motor zastaví.', 'Rozběh Y–D: přepněte na hvězdu, zapněte, po rozběhu přepněte na trojúhelník (druhý proudový ráz).', 'Reverzace za chodu = brzdění protiproudem; v nule vypněte, jinak se rozběhne opačně.', 'Odpor v rotoru: menší záběrný proud, větší záběrný moment, ale větší skluz za chodu.', 'Stejnosměrné brzdění: pole stojí (šipka se nehýbe), rotor v něm brzdí.'])
+    : li(['Zapněte na plné napětí bez odporu: velký proudový ráz. S R_p je menší; po jeho zmenšení proud krátce vyskočí.', 'Snižte buzení: motor zrychlí (odbuzování), proud krátce naroste. Budicí proud se mění s časovou konstantou L_f/R_f = 1 s.', 'Snižte napětí pod indukované: proud změní smysl a motor brzdí rekuperačně.', 'Regulace rychlosti: proud drží omezení, otáčky sledují rampu, po zatížení se vrátí na žádanou hodnotu.']);
+}
+function labMeters() {
+  const dc = L.m === 'dc', sm = L.m === 'sm', g = L.gen;
+  if (sm) return { meters: [['I', 'Ampérmetr: proud (p.j.)', 'p.j.'], ['n', 'Otáčkoměr', 'ot/min'], ['M', 'Moment stroje (motorický +)', 'p.j.'], ['b', g ? 'Zátěžný úhel β (generátor +)' : 'Zátěžný úhel β', '°']],
+    extra: g ? [['x2', 'Činný výkon do sítě P', 'p.j.'], ['x3', 'Jalový výkon do sítě Q', 'p.j.'], ['x4', 'Účiník cos φ', ''], ['df', 'Synchronoskop Δf', 'Hz'], ['dphi', 'Synchronoskop Δφ', '°'], ['t', 'Čas simulace', 's']]
+      : [['x1', 'Napětí od buzení U_i', 'p.j.'], ['x2', 'Činný příkon P', 'p.j.'], ['x3', 'Jalový příkon Q', 'p.j.'], ['x4', 'Účiník cos φ', ''], ['t', 'Čas simulace', 's']] };
+  if (dc) return { meters: [['U', g ? 'Voltmetr: svorkové napětí' : 'Voltmetr: napětí na kotvě', 'V'], ['I', g ? 'Ampérmetr: proud do zátěže' : 'Ampérmetr: proud kotvy', 'A'], ['n', 'Otáčkoměr', 'ot/min'], ['M', 'Moment stroje (motorický +)', 'N·m']],
+    extra: g ? [['x1', 'Indukované napětí U_i', 'V'], ['x2', 'Budicí proud I_f', 'A'], ['x3', 'Výkon do zátěže U·I', 'kW'], ['Mp', 'Moment pohonného motoru', 'N·m'], ['t', 'Čas simulace', 's']]
+      : [['x1', 'Indukované napětí U_i', 'V'], ['x2', 'Budicí proud I_f', 'A'], ['x3', 'Příkon kotvy U·I', 'kW'], ['t', 'Čas simulace', 's']] };
+  return { meters: [['U', 'Voltmetr: napětí (ef., sdružené)', 'V'], ['I', 'Ampérmetr: proud (ef.)', 'A'], ['n', 'Otáčkoměr', 'ot/min'], ['M', 'Moment stroje (motorický +)', 'N·m']],
+    extra: g ? [['x2', 'Skluz s', '%'], ['pg', 'Činný výkon do sítě P', 'kW'], ['qg', 'Jalový výkon ze sítě Q', 'kVAr'], ['Mp', 'Moment turbíny', 'N·m'], ['t', 'Čas simulace', 's']]
+      : [['x1', 'Frekvence f₁', 'Hz'], ['x2', 'Skluz s', '%'], ['x3', 'Výkon M·Ω', 'kW'], ['t', 'Čas simulace', 's']] };
 }
 function renderLab(el) {
-  if (!L || L.m !== LAB.m) { labInit(); labGaugeInit(); }
-  const dc = L.m === 'dc', sm = L.m === 'sm';
-  const meters = sm ? [['I', 'Ampérmetr: proud (p.j.)', 'p.j.'], ['n', 'Otáčkoměr', 'ot/min'], ['M', 'Momentoměr: moment motoru', 'p.j.'], ['b', 'Zátěžný úhel β', '°']]
-    : [['U', dc ? 'Voltmetr: napětí na kotvě' : 'Voltmetr: napětí (ef., sdružené)', 'V'], ['I', dc ? 'Ampérmetr: proud kotvy' : 'Ampérmetr: proud (ef.)', 'A'], ['n', 'Otáčkoměr', 'ot/min'], ['M', 'Momentoměr: moment motoru', 'N·m']];
-  const extra = sm ? [['x1', 'Napětí od buzení U_i', 'p.j.'], ['x2', 'Činný příkon P', 'p.j.'], ['x3', 'Jalový příkon Q', 'p.j.'], ['x4', 'Účiník cos φ', ''], ['t', 'Čas simulace', 's']]
-    : dc ? [['x1', 'Indukované napětí U_i', 'V'], ['x2', 'Budicí proud I_f', 'A'], ['x3', 'Příkon kotvy U·I', 'kW'], ['t', 'Čas simulace', 's']] : [['x1', 'Frekvence f₁', 'Hz'], ['x2', 'Skluz s', '%'], ['x3', 'Výkon M·Ω', 'kW'], ['t', 'Čas simulace', 's']];
-  el.innerHTML = `<div class="wrap lab"><h2>Laboratoř: motor naživo</h2><p class="lead">Motor se počítá průběžně a běží, dokud ho nevypnete. Za chodu můžete přepínat napájení, zátěž i buzení. Ručky ukazují okamžité hodnoty${sm ? '' : ' (u střídavého motoru efektivní)'}; červená šipka je osa magnetického pole${sm ? ' statoru' : ''}, bílý pruh značka na rotoru.</p>
+  if (!L || L.m !== LAB.m || L.gen !== LAB.gen) { labInit(); labGaugeInit(); }
+  const { meters, extra } = labMeters();
+  el.innerHTML = `<div class="wrap lab"><h2>Laboratoř: stroj naživo</h2><p class="lead">Stroj se počítá průběžně a běží, dokud ho nevypnete; za chodu můžete přepínat napájení, zátěž i buzení. Ručky ukazují okamžité hodnoty${L.m === 'sm' ? '' : ' (u střídavého stroje efektivní)'}; červená šipka je osa magnetického pole${L.m === 'dc' ? '' : ' statoru'}, bílý pruh značka na rotoru.</p>
 <div class="lbar">
-<label>Motor<select id="lb-m">${[['am', 'asynchronní 400 V'], ['dc', 'stejnosměrný cize buzený 440 V'], ['sm', 'synchronní s vyniklými póly']].map(([k, t]) => `<option value="${k}"${L.m === k ? ' selected' : ''}>${t}</option>`).join('')}</select></label>
+<label>Stroj<select id="lb-m">${[['am', 'asynchronní 400 V'], ['dc', 'stejnosměrný 440 V'], ['sm', 'synchronní s vyniklými póly']].map(([k, t]) => `<option value="${k}"${L.m === k ? ' selected' : ''}>${t}</option>`).join('')}</select></label>
+<label>Režim<span class="seg">${[['mot', 'motor'], ['gen', L.m === 'dc' ? 'dynamo' : 'generátor']].map(([k, t]) => `<button type="button" data-lgen="${k}" aria-pressed="${(k === 'gen') === L.gen}">${t}</button>`).join('')}</span></label>
 <label>Zpomalení<select id="lb-sp">${[[1, 'skutečný čas'], [0.5, '2×'], [0.2, '5×'], [0.1, '10×'], [0.05, '20×'], [0.02, '50×']].map(([v, t]) => `<option value="${v}"${+v === LAB.sp ? ' selected' : ''}>${t}</option>`).join('')}</select></label>
 <label>Setrvačnost<select id="lb-J">${[0.5, 1, 2, 4].map(v => `<option value="${v}"${v === LAB.J ? ' selected' : ''}>${fmt(v, 1)}× J</option>`).join('')}</select></label>
-<span class="lrun"><button type="button" class="btn big" id="lb-go">${LAB.run ? '❚❚ Pozastavit' : '▶ Pokračovat'}</button><button type="button" class="btn" id="lb-re">↺ Znovu (motor v klidu)</button></span>
+<span class="lrun"><button type="button" class="btn big" id="lb-go">${LAB.run ? '❚❚ Pozastavit' : '▶ Pokračovat'}</button><button type="button" class="btn" id="lb-re">↺ Znovu (stroj v klidu)</button></span>
 </div>
-<div class="lctl"><div id="lb-ctl">${labCtlHTML()}</div>
-<div class="lgrp"><p class="lgh">Zátěž</p><div class="lrow"><span class="seg">${[['react', 'tření (pasivní)'], ['pot', 'jeřáb (aktivní)'], ['fan', 'ventilátor']].map(([k, t]) => `<button type="button" data-llt="${k}" aria-pressed="${LAB.lt === k}">${t}</button>`).join('')}</span></div>${sl('load', 'Zátěžný moment', 0, 150, 5, LAB.load, '% M_N')}</div></div>
+<div class="lctl"><div id="lb-ctl">${labCtlHTML()}</div><div id="lb-load">${labLoadHTML()}</div></div>
 <div class="lstage">${labBench()}</div>
 <div class="gauges">${meters.map(([k, t, u]) => `<div class="meter"><p>${t}</p><div id="gw-${k}">${gaugeSVG(k, ...labGR[k])}</div><div class="lcd"><span id="lcd-${k}">0</span><small>${u}</small></div></div>`).join('')}</div>
 <div class="lcds">${extra.map(([k, t, u]) => `<div class="meter sm"><p>${sub(t)}</p><div class="lcd"><span id="lcx-${k}">0</span><small>${u}</small></div></div>`).join('')}</div>
@@ -259,7 +379,7 @@ function renderLab(el) {
   labCol = null; labLogDraw(); labDraw(); labStartLoop();
 }
 function labLogAdd(t) { labLog.unshift(`<li class="done"><b>${fmt(L.t, 2)} s</b> ${t}</li>`); labLog = labLog.slice(0, 10); labLogDraw(); }
-function labLogDraw() { const e = $('#lb-ev'); if (e) e.innerHTML = labLog.join('') || '<li>Zatím nic; zapněte motor.</li>'; }
+function labLogDraw() { const e = $('#lb-ev'); if (e) e.innerHTML = labLog.join('') || '<li>Zatím nic; zapněte stroj.</li>'; }
 function labColors() {
   if (labCol) return labCol;
   const s = document.createElement('span'); s.style.display = 'none'; document.body.appendChild(s);
@@ -270,23 +390,34 @@ function labColors() {
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { labCol = null; });
 function labDraw() {
   if (!L || !$('#lab-rot')) return;
-  const m = L.meas, dc = L.m === 'dc', sm = L.m === 'sm';
+  const m = L.meas, dc = L.m === 'dc', sm = L.m === 'sm', g = L.gen;
   const set = (id, v, d) => { const e = document.getElementById(id); if (e) e.textContent = isFinite(v) ? fmt(Math.abs(v) < 0.5 * Math.pow(10, -d) ? 0 : v, d) : '–'; };
-  const keys = sm ? ['I', 'n', 'M', 'b'] : ['U', 'I', 'n', 'M'];
-  for (const k of keys) { labNeedle(k, m[k]); set('lcd-' + k, m[k], sm ? (k === 'n' || k === 'b' ? 0 : 2) : k === 'n' ? 0 : k === 'M' ? 1 : Math.abs(m[k]) < 100 ? 1 : 0); }
-  if (sm) { set('lcx-x1', m.x1, 2); set('lcx-x2', m.x2, 2); set('lcx-x3', m.x3, 2); set('lcx-x4', m.x4, 3); }
-  else if (dc) { set('lcx-x1', m.x1, 0); set('lcx-x2', m.x2, 2); set('lcx-x3', m.x3, 1); } else { set('lcx-x1', m.x1, 1); set('lcx-x2', m.x2, 1); set('lcx-x3', m.x3, 1); }
+  const txt = (id, t) => { const e = document.getElementById(id); if (e) e.innerHTML = lsub(t); };
+  for (const k of (sm ? ['I', 'n', 'M', 'b'] : ['U', 'I', 'n', 'M'])) { labNeedle(k, m[k]); set('lcd-' + k, m[k], sm ? (k === 'n' || k === 'b' ? 0 : 2) : k === 'n' ? 0 : k === 'M' ? 1 : Math.abs(m[k]) < 100 ? 1 : 0); }
+  if (sm) { set('lcx-x1', m.x1, 2); set('lcx-x2', m.x2, 2); set('lcx-x3', m.x3, 2); set('lcx-x4', m.x4, 3); if (g) { set('lcx-df', G_SM.on ? NaN : m.df, 2); set('lcx-dphi', G_SM.on ? NaN : m.dphi, 0); } }
+  else if (dc) { set('lcx-x1', m.x1, 0); set('lcx-x2', m.x2, 2); set('lcx-x3', m.x3, 1); set('lcx-Mp', m.Mp, 0); }
+  else { set('lcx-x1', m.x1, 1); set('lcx-x2', m.x2, 1); set('lcx-x3', m.x3, 1); set('lcx-pg', -(m.p || 0) / 1e3, 1); set('lcx-qg', (m.q || 0) / 1e3, 1); set('lcx-Mp', m.Mp, 1); }
   set('lcx-t', L.t, 1);
   $('#lab-rot').setAttribute('transform', `rotate(${(-L.thv * 180 / Math.PI % 360).toFixed(2)} 455 140)`);
   const fl = $('#lab-fld');
-  if (dc) fl.style.opacity = Math.min(1, L.s[2] / L.d.ifN).toFixed(2);
-  else if (sm) { fl.setAttribute('transform', `rotate(${(-L.fang * 180 / Math.PI % 360).toFixed(2)} 455 140)`); fl.style.opacity = LAB_SM.on ? 1 : 0.12; }
+  if (dc) fl.style.opacity = clamp(g ? xiSat(L.d, L.s[2]) / L.d.xiN : L.s[2] / L.d.ifN, 0.05, 1).toFixed(2);
+  else if (sm) { const on = g ? G_SM.on : LAB_SM.on; fl.setAttribute('transform', `rotate(${(-L.fang * 180 / Math.PI % 360).toFixed(2)} 455 140)`); fl.style.opacity = on ? 1 : 0.12; }
   else { fl.setAttribute('transform', `rotate(${(-L.fang * 180 / Math.PI % 360 + 90).toFixed(2)} 455 140)`); fl.style.opacity = Math.min(1, (L.fmag || 0) / 0.9).toFixed(2); }
-  const on = dc ? LAB_DC.on : sm ? LAB_SM.on : LAB_AM.on; $('#lab-sw').setAttribute('transform', on ? 'rotate(26 170 100)' : '');
-  const W = dc ? L.s[1] : sm ? L.nu * L.ws : L.s[4], Mz0 = LAB.load / 100 * L.MN, mzv = LAB.lt === 'fan' ? Mz0 * (W / labWb()) ** 2 : Mz0;
-  $('#lab-mz').textContent = 'M_z = ' + fmt(mzv, sm ? 2 : 1) + (sm ? ' p.j.' : ' N·m');
-  $('#lab-st').textContent = sm ? (!LAB_SM.on ? 'odpojeno' : Math.abs(m.sl) < 2e-3 ? 'v synchronizmu' : 'asynchronní chod, s = ' + fmt(m.sl * 100, 1) + ' %')
-    : dc ? (LAB_DC.mode === 'u' && LAB_DC.Rp > 0 ? 'R_p = ' + fmt(LAB_DC.Rp, 1) + ' Ω v obvodu' : '') : (LAB_AM.dcb ? 'brzdí ss proudem' : LAB_AM.src === 'sit' ? 'vinutí v ' + (LAB_AM.yd === 'Y' ? 'hvězdě' : 'trojúhelníku') : '');
+  if (dc) txt('lab-if', 'I_f = ' + fmt(L.s[2], 2) + ' A');
+  if (!dc && !sm && !g && LAB_AM.src === 'mf' && !LAB_AM.dcb) txt('lab-srcv', 'f = ' + fmt(L.f, 0) + ' Hz');
+  const W = dc ? L.s[1] : sm ? L.nu * L.ws : L.s[4];
+  if (g) {
+    if (dc) { txt('lab-mz', 'n = ' + fmt(toRpm(W), 0) + ' ot/min'); txt('lab-st', 'M_p = ' + fmt(m.Mp, 0) + ' N·m'); }
+    else if (sm) {
+      txt('lab-mz', 'M_t = ' + fmt(G_SM.on ? G_SM.Mt : m.Mp, 2) + ' p.j.'); txt('lab-st', G_SM.on ? (Math.abs(m.sl) < 2e-3 ? 'v synchronizmu' : 'mimo synchronizmus!') : 'drží ' + G_SM.nset + ' ot/min');
+      txt('lab-syn', G_SM.on ? '' : 'Δf = ' + fmt(m.df, 2) + ' Hz, Δφ = ' + fmt(m.dphi, 0) + '°'); txt('lab-syn2', G_SM.on ? '' : 'U_gen = ' + fmt(m.Ug, 2) + ' p.j. (síť 1)');
+      for (let k = 0; k < 3; k++) { const e = document.getElementById('lab-lamp' + k); if (e) e.style.opacity = G_SM.on ? 0.05 : clamp(m.dU / 2, 0.05, 1).toFixed(2); }
+    } else { txt('lab-mz', 'M_t = ' + fmt(m.Mp, 1) + ' N·m'); txt('lab-st', G_AM.on ? 'na síti' : 'drží ' + G_AM.nset + ' ot/min'); }
+  } else {
+    const Mz0 = LAB.load / 100 * L.MN, mzv = LAB.lt === 'fan' ? Mz0 * (W / labWb()) ** 2 : Mz0;
+    txt('lab-mz', 'M_z = ' + fmt(mzv, sm ? 2 : 1) + (sm ? ' p.j.' : ' N·m'));
+    txt('lab-st', sm ? (!LAB_SM.on ? 'odpojeno' : Math.abs(m.sl) < 2e-3 ? 'v synchronizmu' : 'asynchronní chod, s = ' + fmt(m.sl * 100, 1) + ' %') : '');
+  }
   labChart();
 }
 function labChart() {
@@ -316,20 +447,31 @@ function labLoop(ts) {
   labRaf = requestAnimationFrame(labLoop);
 }
 function labStartLoop() { if (!labRaf) { labLast = 0; labRaf = requestAnimationFrame(labLoop); } }
+function labRefresh() { $('#lb-ctl').innerHTML = labCtlHTML(); $('.lstage').innerHTML = labBench(); }
 
 /* ---------- ovládání ---------- */
 document.addEventListener('click', e => {
   if (tab !== 'lab' || !L) return;
   const t = e.target.closest('button'); if (!t) return;
   if (t.id === 'lb-go') { LAB.run = !LAB.run; t.textContent = LAB.run ? '❚❚ Pozastavit' : '▶ Pokračovat'; return; }
-  if (t.id === 'lb-re') { L = null; Object.assign(LAB_AM, { on: false, rev: false, dcb: false }); LAB_DC.on = false; Object.assign(LAB_SM, { on: false, exc: false }); renderLab($('#cards')); return; }
+  if (t.id === 'lb-re') { L = null; Object.assign(LAB_AM, { on: false, rev: false, dcb: false }); LAB_DC.on = false; Object.assign(LAB_SM, { on: false, exc: false }); G_DC.on = false; G_AM.on = false; G_SM.on = false; renderLab($('#cards')); return; }
+  if (t.dataset.lgen) { LAB.gen = t.dataset.lgen === 'gen'; L = null; renderLab($('#cards')); return; }
   const A = LAB_AM, C = LAB_DC, S = LAB_SM;
   if (t.dataset.lsrc) { A.src = t.dataset.lsrc; if (A.src === 'mf') A.yd = 'D'; labLogAdd(A.src === 'sit' ? 'napájení ze sítě' : 'napájení z měniče frekvence'); }
   else if (t.dataset.lmode) { C.mode = t.dataset.lmode; L.ci.x = 0; L.cw.x = 0; L.nr = L.s[1]; L.s[3] = C.mode === 'reg' && C.on ? C.U : 0; labLogAdd(C.mode === 'u' ? 'ruční zdroj napětí' : 'regulace rychlosti'); }
+  else if (t.dataset.lexc) { G_DC.exc = t.dataset.lexc; labLogAdd(G_DC.exc === 'cizi' ? 'cizí buzení' : 'derivační buzení'); }
   else if (t.dataset.llt) { LAB.lt = t.dataset.llt; document.querySelectorAll('[data-llt]').forEach(b => b.setAttribute('aria-pressed', b.dataset.llt === LAB.lt)); labLogAdd('zátěž: ' + t.textContent); return; }
   else if (t.dataset.lt) {
     const k = t.dataset.lt;
-    if (L.m === 'am') {
+    if (L.gen) {
+      const G = L.m === 'dc' ? G_DC : L.m === 'am' ? G_AM : G_SM;
+      if (k === 'on') {
+        G.on = !G.on;
+        if (L.m === 'sm' && G.on) { const m = L.meas; labLogAdd(`fázováno při Δf = ${fmt(m.df, 2)} Hz, Δφ = ${fmt(m.dphi, 0)}°`); }
+        else labLogAdd(L.m === 'dc' ? (G.on ? 'zátěž připojena' : 'zátěž odpojena') : G.on ? 'připojeno na síť' : 'odpojeno od sítě');
+      }
+      if (k === 'exc') { G.exc = !G.exc; labLogAdd(G.exc ? 'buzení zapnuto' : 'buzení vypnuto'); }
+    } else if (L.m === 'am') {
       if (k === 'on') { A.on = !A.on; if (!A.on) A.dcb = false; labLogAdd(A.on ? 'stykač sepnut' : 'stykač rozepnut'); }
       if (k === 'yd') { A.yd = A.yd === 'Y' ? 'D' : 'Y'; labLogAdd('vinutí přepnuto do ' + (A.yd === 'Y' ? 'hvězdy' : 'trojúhelníku')); }
       if (k === 'rev') { A.rev = !A.rev; labLogAdd(A.rev ? 'přehozeny dvě fáze (opačný sled)' : 'původní sled fází'); }
@@ -339,21 +481,26 @@ document.addEventListener('click', e => {
       if (k === 'exc') { S.exc = !S.exc; labLogAdd(S.exc ? 'buzení zapnuto' : 'buzení vypnuto'); }
     } else if (k === 'on') { C.on = !C.on; labLogAdd(C.on ? 'zapnuto' : 'vypnuto'); }
   } else return;
-  $('#lb-ctl').innerHTML = labCtlHTML();
-  $('.lstage').innerHTML = labBench();
+  labRefresh();
 });
+const LAB_UNITS = { fset: 'Hz', ramp: 'Hz/s', Rp: 'Ω', U: 'V', nset: 'ot/min', Imax: 'A', kf: '% U_fN', load: '% M_N', Ui: 'p.j.', Rz: 'Ω', Rreg: 'Ω' };
 document.addEventListener('input', e => {
   if (tab !== 'lab' || !L) return;
   const k = e.target.dataset && e.target.dataset.ls; if (!k) return;
   const v = +e.target.value, o = document.getElementById('lv-' + k), st = +e.target.step;
-  const unit = { fset: 'Hz', ramp: 'Hz/s', Rp: 'Ω', U: 'V', nset: 'ot/min', Imax: 'A', kf: '% U_fN', load: '% M_N', Ui: 'p.j.' }[k] || '';
-  if (o) o.innerHTML = fmt(v, st < 1 ? (st < 0.1 ? 2 : 1) : 0) + ' ' + sub(unit);
-  if (k === 'load') LAB.load = v; else if (L.m === 'am') LAB_AM[k] = v; else if (L.m === 'sm') LAB_SM[k] = v; else LAB_DC[k] = v;
+  const unit = k === 'Mt' ? (L.m === 'sm' ? 'p.j.' : '% M_N') : LAB_UNITS[k] || '';
+  if (o) o.innerHTML = fmt(v, decOf(st)) + ' ' + sub(unit);
+  if (k === 'load') LAB.load = v;
+  else if (L.gen) (L.m === 'dc' ? G_DC : L.m === 'am' ? G_AM : G_SM)[k] = v;
+  else if (L.m === 'am') LAB_AM[k] = v; else if (L.m === 'sm') LAB_SM[k] = v; else LAB_DC[k] = v;
 });
 document.addEventListener('change', e => {
   if (tab !== 'lab') return;
   const id = e.target.id, k = e.target.dataset && e.target.dataset.ls;
-  if (k && L) { const names = { load: 'zátěž', fset: 'žádaná frekvence', ramp: 'rampa', Rp: 'odpor R_p', U: 'napětí', nset: 'žádané otáčky', Imax: 'omezení proudu', kf: 'buzení', Ui: 'buzení U_i' }; labLogAdd(names[k] + ' ' + e.target.value); return; }
+  if (k && L) {
+    const names = { load: 'zátěž', fset: 'žádaná frekvence', ramp: 'rampa', Rp: 'odpor R_p', U: 'napětí', nset: 'otáčky', Imax: 'omezení proudu', kf: 'buzení', Ui: 'buzení U_i', Rz: 'zátěžný odpor', Rreg: 'R_reg', Mt: 'moment turbíny' };
+    labLogAdd(sub(names[k]) + ' ' + e.target.value); $('.lstage').innerHTML = labBench(); return;
+  }
   if (id === 'lb-m') { LAB.m = e.target.value; L = null; renderLab($('#cards')); }
   else if (id === 'lb-sp') LAB.sp = +e.target.value;
   else if (id === 'lb-J') { LAB.J = +e.target.value; L = null; renderLab($('#cards')); labLogAdd('setrvačnost ' + fmt(LAB.J, 1) + '× (začíná se znovu)'); }
