@@ -1,0 +1,244 @@
+<template id="tpl-uvod"><div class="wrap">
+<h2>Úvod: co je elektrický pohon, uvádění do provozu, poměrné jednotky</h2>
+<p class="lead">Stránka je rozdělená podle kapitol skript Kobrle–Pavelka. Každá záložka má simulaci s připravenými scénáři, rovinu Ω–M nebo jiný charakteristický graf, výklad s odvozeními a otázky k ověření. Záložka Opakování obsahuje všechny otázky najednou.</p>
+<nav class="toc scroll" aria-label="Obsah"><a href="#u1">Definice a řetězec</a><a href="#u2">Kvadranty</a><a href="#u3">Třídění</a><a href="#u4">Uvádění do provozu</a><a href="#u5">Poměrné jednotky</a><a href="#u6">Mapa záložek</a></nav>
+<div class="arts">
+<article id="u1"><h3>Definice (kap. 1)</h3>
+<p>Elektrický pohon je soustava vytvořená z vhodné kombinace elektrotechnických zařízení pro <b>elektromechanickou přeměnu energie</b> a pro <b>vytváření, přenos a zpracování signálů</b>, které tuto přeměnu řídí. Vstupní řídicí signály určuje obsluha nebo nadřazený systém, <b>výstupem jsou parametry mechanického pohybu</b> (rychlost, poloha, moment).</p>
+<div class="chain"><span>napájení</span><i>→</i><span>spínací přístroje</span><i>→</i><span>polovodičový měnič</span><i>→</i><span>elektrický stroj</span><i>→</i><span>převodovka</span><i>→</i><span>mechanizmus</span></div>
+<p class="cap">Výkonový řetězec; nad ním řídicí část (regulátory, čidla), obsluha, nadřazený systém a ochrany. O tom, jaký pohon bude, rozhoduje poháněný mechanizmus.</p>
+<p>Výhody: rozsah výkonů od mW po 10⁸ W, momentů po 10⁶ N·m, otáček od 15 do 10⁵ ot/min; práce ve všech čtyřech kvadrantech a rekuperace; vysoká účinnost a přetížitelnost; životnost přes 20 let. Nevýhody: závislost na síti a horší poměr výkon/hmotnost než hydraulika.</p></article>
+<article id="u2"><h3>Rovina Ω–M a kvadranty</h3>
+<p>Moment se kreslí vodorovně, rychlost svisle; kvadranty se číslují proti směru hodinových ručiček. Mechanický výkon je \(P = M\,\Omega\):</p>
+<div class="quadfig"><svg viewBox="0 0 320 240" role="img" aria-label="Čtyři kvadranty roviny otáčky–moment"><line x1="20" y1="120" x2="300" y2="120" stroke="currentColor"/><line x1="160" y1="15" x2="160" y2="225" stroke="currentColor"/><text x="300" y="138" text-anchor="end">M</text><text x="168" y="26">Ω</text><text x="232" y="62" text-anchor="middle" style="font-weight:600">I. motor</text><text x="232" y="82" text-anchor="middle">Ω &gt; 0, M &gt; 0</text><text x="88" y="62" text-anchor="middle" style="font-weight:600">II. brzda</text><text x="88" y="82" text-anchor="middle">Ω &gt; 0, M &lt; 0</text><text x="88" y="168" text-anchor="middle" style="font-weight:600">III. motor vzad</text><text x="88" y="188" text-anchor="middle">Ω &lt; 0, M &lt; 0</text><text x="232" y="168" text-anchor="middle" style="font-weight:600">IV. brzda vzad</text><text x="232" y="188" text-anchor="middle">Ω &lt; 0, M &gt; 0</text></svg></div>
+<p><b>Motor = M a Ω mají stejné znaménko, brzda = opačné.</b> Jednokvadrantový pohon jen v I.; dvoukvadrantový I. + II. (brzdění, jeden směr) nebo I. + IV. (zdvih: moment drží břemeno stále stejným smyslem); čtyřkvadrantový libovolně. V simulacích DC a asynchronního motoru uvidíte trajektorii pracovního bodu právě v této rovině.</p></article>
+<article id="u3"><h3>Třídění pohonů</h3>
+<div class="scroll"><table><tbody>
+<tr><td>Druh pohybu</td><td>točivý / přímočarý; spojitý / nespojitý (krokové motory)</td></tr>
+<tr><td>Řiditelnost rychlosti</td><td>jednorychlostní, vícerychlostní, plynule řiditelné</td></tr>
+<tr><td>Druh řízení</td><td>ruční, automatické (logické povely), samočinná regulace</td></tr>
+<tr><td>Druh motoru</td><td>DC cize buzený, s PM, sériový, kompaundní; AC asynchronní, synchronní, s PM, reluktanční, krokový, SRM</td></tr>
+<tr><td>Zapojení měniče</td><td>DC: reverzace v buzení / v kotvě / bez, pulzní měnič, Leonardova skupina; AC: nepřímý měnič s napěťovým nebo proudovým meziobvodem, přímý měnič</td></tr>
+<tr><td>Funkce, počet motorů</td><td>hlavní, pomocné, nouzové, záskokové; jedno- a vícemotorové</td></tr></tbody></table></div></article>
+<article id="u4"><h3>Uvádění do provozu (kap. 12)</h3>
+<p>Zakázka: poptávka → nabídka → objednávka → potvrzení → dokumentace, výroba, zkoušky na zkušebně, doprava, uvedení do provozu. Postup uvádění:</p>
+<ol class="steps"><li>Obhlídka bez napětí (montáž, přípravky, spoje)</li><li>Izolační zkoušky</li><li>Analogové vstupy a výstupy</li><li>Logické vstupy a výstupy</li><li>Spínací sekvence ovládacích obvodů</li><li>Řídicí signály na výkonových součástkách</li><li>Připojení měničů na silové napájení bez proudu (fázování)</li><li><b>Proudové smyčky</b></li><li><b>Rychlostní smyčka</b></li><li><b>Polohová smyčka</b></li><li>Zkušební provoz a zaškolení</li><li>Oprava dokumentace, předávací protokol</li></ol>
+<p>Smyčky se nastavují <b>zevnitř ven</b>, protože nadřazená smyčka počítá s fungující podřízenou (viz kaskáda v záložce Cize buzený DC). Regulátory mají funkce postmort (kruhový záznam před a po havárii), osciloskop, změnu parametrů za chodu a autotuning. Většina závad vzniká při dopravě a montáži.</p></article>
+<article id="u5"><h3>Poměrné jednotky (kap. 13)</h3>
+<p>Rovnice se vydělí vztažnými hodnotami (obvykle jmenovitými). Pro kotvu DC motoru: \(Z_{qN} = U_{qN}/I_{qN}\), \(x_d = \omega_NL_d/Z_{qN}\), \(\tau = \omega_N t\), \(\nu = \Omega/\Omega_N\), \(\varphi = \Phi/\Phi_N\), \(\mu = M/M_N\):</p>
+\[u_q^{p.j.} = r_d\,i_q^{p.j.} + x_d\frac{\mathrm di_q^{p.j.}}{\mathrm d\tau} + u_i^{p.j.},\qquad u_i^{p.j.} = \frac{C\Phi\,\Omega}{C\Phi_N\,\Omega_N} = \varphi\,\nu\]
+<p>Pohybovou rovnici vydělíme \(M_N\): z \(J_c\,\mathrm d\Omega/\mathrm dt\) vznikne \(\frac{J_c\Omega_N}{M_N}\frac{\mathrm d\nu}{\mathrm dt}\), tedy</p>
+\[\mu - \mu_z = T_N\,\frac{\mathrm d\nu}{\mathrm dt},\qquad T_N=\frac{J_c\,\Omega_N}{M_N}\]
+<p>Jediným parametrem mechaniky je normální doba rozběhu. Synchronní motor v záložce Synchronní se počítá právě takto. Příklad: \(r_d = 0{,}05\) znamená úbytek 5 % napětí při I<sub>N</sub> a proud 20 p.j. při přímém připojení; motor z kap. 7 má \(r_d = 0{,}2/(440/100) = 0{,}045\).</p></article>
+<article id="u6"><h3>Mapa záložek</h3>
+<div class="scroll"><table><thead><tr><th>Záložka</th><th>Kapitola</th><th>Simulace</th></tr></thead><tbody>
+<tr><td>Mechanika a rozběh</td><td>2–3</td><td>pohybová rovnice, pracovní body a stabilita, doba rozběhu</td></tr>
+<tr><td>Ztráty a oteplení</td><td>4–5</td><td>tepelný model, S1, S2, ekvivalentní moment, účinnost</td></tr>
+<tr><td>Regulace</td><td>6</td><td>P/PI/PID, OM, SO, Ziegler–Nichols, Bodeův diagram</td></tr>
+<tr><td>Cize buzený DC</td><td>7</td><td>rozběh, kaskáda proud–rychlost, měniče a kvadranty, odbuzování</td></tr>
+<tr><td>Sériový DC</td><td>8</td><td>polytropa, MHD a lokomotiva, odporové brzdění</td></tr>
+<tr><td>Asynchronní</td><td>9</td><td>přímé připojení, Y–D, kroužkový, brzdění, U/f, skalární, vektorové; transformace</td></tr>
+<tr><td>Synchronní</td><td>10</td><td>zátěžný úhel, rovnost ploch, asynchronní rozběh, V-křivky</td></tr>
+<tr><td>Speciální motory</td><td>11</td><td>PMSM s odbuzováním, krokový motor, SRM</td></tr></tbody></table></div></article>
+</div></div></template>
+
+<template id="tpl-mech"><div class="wrap">
+<h2>Teorie a odvození: mechanika pohonu a přechodné děje</h2>
+<nav class="toc scroll" aria-label="Obsah"><a href="#m1">Pohybová rovnice</a><a href="#m2">Redukce</a><a href="#m3">Charakteristiky</a><a href="#m4">Stabilita</a><a href="#m5">Doba rozběhu</a><a href="#m6">T_N a měření J</a></nav>
+<div class="arts">
+<article id="m1"><h3>Pohybová rovnice</h3>
+<p>Z d’Alembertova principu: součet všech momentů včetně dynamického je nulový. Ve spotřebičové konvenci:</p>
+\[M - M_z = M_d = \frac{\mathrm d(J\Omega)}{\mathrm dt} = J\frac{\mathrm d\Omega}{\mathrm dt} + \Omega^2\frac{\mathrm dJ}{\mathrm d\varphi}\quad\xrightarrow{J=\text{konst.}}\quad M - M_z = J\frac{\mathrm d\Omega}{\mathrm dt}\]
+<p>Druhý člen platí jen pro proměnný moment setrvačnosti (klikové mechanizmy). Když M &gt; M<sub>z</sub>, pohon zrychluje; když M &lt; M<sub>z</sub>, zpomaluje; při M = M<sub>z</sub> běží ustáleně. Pro posuvný pohyb \(F - F_z = m\,\mathrm dv/\mathrm dt\). Pro hodograf rychlosti v závislosti na poloze se použije \(J\,\frac{\mathrm d\Omega}{\mathrm dt} = J\,\frac{\mathrm d\Omega}{\mathrm d\varphi}\frac{\mathrm d\varphi}{\mathrm dt} = \frac J2\frac{\mathrm d(\Omega^2)}{\mathrm d\varphi}\).</p></article>
+<article id="m2"><h3>Redukce na hřídel motoru</h3>
+<p>Soustavu s převody nahradíme jedním tělesem otáčejícím se rychlostí motoru \(\Omega_1\). Převod \(i = \Omega_1/\Omega_i\).</p>
+<p><b>Moment</b> ze zachování výkonu (ztráty kryje motor): \(M_{i,red}\,\Omega_1 = \frac{M_i\,\Omega_i}{\eta_i}\Rightarrow M_{i,red} = \frac{M_i}{i\,\eta_i}\). Když výkon teče z mechanizmu do motoru, ztráty kryje mechanizmus: \(M_{red} = M_i\,\eta_i/i\).</p>
+<p><b>Setrvačnost</b> ze zachování kinetické energie: \(\tfrac12 J_{i,red}\Omega_1^2 = \tfrac12\frac{J_i\Omega_i^2}{\eta_i}\Rightarrow J_{i,red} = \frac{J_i}{i^2\eta_i}\); posuvná hmota \(J_{red} = m\,(v/\Omega_1)^2/\eta\).</p>
+<p>Příklad ze skript: J<sub>M</sub> = 0,1, i = 10, η = 0,95, buben 20 kg·m² a 950 N·m → M<sub>z,red</sub> = 100 N·m, J<sub>B,red</sub> = 0,21, J<sub>c</sub> = 0,31 kg·m². Buben s 200× větší setrvačností se projeví jen asi dvojnásobkem.</p></article>
+<article id="m3"><h3>Charakteristiky motoru a zátěže</h3>
+<p>V pohonech se kreslí mechanická charakteristika Ω = f(M). Typy motoru: synchronní (Ω = konst.), derivační (\(\Omega = \Omega_0 - M/\beta\), cize buzený DC, asynchronní v pracovní oblasti), sériová (\(\Omega = K_1/M - K_2\)). Obecná zátěž:</p>
+\[M_z = a + \mathrm{sgn}(\Omega)\sum_i b_i\,\Omega^{k_i}\]
+<div class="scroll"><table><thead><tr><th>k</th><th>M<sub>z</sub></th><th>P<sub>z</sub></th><th>Příklady</th></tr></thead><tbody><tr><td>0</td><td>konst.</td><td>~ Ω</td><td>hoblovky, pojezdy, válcovací tratě</td></tr><tr><td>1</td><td>~ Ω</td><td>~ Ω²</td><td>kalandry (viskózní tření)</td></tr><tr><td>2</td><td>~ Ω²</td><td>~ Ω³</td><td>čerpadla, ventilátory, kompresory</td></tr><tr><td>−1</td><td>~ 1/Ω</td><td>konst.</td><td>navíječky</td></tr></tbody></table></div>
+<p>Aktivní složka a (zdvih) nemění smysl se směrem otáčení a leží v I. a IV. kvadrantu; pasivní (tření) mění smysl, I. a III. kvadrant. Převáží-li pasivní složka, je mechanizmus samosvorný.</p></article>
+<article id="m4"><h3>Statická stabilita: odvození</h3>
+<p>V okolí pracovního bodu \(\Omega_0\) linearizujeme: \(M \approx M_0 + k\,\Delta\Omega\), \(M_z\approx M_{z0}+k_z\,\Delta\Omega\) s \(k = \partial M/\partial\Omega\), \(k_z = \partial M_z/\partial\Omega\). Protože \(M_0 = M_{z0}\):</p>
+\[(k-k_z)\,\Delta\Omega = J\frac{\mathrm d\Delta\Omega}{\mathrm dt}\quad\Rightarrow\quad \Delta\Omega(t) = \Delta\Omega(0)\,e^{\frac{k-k_z}{J}t}\]
+<p>Odchylka zanikne, jen když exponent je záporný:</p>
+\[\left(\frac{\partial M}{\partial\Omega}\right)_{\Omega_0} < \left(\frac{\partial M_z}{\partial\Omega}\right)_{\Omega_0}\]
+<p>Rozhoduje <b>rozdíl směrnic</b>, ne to, zda charakteristika motoru klesá. Asynchronní motor s velkou konstantní zátěží má dva průsečíky: horní na pracovní větvi stabilní, dolní na rozběhové větvi labilní – z klidu se nerozběhne. V simulaci jsou stabilní body plné, labilní prázdné.</p></article>
+<article id="m5"><h3>Doba rozběhu</h3>
+<p><b>a) Konstantní dynamický moment</b>: \(\Omega = \frac{M_d}{J}t + \Omega_0\Rightarrow t = J\frac{\Omega_k-\Omega_0}{M_d}\).</p>
+<p><b>b) Lineární charakteristiky</b> \(M = M_{h0} - k_h(\Omega - \Omega_0)\), \(M_z = M_{z0} + k_z(\Omega-\Omega_0)\). Dosazením, \(M_c = M_{h0} - M_{z0}\) a \(k_c = k_h + k_z\):</p>
+\[J\frac{\mathrm d\Omega}{\mathrm dt} = M_c - k_c(\Omega-\Omega_0)\;\Rightarrow\;\Omega = \Omega_0 + (\Omega_\infty-\Omega_0)\left(1-e^{-t/\tau_m}\right),\quad \tau_m=\frac{J}{k_c},\quad \Omega_\infty-\Omega_0=\frac{M_c}{k_c}\]
+\[t_k = -\tau_m\ln\frac{\Omega_\infty-\Omega_k}{\Omega_\infty-\Omega_0}\qquad(95\,\%\text{ za }3\tau_m,\;98{,}2\,\%\text{ za }4\tau_m)\]
+<p><b>c) Obecně numericky</b>: rozsah rychlostí rozdělíme na úseky, v každém \((M_d)_i = \frac{(M-M_z)_i + (M-M_z)_{i-1}}{2}\), \((\Delta t)_i = J\frac{(\Delta\Omega)_i}{(M_d)_i}\), \(t_{roz}=\sum(\Delta t)_i\). Simulace dělá totéž s velmi malými kroky (Runge–Kutta).</p></article>
+<article id="m6"><h3>Normální doba rozběhu a měření J</h3>
+\[T_N = J\frac{\Omega_N}{M_N} = J\frac{\Omega_N^2}{P_N}\approx 10^{-5}\,J\frac{n_N^2}{P_N[\mathrm{kW}]}\]
+<p>Doba rozběhu z 0 na Ω<sub>N</sub> jmenovitým momentem bez zátěže (ČSN 34 5170); u běžných pohonů jednotky až desítky sekund.</p>
+<p><b>Doběhová zkouška</b>: v ustálení při Ω<sub>0</sub> je příkon \(P = P_z(\Omega_0)\). Po odpojení platí \(J\,\mathrm d\Omega/\mathrm dt = -P_z/\Omega_0\); tečna v Ω<sub>0</sub> protne časovou osu v t<sub>2</sub>, sklon je \(-\Omega_0/(t_2-t_1)\):</p>
+\[J = \frac{P_z\,(t_2-t_1)}{\Omega_0^2}\]</article>
+</div></div></template>
+
+<template id="tpl-tep"><div class="wrap">
+<h2>Teorie a odvození: ztráty, účinnost a oteplení</h2>
+<nav class="toc scroll" aria-label="Obsah"><a href="#t1">Ztráty a účinnost</a><a href="#t2">Ztráty při rozběhu</a><a href="#t3">Tepelný model</a><a href="#t4">S1 a S2</a><a href="#t5">Ekvivalentní veličiny</a><a href="#t6">Prostředí a izolace</a></nav>
+<div class="arts">
+<article id="t1"><h3>Ztráty a maximum účinnosti</h3>
+<p>Ztráty dělíme na stálé (naprázdno: železo, tření, buzení) a ztráty ve vinutí ~ I². Při I ~ P:</p>
+\[\Delta P_\Sigma\approx\Delta P_0+\Delta P_{jN}\left(\frac{P}{P_N}\right)^2,\qquad \eta=\frac{P}{P+\Delta P_\Sigma}=\frac{1}{1+\dfrac{\Delta P_0}{P}+\dfrac{\Delta P_{jN}}{P_N^2}P}\]
+<p>Maximum η je minimum jmenovatele: \(\frac{\mathrm d}{\mathrm dP}\left(\frac{\Delta P_0}{P}+\frac{\Delta P_{jN}P}{P_N^2}\right) = -\frac{\Delta P_0}{P^2}+\frac{\Delta P_{jN}}{P_N^2}=0\):</p>
+\[P_{\eta\max}=P_N\sqrt{\frac{\Delta P_0}{\Delta P_{jN}}}\quad\Leftrightarrow\quad \Delta P_0=\Delta P_j(P)\]
+<p>Stroje se navrhují s ΔP<sub>0</sub> &lt; ΔP<sub>jN</sub>, maximum je pod jmenovitým výkonem. Příklad ze skript (0,03 a 0,07 P<sub>N</sub>): P<sub>ηmax</sub> = 0,65 P<sub>N</sub>, η<sub>max</sub> = 91,6 %, η<sub>N</sub> = 90,9 % – graf vpravo. Závislosti: vířivé proudy ~ B²f², hystereze ~ B²f, tření ~ Ω, ventilace ~ Ω³.</p></article>
+<article id="t2"><h3>Ztráty v rotoru při rozběhu asynchronního motoru</h3>
+<p>Ztráty v rotoru jsou \(sP_\delta\), kde \(P_\delta = M\Omega_s\) a \(s\Omega_s = \Omega_s-\Omega\). Při rozběhu naprázdno je \(M = J\,\mathrm d\Omega/\mathrm dt\):</p>
+\[\Delta W_{j,rot}=\int (\Omega_s-\Omega)\,M\,\mathrm dt=\int_{\Omega_1}^{\Omega_2}J(\Omega_s-\Omega)\,\mathrm d\Omega\;\xrightarrow{0\to\Omega_s}\;\tfrac12J\Omega_s^2\]
+<p><b>Ztráty v rotoru se rovnají kinetické energii, kterou rotor získal</b>, a nezávisí na tvaru charakteristiky. Dosazením mezí: brzdění protiproudem z Ω<sub>0</sub> do nuly 3 × ½JΩ<sub>0</sub>², reverzace 4 ×. Rozběh v n stupních ztrátu n-krát zmenší; plynulý frekvenční rozběh ji teoreticky odstraní.</p></article>
+<article id="t3"><h3>Tepelný model: odvození</h3>
+<p>Homogenní těleso s tepelnou kapacitou C = cm a přestupem A = αS. Teplo ze ztrát za dt částečně ohřeje těleso, zbytek odejde do okolí:</p>
+\[\Delta P\,\mathrm dt = C\,\mathrm d(\Delta\vartheta)+A\,\Delta\vartheta\,\mathrm dt\;\Rightarrow\;\tau_\vartheta\frac{\mathrm d\Delta\vartheta}{\mathrm dt}+\Delta\vartheta=\Delta\vartheta_\infty,\quad \tau_\vartheta=\frac CA,\quad\Delta\vartheta_\infty=\frac{\Delta P}{A}\]
+\[\Delta\vartheta(t)=\Delta\vartheta_0+(\Delta\vartheta_\infty-\Delta\vartheta_0)\left(1-e^{-t/\tau_\vartheta}\right)\]
+<p>Stejný tvar jako rozběh v kap. 3. Ustálené oteplení je úměrné ztrátám, časová konstanta na zatížení nezávisí. Stroj s vlastní ventilací má v klidu menší A a chladne pomaleji (v simulaci činitel α).</p></article>
+<article id="t4"><h3>S1 a S2: přetížitelnost</h3>
+<p>S1: chod delší než 3τ<sub>ϑ</sub>, stroj dosáhne ustáleného oteplení; katalogové údaje platí pro S1. S2: chod t<sub>z</sub> &lt; 3τ<sub>ϑ</sub>, pak vychladnutí. Na konci chodu smí oteplení dosáhnout právě dovolené hodnoty:</p>
+\[\Delta\vartheta_{dov}=\Delta\vartheta_{\infty2}\left(1-e^{-t_z/\tau_\vartheta}\right)\;\Rightarrow\;p_\vartheta=\frac{\Delta P_z}{\Delta P_N}=\frac{\Delta\vartheta_{\infty2}}{\Delta\vartheta_{dov}}=\frac{1}{1-e^{-t_z/\tau_\vartheta}}\]
+<p>Bez ztrát naprázdno ΔP ~ I², tedy \(p_I=\sqrt{p_\vartheta}\). Se ztrátami naprázdno (poměr \(r=\Delta P_0/\Delta P_{jN}\)) platí \(\frac{r+(I/I_N)^2}{1+r}=p_\vartheta\), takže \(I/I_N=\sqrt{p_\vartheta(1+r)-r}\). Příklad: τ<sub>ϑ</sub> = 30 min, t<sub>z</sub> = 10 min → p<sub>ϑ</sub> = 3,53, p<sub>I</sub> = 1,88.</p></article>
+<article id="t5"><h3>Ekvivalentní veličiny: odvození</h3>
+<p>Je-li cyklus T<sub>c</sub> ≪ τ<sub>ϑ</sub>, oteplení se během cyklu skoro nemění a rozhodují střední ztráty. Stálé ztráty jsou ve všech úsecích stejné; proměnné ~ I² ~ M² (platí-li M ~ I):</p>
+\[\frac{1}{T_c}\sum k\,M_i^2\,t_i = k\,M_{ekv}^2\quad\Rightarrow\quad M_{ekv}=\sqrt{\frac{\sum M_i^2\,t_i}{\sum\alpha_i\,t_i}}\le M_N\]
+<p>Ve jmenovateli α<sub>i</sub> zohlední horší chlazení v klidu a při nízkých otáčkách. Obdobně I<sub>ekv</sub> a P<sub>ekv</sub> (to jen při stálé rychlosti a buzení). V odbuzené oblasti se moment dělí poměrem k<sub>odb</sub> = Ω<sub>N</sub>/Ω. <b>Vždy zvlášť zkontrolovat momentovou přetížitelnost.</b> Metoda středních ztrát: ΔP<sub>i</sub> = P<sub>i</sub>(1 − η<sub>i</sub>)/η<sub>i</sub>, ΔP<sub>(AV)</sub> = ΣΔP<sub>i</sub>t<sub>i</sub>/T<sub>c</sub> ≤ ΔP<sub>N</sub>.</p>
+<p>Příklad ze skript: 200 N·m po 2 s, 100 N·m po 6 s, klid 2 s (α = 0,5): M<sub>ekv</sub> = √(140 000/9) ≈ 125 N·m; přetížitelnost 200/125 = 1,6.</p></article>
+<article id="t6"><h3>Izolace a prostředí</h3>
+<div class="scroll"><table><thead><tr><th>Třída</th><th>A</th><th>E</th><th>B</th><th>F</th><th>H</th></tr></thead><tbody><tr><td>Oteplení statoru</td><td>60–65 K</td><td>75 K</td><td>80–85 K</td><td>100–110 K</td><td>125–130 K</td></tr></tbody></table></div>
+<p>Přechod B → F: ztráty ve vinutí (100 − 20)/(80 − 20) = 1,33×, výkon jen √1,33 ≈ 1,15×. Nad 40 °C okolí se dovolené oteplení sníží o rozdíl: \(\Delta\vartheta_{dov}=\Delta\vartheta_N-(\vartheta_a-40)\) a</p>
+\[I_{dov}=I_N\sqrt{\frac{\Delta\vartheta_{dov}}{\Delta\vartheta_N}-\frac{\Delta P_0}{\Delta P_{jN}}\left(1-\frac{\Delta\vartheta_{dov}}{\Delta\vartheta_N}\right)}\]
+<p>Nad 1000 m n. m. klesá dovolený výkon (2000 m: 95 %, 4000 m: 82 %). Setrvačník pomáhá s rázy jen při měkké charakteristice motoru.</p></article>
+</div></div></template>
+
+<template id="tpl-reg"><div class="wrap">
+<h2>Teorie a odvození: řízení elektrických pohonů</h2>
+<nav class="toc scroll" aria-label="Obsah"><a href="#r1">Pojmy</a><a href="#r2">Přenosy a algebra</a><a href="#r3">Trvalá odchylka</a><a href="#r4">Kvalita regulace</a><a href="#r5">Optimální modul</a><a href="#r6">Symetrické optimum</a><a href="#r7">Ziegler–Nichols</a><a href="#r8">Frekvenční charakteristika</a></nav>
+<div class="arts">
+<article id="r1"><h3>Ovládání, regulace, kaskáda</h3><figure class="sch" data-fig="loop"></figure>
+<p><b>Ovládání</b> neměří výsledek zásahu (otevřená smyčka), <b>regulace</b> průběžně porovnává regulovanou veličinu se žádanou (záporná zpětná vazba). Logické řízení (relé, PLC) vs. spojité (zesilovače, mikroprocesory).</p>
+<div class="chain"><span>w</span><b>−</b><span>x₁</span><i>→</i><span>e</span><i>→</i><span>regulátor R</span><i>→</i><span>v</span><i>→</i><span>akční člen A</span><i>→</i><span>y</span><b>+</b><span>z</span><i>→</i><span>soustava S</span><i>→</i><span>x</span><i>→</i><span>čidlo</span><i>→</i><span>x₁ (zpět)</span></div>
+<p>V pohonech se smyčky řadí <b>kaskádně</b>: vnější rychlost (poloha), uvnitř rychlá smyčka proudu (momentu). Omezením výstupu nadřazeného regulátoru se přímo omezí proud. Nastavují se zevnitř ven.</p></article>
+<article id="r2"><h3>Přenos a algebra přenosů</h3>
+<p>Lineární diferenciální rovnice s nulovými počátečními podmínkami se Laplaceovou transformací (\(\mathrm d/\mathrm dt\to s\)) změní na algebraickou:</p>
+\[G(s)=\frac{Y(s)}{U(s)}=\frac{b_ms^m+\dots+b_0}{a_ns^n+\dots+a_0},\qquad G_{\text{série}}=G_1G_2,\quad G_{\text{paralel}}=G_1+G_2\]
+<p>Uzavřená smyčka: \(Y = G_1E\), \(E = W - G_2Y\) ⇒ \(Y(1+G_1G_2) = G_1W\):</p>
+\[G_c=\frac{G_1}{1+G_1G_2}=\frac{G_1}{1+G_o}\]
+<p>Kořeny jmenovatele jsou póly, kořeny čitatele nuly. Základní bloky: proporcionální K, zpoždění K/(1 + sT), integrátor 1/(sT) (mechanika), PID \(K_P\left(1+\frac1{sT_I}+sT_D\right)\).</p></article>
+<article id="r3"><h3>Proč P nechává trvalou odchylku a PI ne</h3>
+<p>Věta o konečné hodnotě: \(y_\infty=\lim_{s\to0}sY(s)\). Pro skok \(W = 1/s\) a jednotkovou zpětnou vazbu:</p>
+\[y_\infty=\lim_{s\to0}\frac{G_o(s)}{1+G_o(s)}\]
+<p>Statická \(G_o\) se zesílením \(K_o\) dá \(y_\infty = K_o/(1+K_o)\) a odchylku \(1/(1+K_o)\). Obsahuje-li \(G_o\) integrátor, \(G_o(0)\to\infty\) a \(y_\infty = 1\): <b>nulová odchylka</b> i po skoku poruchy. Ověřte v simulaci: P regulátor s K<sub>P</sub> = 2 a K<sub>S</sub> = 2 nechá odchylku 1/5.</p></article>
+<article id="r4"><h3>Ukazatele kvality</h3>
+<div class="scroll"><table><tbody><tr><td>Přeregulování σ</td><td>100·(h<sub>max</sub> − h<sub>∞</sub>)/h<sub>∞</sub></td></tr><tr><td>Rychlost regulace T<sub>1</sub></td><td>první dosažení h<sub>∞</sub></td></tr><tr><td>Doba regulace T<sub>reg</sub></td><td>od ní platí |h − h<sub>∞</sub>| ≤ δ</td></tr><tr><td>Kvadratická plocha</td><td>∫(h − h<sub>∞</sub>)² dt</td></tr><tr><td>Pásmo propustnosti</td><td>do poklesu o 3 dB a fáze o 90°</td></tr></tbody></table></div>
+<p>Dlaždice simulace tyto ukazatele odečítají přímo z průběhu.</p></article>
+<article id="r5"><h3>Princip kompenzace a optimální modul</h3>
+<p>Soustavu zapíšeme jako dominantní konstanty \(T_{Si}\) a náhradní \(T_\Sigma\) = součet malých. Regulátor vykrátí dominantní konstanty (\(T_{Ri} = T_{Si}\)) a zbude</p>
+\[G_o=\frac{K_o}{s(1+sT_\Sigma)},\qquad G_c=\frac{1}{1+\dfrac{s}{K_o}+\dfrac{T_\Sigma}{K_o}s^2}\]
+<p>Optimální modul chce \(|G_c(j\omega)|=1\) v co nejširším pásmu bez rezonance. Porovnáním se standardním tvarem \(\frac{1}{1+2\tau_\sigma s+2\tau_\sigma^2s^2}\) (\(|G_c|^2 = 1/(1+4\tau^4\omega^4)\), žádný člen s ω²): \(\tau_\sigma = T_\Sigma\), \(K_o = \frac{1}{2T_\Sigma}\). Pro PI proti \(\frac{K_S}{(1+sT_1)(1+sT_\Sigma)}\):</p>
+\[T_I=T_1,\qquad K_P=\frac{T_1}{2K_ST_\Sigma}\]
+<p>PID kompenzuje dvě konstanty: \(K_P\left(1+\frac1{sT_I}+sT_D\right)=\frac{K_P}{T_I}\,\frac{1+sT_I+s^2T_IT_D}{s}\) se rovná \(\frac{K_P}{T_I}\frac{(1+sT_1)(1+sT_2)}{s}\) pro \(T_I = T_1+T_2\), \(T_D = \frac{T_1T_2}{T_1+T_2}\), \(K_P = \frac{T_1+T_2}{2K_ST_\Sigma}\). Odezva OM: 4,3 %, 4,7τ<sub>σ</sub>, T<sub>reg</sub> 10τ<sub>σ</sub>. Typicky proudová smyčka.</p></article>
+<article id="r6"><h3>Symetrické optimum</h3>
+<p>Soustava s integrátorem \(\frac{K_S}{sT_1(1+sT_\Sigma)}\): integrátor vykrátit nelze. PI dá</p>
+\[G_o=\frac{K_PK_S}{T_1T_I}\cdot\frac{1+sT_I}{s^2(1+sT_\Sigma)}\]
+<p>Volba \(T_I=4T_\Sigma\), \(K_P=\frac{T_1}{2K_ST_\Sigma}\) dává \(G_o=\frac{1+4\tau s}{8\tau^2s^2(1+\tau s)}\) a</p>
+\[G_c=\frac{1+4\tau_\sigma s}{1+4\tau_\sigma s+8\tau_\sigma^2s^2+8\tau_\sigma^3s^3}\]
+<p>Průchod nulou \(\omega_c = 1/(2\tau_\sigma)\) leží geometricky uprostřed zlomů \(1/(4\tau_\sigma)\) a \(1/\tau_\sigma\), fázová bezpečnost je tam maximální: \(\arctan 2-\arctan\tfrac12 = 36{,}9°\). Odezva: 43 %, 3,1τ<sub>σ</sub>, T<sub>reg</sub> 18τ<sub>σ</sub>; filtr \(1/(1+4\tau_\sigma s)\) na žádané hodnotě sníží překmit asi na 8 %. Typicky rychlostní smyčka.</p></article>
+<article id="r7"><h3>Ziegler–Nichols</h3>
+<p>Empiricky na zařízení: vypnout I a D, zvyšovat K<sub>P</sub> až do netlumených kmitů, odečíst K<sub>kr</sub> a T<sub>kr</sub>. Na mezi stability je \(|G_o(j\omega)| = 1\) a fáze −180°: \(K_{kr} = 1/|G_S(j\omega_{180})|\), \(T_{kr} = 2\pi/\omega_{180}\) (tak to počítá i simulace).</p>
+<div class="scroll"><table><thead><tr><th>Regulátor</th><th>K<sub>P</sub></th><th>T<sub>I</sub></th><th>T<sub>D</sub></th></tr></thead><tbody><tr><td>P</td><td>0,5 K<sub>kr</sub></td><td>–</td><td>–</td></tr><tr><td>PI</td><td>0,45 K<sub>kr</sub></td><td>0,85 T<sub>kr</sub></td><td>–</td></tr><tr><td>PD</td><td>0,625 K<sub>kr</sub></td><td>–</td><td>0,12 T<sub>kr</sub></td></tr><tr><td>PID</td><td>0,59 K<sub>kr</sub></td><td>0,5 T<sub>kr</sub></td><td>0,12 T<sub>kr</sub></td></tr></tbody></table></div>
+<p>Soustava se dvěma zpožděními nebo integrátorem a jedním zpožděním mez stability nemá (fáze −180° jen asymptoticky); metoda pak nejde použít.</p></article>
+<article id="r8"><h3>Frekvenční charakteristika a stabilita</h3>
+<p>Dosazením \(s=j\omega\) do \(G_o\) dostaneme modul a fázi (Bodeův diagram vpravo). Uzavřená smyčka je stabilní, pokud v průchodu modulu nulou (ω<sub>c</sub>) je fáze nad −180°; rezerva je <b>fázová bezpečnost</b>. OM ≈ 63°, SO 36,9°. Integrátor přidává −90° a −20 dB/dek, zpoždění 1/(1 + sT) zlom v 1/T a další −20 dB/dek.</p></article>
+</div></div></template>
+
+<template id="tpl-ser"><div class="wrap">
+<h2>Teorie a odvození: sériově buzený motor</h2>
+<nav class="toc scroll" aria-label="Obsah"><a href="#s1">Model</a><a href="#s2">Charakteristiky</a><a href="#s3">Linearizace</a><a href="#s4">Brzdění a reverzace</a><a href="#s5">Zdroje a regulace</a></nav>
+<div class="arts">
+<article id="s1"><h3>Model: jeden obvod, nelineární</h3><figure class="sch" data-fig="ser"></figure>
+<p>Budicí vinutí je v sérii s kotvou, tok roste s proudem. V lineární části magnetizační charakteristiky \(\Phi = k_\Phi i_q\):</p>
+\[u_q = R_{dc}i_q + L_{dc}\frac{\mathrm di_q}{\mathrm dt}+u_i,\qquad u_i = C_U\,i_q\,\Omega,\qquad M=C_M\,i_q^2,\qquad M-M_z=J_c\frac{\mathrm d\Omega}{\mathrm dt}\]
+<p>I v lineární oblasti je model nelineární (součiny \(i_q\Omega\) a \(i_q^2\)). V simulaci se sycení modeluje \(\xi(i) = C_UI_s\tanh(i/I_s)\): pro malé proudy \(\xi\approx C_Ui\), pro velké se tok blíží \(C_UI_s\) a moment roste už jen lineárně.</p></article>
+<article id="s2"><h3>Charakteristiky: odvození</h3>
+<p>Ustálený stav: \(U_q = R_{dc}I_q + C_UI_q\Omega\). Rychlostní charakteristika:</p>
+\[\Omega=\frac{U_q}{C_UI_q}-\frac{R_{dc}}{C_U}\]
+<p>Dosadíme \(I_q=\sqrt{M/C_M}\) a dostaneme mechanickou charakteristiku (polytropu):</p>
+\[\Omega=\frac{\sqrt{C_M}}{C_U}\,\frac{U_q}{\sqrt M}-\frac{R_{dc}}{C_U}\]
+<p>Při \(M\to0\) roste rychlost nade všechny meze: <b>motor nesmí běžet naprázdno</b>. V klidu teče záběrný proud \(U_q/R_{dc}\) a moment je obrovský (~ I²). Příklad ze skript (600 V, 0,5 Ω, C = 0,02): 100 A → 275 rad/s a 200 N·m; 200 A → 125 rad/s a 800 N·m. Dvojnásobný proud, čtyřnásobný moment, příkon jen dvojnásobný: vozidlo do kopce zpomalí a síť nepřetíží.</p></article>
+<article id="s3"><h3>Linearizace v pracovním bodě</h3>
+<p>Dosadíme \(X = X_0+\Delta X\) a zanedbáme součiny přírůstků: \(\Delta u_i = C_U(I_{q0}\Delta\Omega+\Omega_0\Delta i)\), \(\Delta M = 2C_MI_{q0}\Delta i\). Vyjde zpoždění 2. řádu, jehož konstanty <b>závisí na pracovním proudu</b>:</p>
+\[G_{SM}=\frac{\Delta\Omega}{\Delta U_q}=\frac{1/(C_UI_{q0})}{1+s\tau_m\left(1+\frac{C_U\Omega_0}{R_{dc}}\right)+s^2\tau_m\tau_d},\quad \tau_m=\frac{R_{dc}J_c}{2C_UC_MI_{q0}^2},\quad\tau_d=\frac{L_{dc}}{R_{dc}}\]
+<p>Proto se sériový motor přesně řeší numericky (jako v této simulaci).</p></article>
+<article id="s4"><h3>Brzdění a reverzace</h3>
+<p><b>Rekuperace přímo nejde</b>: s obráceným proudem se obrátí i tok a moment zůstane motorický; je možná až s měničem a kotevní diodou. <b>Odporové brzdění</b>: kotva na odpor R<sub>br</sub>, budicí vinutí přepólované, aby proud remanenci posiloval. Proud roste, pokud indukované napětí převýší úbytek:</p>
+\[L\frac{\mathrm di}{\mathrm dt}=\xi(i)\Omega-(R+R_{br})i>0\quad\Leftrightarrow\quad C_U\Omega>R+R_{br}\ \ (\text{lineárně})\]
+<p>Pracovní bod je průsečík napěťové charakteristiky dynama s přímkou \((R+R_{br})i\); pod mezní rychlostí průsečík zmizí a brzdění ustane, proto se R<sub>br</sub> postupně zmenšuje. Brzda funguje i bez napětí v troleji. <b>Reverzace</b>: obrátit proud jen v kotvě, nebo jen v buzení.</p></article>
+<article id="s5"><h3>Zdroje a regulace v trakci</h3>
+<p>Polořízený usměrňovač \(U_{d(AV)}=U_{d0}\frac{1+\cos\alpha}{2}\): méně jalového výkonu, nelze rekuperovat. Pulzní měnič: \(U_2 = zU_1\); rekuperace spínačem S₂ s \(U_2 = U_1(1-z)\).</p>
+<p><b>MHD</b> (časté rozjezdy): pedál → žádaný proud → R<sub>i</sub> → pulzní měnič; řidič ovládá tah. Při rekuperaci brzdný měnič s odporem maří energii, když trolej nikdo neodebírá. <b>Lokomotiva</b>: rampa → R<sub>Ω</sub> → omezovač → R<sub>M</sub> → měnič; moment se počítá z proudu přes nelinearitu M = f(i).</p></article>
+</div></div></template>
+
+<template id="tpl-sm"><div class="wrap">
+<h2>Teorie a odvození: synchronní motor</h2>
+<nav class="toc scroll" aria-label="Obsah"><a href="#y1">Jak motor funguje</a><a href="#y2">Model v (d, q)</a><a href="#y3">Moment a zátěžný úhel</a><a href="#y4">Rovnost ploch</a><a href="#y5">V-křivky</a><a href="#y6">Rozběh</a><a href="#y7">Ventilový pohon</a></nav>
+<div class="arts">
+<article id="y1"><h3>Jak motor funguje</h3><figure class="sch" data-fig="smsec"></figure>
+<p>Stator je stejný jako u asynchronního motoru a vytváří točivé pole. Rotor má budicí vinutí (stejnosměrný proud) a tlumič (klec). Nabuzený rotor se „zavěsí“ do točivého pole a točí se <b>přesně synchronně</b>; při zatížení se jen pootočí o zátěžný úhel β. Sám se z klidu nerozběhne: rozbíhá ho klec (asynchronně) nebo měnič frekvence. Budicím proudem se nastavuje jalový výkon a účiník.</p></article>
+<article id="y2"><h3>Model v osách rotoru</h3>
+\[u_d=R_si_d+\frac{\mathrm d\psi_d}{\mathrm dt}-\omega_1\psi_q,\qquad u_q=R_si_q+\frac{\mathrm d\psi_q}{\mathrm dt}+\omega_1\psi_d\]
+\[\psi_d=L_di_d+L_{df}i_f+L_{dD}i_D,\qquad\psi_q=L_qi_q+L_{qQ}i_Q,\qquad M=\tfrac32p_p(\psi_di_q-\psi_qi_d)\]
+<p>Plus rovnice buzení a tlumičů: 13 rovnic, 17 neznámých, nelineární (ω·ψ) – řeší se simulací. Osy jsou svázané s rotorem, protože vyniklé póly mají různý magnetický odpor v ose d a q.</p></article>
+<article id="y3"><h3>Moment v závislosti na zátěžném úhlu</h3><figure class="sch" data-fig="smph"></figure>
+<p>Ustálený stav na tvrdé síti, \(R_s = 0\): fázorový diagram \(\hat U = \hat U_i + jX_d\hat I_d + jX_q\hat I_q\). Rozložením napětí do os: \(U\cos\beta = U_i + X_dI_d\), \(U\sin\beta = X_qI_q\). Činný výkon \(P = 3(U_dI_d+U_qI_q)\) po dosazení:</p>
+\[M=\frac{P}{\Omega_1}=\frac{3p_p}{\omega_1}\left[\frac{UU_i}{X_d}\sin\beta+\frac{U^2}{2}\left(\frac1{X_q}-\frac1{X_d}\right)\sin2\beta\right]=M_s+M_{rel}\]
+<p>Synchronní moment vzniká díky buzení, reluktanční jen při X<sub>d</sub> ≠ X<sub>q</sub> (vyniklé póly, běžně X<sub>q</sub> ≈ 0,7X<sub>d</sub>, M<sub>rel</sub> ≈ 0,2M<sub>N</sub>). Hladký rotor má maximum při β = 90° – <b>mez statické stability</b>; za ní stroj vypadne ze synchronizmu. V poměrných jednotkách je výraz v hranaté závorce přímo moment v p.j. (tak počítá simulace).</p></article>
+<article id="y4"><h3>Dynamická stabilita: metoda rovnosti ploch</h3>
+<p>Při rychlých změnách se uplatní tlumič a buzení: platí stejný vztah s přechodnou reaktancí X′<sub>d</sub> a napětím U<sub>v</sub>. Pohyb rotoru (bez tlumení) popisují rovnice</p>
+\[T_N\frac{\mathrm d\nu}{\mathrm dt}=M(\beta)-M_z,\qquad\frac{\mathrm d\beta}{\mathrm dt}=\omega_1(1-\nu)\]
+<p>Vynásobíme první rovnici \(\mathrm d\beta/\mathrm dt\) a integrujeme od výchozího úhlu β<sub>0</sub> (ν = 1) do největšího výkyvu β<sub>m</sub> (tam je opět ν = 1, rotor se zastaví vůči poli):</p>
+\[-\frac{T_N\omega_1}{2}\left[(1-\nu)^2\right]_{\beta_0}^{\beta_m}=\int_{\beta_0}^{\beta_m}\left(M(\beta)-M_z\right)\mathrm d\beta=0\]
+<p>Plocha, kde zátěž převyšuje moment stroje (rotor zpomaluje), se musí vyrovnat ploše, kde moment stroje převyšuje zátěž. Když dostupná plocha nestačí, β přeběhne za průsečík na sestupné větvi a stroj proklouzne. Pro příklad ze skript (U = 1, U<sub>v</sub> = 1,1, X′<sub>d</sub> = 0,2, X<sub>q</sub> = 2) je M<sub>s,max</sub> = 5,5, amplituda M<sub>rel</sub> = −2,25 a nový úhel 34,2°; výpočet integrálu dává β<sub>m</sub> ≈ 59,5° (skripta uvádějí 55,3°), mez skoku asi 3,7 M<sub>N</sub>.</p></article>
+<article id="y5"><h3>V-křivky a vliv buzení</h3>
+<p>Hladký rotor, \(R_s = 0\): \(\hat I = (\hat U - \hat U_i)/(jX_d)\) a \(P = UU_i\sin\beta/X_d\). Při stálém P a měnícím se buzení (U<sub>i</sub> ~ I<sub>f</sub>) má statorový proud minimum při cos φ = 1; vlevo podbuzený stav (odebírá jalový výkon, končí mezí stability), vpravo přebuzený (dodává jalový výkon). Motory se provozují přebuzené.</p>
+<div class="fig vfig"><svg id="vcurve" role="img" aria-label="V-křivky synchronního motoru"></svg></div>
+<ul class="lg"><li><i style="--c:var(--ink)"></i>P = 0</li><li><i style="--c:var(--red)"></i>P = 0,5</li><li><i style="--c:var(--blu)"></i>P = 1 p.j. (X<sub>d</sub> = 1)</li><li>tečka = minimum proudu (cos φ = 1)</li></ul>
+<p>Přetížitelnost hladkého rotoru: \(p_{MN}=\frac{I_{fN}}{I_{f0}}\frac{\nu_k}{\cos\varphi_N}\ge1{,}6\) (ČSN 35 0200).</p></article>
+<article id="y6"><h3>Asynchronní rozběh a synchronizace</h3>
+<p>Nenabuzený stroj rozběhne klec téměř na synchronní rychlost. Budicí vinutí nesmí být rozpojené (přepětí) a zkratované dává sedlo v charakteristice, proto spouštěcí odpor 5–10 R<sub>f</sub>. Synchronizace podle zátěže: M<sub>z</sub> &lt; M<sub>rel</sub> vtáhne už reluktanční moment; větší zátěž krátkodobá synchronizace, nebo až po nabuzení v 1–3 skluzových periodách. Při skluzu s se β mění rychlostí sω<sub>1</sub> a synchronní moment pulzuje kolem nuly – proto v simulaci kmitá. Přesná synchronizace: stejný sled fází, napětí, rychlost a fáze.</p></article>
+<article id="y7"><h3>Měniče a synchronní ventilový pohon</h3>
+<p>Cyklokonvertor (do 40 % f<sub>sítě</sub>, pomaloběžné pohony). Měnič s proudovým meziobvodem: přebuzený motor dodá jalový výkon pro komutaci tyristorů invertoru (vnější komutace), řídicí úhel asi 150°. Fázové proudy jsou bloky 120°: \(I_{ef}=\sqrt{2/3}I_d=0{,}816I_d\), \(I_\nu=0{,}78I_d/\nu\), \(\nu=6k\pm1\). Regulace: R<sub>Ω</sub> → M* → I<sub>d</sub>* = |M*|, tok z napětí, R<sub>Φ</sub> → I<sub>f</sub>*. Pod 5 % Ω<sub>N</sub> taktování. Dvanáctipulzní zapojení vyruší harmonické 6k ± 1 pro lichá k.</p></article>
+</div></div></template>
+
+<template id="tpl-spec"><div class="wrap">
+<h2>Teorie a odvození: speciální pohony</h2>
+<nav class="toc scroll" aria-label="Obsah"><a href="#p1">PMSM: model</a><a href="#p2">PMSM: odbuzování</a><a href="#p3">Krokový motor</a><a href="#p4">SRM: moment</a><a href="#p5">SRM: řízení</a></nav>
+<div class="arts">
+<article id="p1"><h3>PMSM: model v osách rotoru a I<sub>d</sub> = 0</h3><figure class="sch" data-fig="spec"></figure>
+<p>Magnety tvoří stálý tok ψ<sub>m</sub> v ose d. S magnety na povrchu je μ<sub>r</sub> ≈ 1 a \(L_d=L_q=L_s\):</p>
+\[u_d=R_si_d+L_s\frac{\mathrm di_d}{\mathrm dt}-\omega L_si_q,\qquad u_q=R_si_q+L_s\frac{\mathrm di_q}{\mathrm dt}+\omega(L_si_d+\psi_m)\]
+<p>Z obecného vzorce \(M=\tfrac32p_p(\psi_di_q-\psi_qi_d)\) s \(\psi_d = L_si_d+\psi_m\), \(\psi_q=L_si_q\) zbude</p>
+\[M=\tfrac32\,p_p\,\psi_m\,i_q\]
+<p>Moment nezávisí na i<sub>d</sub>, proto se pro nejvíc momentu na ampér řídí <b>i<sub>d</sub> = 0</b> (proud kolmo na tok magnetů). Regulace jako u vektorového řízení AM, jen úhel se měří přímo čidlem polohy: proudy → (d, q) → PI regulátory i<sub>d</sub>, i<sub>q</sub> s odvazbením → zpětná transformace → střídač.</p></article>
+<article id="p2"><h3>PMSM: nepřímé odbuzování</h3>
+<p>V ustáleném stavu (R<sub>s</sub> zanedbáme) je \(u_d=-\omega L_si_q\), \(u_q=\omega(L_si_d+\psi_m)\) a napětí je omezené \(u_d^2+u_q^2\le U_{max}^2\):</p>
+\[\left(i_d+\frac{\psi_m}{L_s}\right)^2+i_q^2\le\left(\frac{U_{max}}{\omega L_s}\right)^2,\qquad i_d^2+i_q^2\le I_{max}^2\]
+<p>Napěťová mez je kružnice se středem v \(-\psi_m/L_s\), která se s rychlostí zmenšuje; proudová mez je kružnice kolem počátku. Pracovní bod musí ležet v obou (rovina vpravo, když je vybrán PMSM). Nad základní rychlostí \(\omega_b=U_{max}/\psi_m\) se dostaneme jen zápornou i<sub>d</sub> – tok magnetů nejde zmenšit přímo, proto „nepřímé“ odbuzování. Za to se zmenší dovolené i<sub>q</sub> a moment. V simulaci zadává i<sub>d</sub>* regulátor napětí podle |u| a U<sub>max</sub>.</p></article>
+<article id="p3"><h3>Krokový motor</h3>
+<p>Proud každé fáze má hodnoty +I, 0, −I. Moment aktivního rotoru se dvěma fázemi a N<sub>r</sub> zuby:</p>
+\[M=K_m\left(-i_A\sin N_r\theta+i_B\cos N_r\theta\right),\qquad\text{krok}=\frac{360°}{4N_r}\ \text{(plný)},\ \frac{360°}{8N_r}\ \text{(poloviční)}\]
+<p>Po přepnutí se rotor natočí do nové rovnovážné polohy a tlumeně dokmitá s vlastní frekvencí \(\omega_0=\sqrt{K_mIN_r/J}\). <b>Dolní mez</b> frekvence kroků: rezonance s vlastními kmity (ztráta kroku). <b>Horní mez</b>: proud nestačí kvůli indukčnosti narůst (τ = L/R), moment klesá zhruba ~ 1/f<sub>sp</sub>. Fázi napájí H-můstek s hysterezní regulací proudu; po vypnutí připojí diody vinutí na opačné napětí a proud zaniká nejrychleji. Čtyřtaktní řízení napájí vždy jednu fázi, osmitaktní střídá jednu a obě (dvojnásobná jemnost).</p></article>
+<article id="p4"><h3>SRM: moment z energetické bilance</h3>
+<p>Napěťová rovnice fáze s indukčností závislou na natočení:</p>
+\[u=Ri+\frac{\mathrm d\Psi}{\mathrm dt}=Ri+i\frac{\mathrm dL}{\mathrm d\varphi}\Omega+L\frac{\mathrm di}{\mathrm dt}\]
+<p>Při lineárním obvodu je koenergie \(W'=\tfrac12L(\varphi)i^2\) a moment je její derivace podle úhlu při stálém proudu:</p>
+\[M=\left.\frac{\partial W'}{\partial\varphi}\right|_{i=\text{konst.}}=\frac12\frac{\mathrm dL}{\mathrm d\varphi}i^2\]
+<p>Moment nezávisí na smyslu proudu a vzniká jen tam, kde se L mění: motorický při rostoucí L (15–45° u motoru 6/4), brzdný při klesající. Skripta (rovnice 265) píší bez ½; z bilance energie ½ vychází. Energetická smyčka ψ–i v rovině vpravo má plochu rovnou práci jednoho zdvihu.</p></article>
+<article id="p5"><h3>SRM: napěťové a proudové řízení</h3>
+<p>Asymetrický polomůstek: oba spínače = +U, jeden = nulové napětí, žádný = proud teče diodami a fáze dostane −U (energie zpět do zdroje). Napěťové řízení: +U od 0°, kdy je L malá a proud rychle roste, vypnutí ve 30°; moment jen 15–45° s velkou špičkou, ER asi 0,9. Proudové: proud udržovaný konstantní v 15–45°, moment téměř konstantní, ER asi 0,2. Fáze se spínají postupně po 30°.</p>
+\[ER=\frac{W_{dod}-W_{vr}}{W_{dod}}\]
+<p>Vlastnosti SRM: rotor bez vinutí a magnetů, otáčky až 100 000 ot/min, provoz při vysokých teplotách; nevýhodou zvlnění momentu a hluk.</p></article>
+</div></div></template>

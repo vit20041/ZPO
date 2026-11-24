@@ -1,0 +1,139 @@
+<template id="tpl-dc"><div class="wrap">
+<h2>Teorie a odvození: cize buzený stejnosměrný motor</h2>
+<nav class="toc scroll" aria-label="Obsah"><a href="#d1">Jak motor funguje</a><a href="#d2">Přenos motoru</a><a href="#d3">Statické charakteristiky</a><a href="#d4">Optimální modul</a><a href="#d5">Symetrické optimum</a><a href="#d6">Omezení proudu</a><a href="#d7">Měniče a kvadranty</a></nav>
+<div class="arts">
+<article id="d1"><h3>Jak motor funguje</h3><figure class="sch" data-fig="dcsec"></figure><figure class="sch" data-fig="dcconn"></figure><figure class="sch" data-fig="dcekv"></figure>
+<p>Budicí proud \(i_f\) vytvoří v magnetickém obvodu tok \(\Phi\). Proud kotvy \(i_q\) teče vodiči, které leží v tomto poli, a vzniká síla, tedy moment \(M = C\Phi\, i_q\). Když se kotva točí, vodiče protínají pole a indukuje se v nich napětí \(u_i = C\Phi\,\Omega\), které působí proti napájecímu napětí.</p>
+<p>Obě rovnice obsahují tutéž konstantu \(\xi = C\Phi\). Indukované napětí je <b>vnitřní zpětná vazba motoru</b>: čím rychleji se točí, tím menší rozdíl \(u_q - u_i\) zbývá na odporu kotvy, tím menší proud a moment. Motor zrychluje, dokud moment nepokryje zátěž.</p>
+<div class="chain"><span>u<sub>q</sub></span><b>−</b><span>u<sub>i</sub></span><i>→</i><span>1/(R<sub>d</sub>(1+sτ<sub>d</sub>))</span><i>→</i><span>i<sub>q</sub></span><i>→</i><span>ξ</span><i>→</i><span>M</span><b>−</b><span>M<sub>z</sub></span><i>→</i><span>1/(sJ<sub>c</sub>)</span><i>→</i><span>Ω</span><i>→</i><span>ξ</span><i>→</i><span>u<sub>i</sub> (zpět)</span></div>
+<p class="cap">Blokové schéma motoru při stálém buzení: elektrický obvod kotvy (zpoždění τ<sub>d</sub>), mechanika (integrátor) a vnitřní zpětná vazba přes u<sub>i</sub>.</p></article>
+
+<article id="d2"><h3>Odvození přenosu Ω/U<sub>q</sub></h3>
+<p>Rovnice kotvy a pohybovou rovnici převedeme Laplaceovou transformací (nulové počáteční podmínky, \(\tau_d = L_d/R_d\)):</p>
+\[\begin{aligned} u_q &= R_d i_q + L_d\frac{\mathrm di_q}{\mathrm dt} + \xi\Omega &&\Rightarrow\; U_q = R_d(1+s\tau_d)\,I_q + \xi\,\Omega\\ \xi i_q - M_z &= J_c\frac{\mathrm d\Omega}{\mathrm dt} &&\Rightarrow\; \xi I_q - M_z = sJ_c\,\Omega \end{aligned}\]
+<p>Pro \(M_z = 0\) je \(I_q = sJ_c\Omega/\xi\). Dosadíme do první rovnice a vydělíme \(\xi\):</p>
+\[U_q = \left(\frac{R_dJ_c}{\xi}\,s(1+s\tau_d) + \xi\right)\Omega \quad\Rightarrow\quad G_{SM}(s)=\frac{\Omega(s)}{U_q(s)}=\frac{1/\xi}{1+s\tau_m+s^2\tau_m\tau_d},\qquad \tau_m=\frac{R_dJ_c}{\xi^2}\]
+<p>Kořeny jmenovatele jsou reálné pro \(\tau_m \ge 4\tau_d\); pak \(G_{SM}\approx \frac{1/\xi}{(1+s\tau_m)(1+s\tau_d)}\) a odezva je aperiodická. Při malé setrvačnosti (\(\tau_m < 4\tau_d\)) odezva kmitá: zkuste v simulaci přímé připojení s \(J_c = 0{,}2\ \mathrm{kg\,m^2}\).</p>
+<p>Stejným postupem s \(U_q = 0\) vyjde vliv zátěže; v ustáleném stavu (\(s\to 0\)) dává pokles rychlosti \(R_dM_z/\xi^2\):</p>
+\[\frac{\Omega(s)}{M_z(s)} = -\frac{R_d}{\xi^2}\,\frac{1+s\tau_d}{1+s\tau_m+s^2\tau_m\tau_d}\]</article>
+
+<article id="d3"><h3>Statické charakteristiky a dvoupásmové řízení</h3>
+<p>V ustáleném stavu jsou derivace nulové: \(U_q = R_dI_q + \xi\Omega\) a \(M = \xi I_q\). Vyjádříme rychlost:</p>
+\[\Omega = \frac{U_q}{\xi} - \frac{R_d}{\xi^2}\,M = \Omega_0 - k_M M\]
+<ul><li>Napětí \(U_q\) posouvá charakteristiku rovnoběžně a bez ztrát (hlavní způsob řízení do \(\Omega_N\)).</li>
+<li>Odbuzení zmenší \(\xi\): \(\Omega_0\) roste s \(1/\Phi\), sklon s \(1/\Phi^2\). Při \(U_q = U_N\) a \(I_q = I_N\) je \(P = M\Omega \approx \xi I_N\cdot U_N/\xi = U_NI_N\): <b>konstantní výkon</b>, moment klesá s \(1/\Omega\).</li>
+<li>Odpor v kotvě mění jen sklon a maří energii.</li></ul></article>
+
+<article id="d4"><h3>Proudová smyčka: optimální modul</h3><figure class="sch" data-fig="casc"></figure>
+<p>Indukované napětí se mění pomalu, proto ho v proudové smyčce bereme jako poruchu. Soustava je měnič a kotva:</p>
+\[G_S(s)=\frac{K_S}{(1+sT_1)(1+sT_\Sigma)},\qquad K_S=\frac1{R_d},\; T_1=\tau_d,\; T_\Sigma=\tau_U\]
+<p>PI regulátor \(G_R = K_P\frac{1+sT_I}{sT_I}\) s \(T_I = T_1\) vykrátí velkou časovou konstantu:</p>
+\[G_o=\frac{K_PK_S}{T_1}\cdot\frac{1}{s(1+sT_\Sigma)}=\frac{K_o}{s(1+sT_\Sigma)},\qquad G_c=\frac{G_o}{1+G_o}=\frac{1}{1+\dfrac{s}{K_o}+\dfrac{T_\Sigma}{K_o}s^2}\]
+<p>Porovnáme se standardním tvarem \(\frac{1}{1+2\tau_\sigma s+2\tau_\sigma^2s^2}\): \(1/K_o = 2\tau_\sigma\) a \(T_\Sigma/K_o = 2\tau_\sigma^2\), tedy \(\tau_\sigma = T_\Sigma\) a</p>
+\[K_o=\frac{1}{2T_\Sigma}\quad\Rightarrow\quad K_P=\frac{T_1}{2K_ST_\Sigma}=\frac{\tau_dR_d}{2\tau_U}=\frac{L_d}{2\tau_U},\qquad T_I=\tau_d\]
+<p>Odezva: překmit 4,3 %, první dosažení za \(4{,}7\tau_\sigma\). Pro nadřazenou smyčku se uzavřená proudová smyčka nahradí členem \(\frac{1}{1+2T_\Sigma s}\).</p></article>
+
+<article id="d5"><h3>Rychlostní smyčka: symetrické optimum</h3>
+<p>Mechanika je integrátor \(\xi/(sJ_c)\), PI regulátor ho vykrátit nemůže. Malé konstanty (uzavřená proudová smyčka a filtr měření) sečteme:</p>
+\[G_S(s)\approx\frac{\xi}{sJ_c\,(1+s\tau_\sigma)},\qquad \tau_\sigma = 2\tau_U + T_{f\omega}\]
+<p>Volbou \(T_I = 4\tau_\sigma\) a \(K_P = \frac{J_c}{2\xi\tau_\sigma}\) vyjde (ověřte dosazením \(K_P\xi/(J_cT_I) = 1/(8\tau_\sigma^2)\)):</p>
+\[G_o=\frac{1+4\tau_\sigma s}{8\tau_\sigma^2s^2(1+\tau_\sigma s)},\qquad G_c=\frac{G_o}{1+G_o}=\frac{1+4\tau_\sigma s}{1+4\tau_\sigma s+8\tau_\sigma^2s^2+8\tau_\sigma^3s^3}\]
+<p>Název: zlomové frekvence \(1/(4\tau_\sigma)\) a \(1/\tau_\sigma\) leží souměrně kolem průchodu nulou \(1/(2\tau_\sigma)\) a fázová bezpečnost je tam největší. Nula \((1+4\tau_\sigma s)\) způsobí překmit 43 %; filtr žádané hodnoty \(\frac{1}{1+4\tau_\sigma s}\) ji vykrátí a překmit klesne asi na 8 %. Integrátor v regulátoru udělá smyčku astatickou, takže skok zátěže nezanechá trvalou odchylku.</p></article>
+
+<article id="d6"><h3>Omezení proudu a rozběh</h3>
+<p>Při velkém skoku žádané rychlosti regulátor \(R_\Omega\) narazí na omezení \(i_q^* = I_{max}\). Smyčka rychlosti je tím rozpojená, moment je stálý a rozběh je lineární (kap. 3, případ konstantního dynamického momentu):</p>
+\[\frac{\mathrm d\Omega}{\mathrm dt}=\frac{\xi I_{max}-M_z}{J_c}\qquad\Rightarrow\qquad t_{roz}=J_c\,\frac{\Delta\Omega}{\xi I_{max}-M_z}\]
+<p>Během omezení se integrátor nesmí dál nabíjet (anti-windup, zde podmíněná integrace), jinak by po dosažení rychlosti vznikl velký překmit. Rampa žádané hodnoty dělá totéž „měkčeji“: zrychlení drží pod mezí, kterou dovolí proud.</p></article>
+
+<article id="d7"><h3>Měniče a kvadranty</h3><figure class="sch" data-fig="conv"></figure>
+<div class="scroll"><table><thead><tr><th>Měnič</th><th>u<sub>q</sub></th><th>i<sub>q</sub></th><th>Kvadranty</th></tr></thead><tbody>
+<tr><td>Reverzační usměrňovač (2 antiparalelní můstky)</td><td>±</td><td>±</td><td>I.–IV.</td></tr>
+<tr><td>Nereverzační tyristorový usměrňovač</td><td>±</td><td>+</td><td>I. a IV.</td></tr>
+<tr><td>Pulzní měnič S₁ + S₂</td><td>+</td><td>±</td><td>I. a II.</td></tr>
+<tr><td>Pulzní měnič jen S₁</td><td>+</td><td>+</td><td>I.</td></tr></tbody></table></div>
+<p>Usměrňovač dává \(U_{d(AV)} = U_{d0}\cos\alpha\) a nový řídicí úhel uplatní až s dalším impulzem; střední zpoždění je \(\tau_U = T/(2q) = 1{,}667\ \mathrm{ms}\) pro šestipulzní můstek na 50 Hz. Pulzní měnič má \(\tau_{PM} = 1/(2f_{sp})\). V simulaci je měnič náhradní článek \(\frac{1}{1+s\tau_U}\) se střední hodnotou napětí.</p></article>
+</div></div></template>
+
+<template id="tpl-am"><div class="wrap">
+<h2>Teorie a odvození: asynchronní motor</h2>
+<nav class="toc scroll" aria-label="Obsah"><a href="#a1">Jak motor funguje</a><a href="#a2">Prostorový vektor</a><a href="#a3">Rotující osy</a><a href="#a4">Model a moment</a><a href="#a5">T-schéma</a><a href="#a6">Klossův vztah</a><a href="#a7">U/f</a><a href="#a8">Vektorové řízení</a></nav>
+<div class="trw" id="a2"><div class="trtxt"><h3>Transformace abc → (α, β) → (d, q)</h3>
+<p>Tři fázové proudy se nahradí jedním komplexním číslem, <b>prostorovým vektorem</b>. Při souměrném napájení má stálou délku a otáčí se rychlostí ω. V osách (d, q), které se točí s ním, jsou jeho složky <b>konstantní</b>: proto regulátory pracují v (d, q) se stejnosměrnými veličinami jako u DC motoru.</p>
+<div class="trc">
+<div class="row"><label for="tr-wt">Okamžik ωt</label><span class="inp"><input type="range" id="tr-wt" min="0" max="360" step="1" value="40"><span class="u" id="tr-wtv">40°</span></span></div>
+<div class="row wide"><label for="tr-mode">Osy (x, y)</label><select id="tr-mode"><option value="sync">synchronní (d, q): ϑ<sub>k</sub> = ωt + δ</option><option value="ab">statorové (α, β): ϑ<sub>k</sub> = 0</option><option value="man">ručně natočené o ϑ<sub>k</sub></option></select></div>
+<div class="row" id="tr-drow"><label for="tr-d">Natočení os δ / ϑ<sub>k</sub></label><span class="inp"><input type="range" id="tr-d" min="-180" max="180" step="1" value="-30"><span class="u" id="tr-dv">−30°</span></span></div>
+<div class="row wide"><label for="tr-K">Konstanta K</label><select id="tr-K"><option value="0.6666666667">2/3 – amplitudově invariantní (|i| = I<sub>m</sub>)</option><option value="1">1 – délka 3/2·I<sub>m</sub></option><option value="0.8164965809">√(2/3) – výkonově invariantní</option></select></div>
+<button type="button" class="btn" id="tr-play">Spustit otáčení</button></div>
+<div class="trnum" id="tr-num"></div></div>
+<div class="trfig"><div class="fig trp"><svg id="tr-plane" role="img" aria-label="Prostorový vektor v rovině alfa beta s osami d q"></svg></div><div class="fig trt"><svg id="tr-time" role="img" aria-label="Fázové proudy v čase"></svg></div></div></div>
+<div class="arts">
+<article id="a1"><h3>Jak motor funguje</h3><figure class="sch" data-fig="amsec"></figure>
+<p>Tři vinutí statoru posunutá o 120° napájená souměrnými proudy vytvoří <b>točivé magnetické pole</b> s úhlovou rychlostí \(\Omega_1 = \omega_1/p_p\). Pole protíná tyče klece rotoru a indukuje v nich napětí úměrné rozdílu rychlostí; rotorové proudy v poli vytvoří moment. Bez rozdílu rychlostí (skluzu) by se nic neindukovalo, proto se motor točí vždy o skluz pomaleji:</p>
+\[s=\frac{\omega_1-p_p\Omega}{\omega_1},\qquad \omega_2 = s\,\omega_1 \;\text{(rotorová úhlová frekvence)}\]
+<p>Výkon přenesený přes vzduchovou mezeru \(P_\delta\) se dělí na mechanický \((1-s)P_\delta\) a ztráty v rotoru \(sP_\delta\). Proto je řízení rychlosti velkým skluzem ztrátové a hospodárné je měnit \(\omega_1\) (frekvenci).</p></article>
+
+<article id="a2b"><h3>Prostorový vektor (Clarkova transformace)</h3>
+<p>Osa α leží v ose fáze a; podle skript je fáze b natočena o −120° a c o +120°:</p>
+\[\mathbf i = K\left(i_a + i_b\,e^{-j\frac{2\pi}{3}} + i_c\,e^{\,j\frac{2\pi}{3}}\right)\;\overset{i_a+i_b+i_c=0}{\Longrightarrow}\; i_\alpha = K\tfrac32\,i_a,\quad i_\beta = K\tfrac{\sqrt3}{2}\,(i_c - i_b)\]
+<p>Zpětně pro \(K = 2/3\): \(i_a = i_\alpha,\; i_b = -\tfrac12 i_\alpha - \tfrac{\sqrt3}{2} i_\beta,\; i_c = -\tfrac12 i_\alpha + \tfrac{\sqrt3}{2} i_\beta\).</p>
+<p>Proč se vektor točí: dosadíme \(i_x = I_m\cos(\omega t - \gamma_x)\) s osami \(\gamma_a = 0,\ \gamma_b = -\tfrac{2\pi}3,\ \gamma_c = \tfrac{2\pi}3\) a \(\cos x = \tfrac12(e^{jx}+e^{-jx})\):</p>
+\[\mathbf i = \frac{K I_m}{2}\sum_x \left(e^{j\omega t} + e^{-j\omega t}e^{\,j2\gamma_x}\right) = \frac{K I_m}{2}\Big(3e^{j\omega t} + e^{-j\omega t}\underbrace{\textstyle\sum_x e^{j2\gamma_x}}_{=0}\Big) = K\frac32 I_m\,e^{j\omega t}\]
+<p>S \(K = 2/3\) má vektor délku amplitudy fáze a výkon je \(p = \tfrac32\,\mathrm{Re}(\mathbf u\,\mathbf i^*)\); odtud činitel 3/2 ve vzorci pro moment.</p></article>
+
+<article id="a3"><h3>Rovnice v rotujících osách (Parkova transformace)</h3>
+<p>Vektor v osách (x, y) natočených o \(\vartheta_k\) (\(\omega_k = \mathrm d\vartheta_k/\mathrm dt\)) je \(\mathbf A^{(k)} = \mathbf A^{(1)}e^{-j\vartheta_k}\):</p>
+\[A_x = A_\alpha\cos\vartheta_k + A_\beta\sin\vartheta_k,\qquad A_y = A_\beta\cos\vartheta_k - A_\alpha\sin\vartheta_k\]
+<p>Statorová rovnice platí ve statorových osách: \(\mathbf u_1^{(1)} = R_1\mathbf i_1^{(1)} + \mathrm d\boldsymbol\psi_1^{(1)}/\mathrm dt\). Dosadíme \(\mathbf A^{(1)} = \mathbf A^{(k)}e^{j\vartheta_k}\) a derivujeme součin:</p>
+\[\frac{\mathrm d}{\mathrm dt}\left(\boldsymbol\psi_1^{(k)}e^{j\vartheta_k}\right)=\left(\frac{\mathrm d\boldsymbol\psi_1^{(k)}}{\mathrm dt}+j\omega_k\boldsymbol\psi_1^{(k)}\right)e^{j\vartheta_k}\;\Rightarrow\; \mathbf u_1 = R_1\mathbf i_1 + \frac{\mathrm d\boldsymbol\psi_1}{\mathrm dt} + j\omega_k\boldsymbol\psi_1\]
+<p>Rotorová rovnice platí v osách rotoru, které se točí rychlostí \(\omega = p_p\Omega\); vůči osám k je relativní rychlost \(\omega_k - \omega\):</p>
+\[\mathbf u_2 = R_2\mathbf i_2 + \frac{\mathrm d\boldsymbol\psi_2}{\mathrm dt} + j(\omega_k-\omega)\boldsymbol\psi_2 = 0\ \text{(klec)}\]
+<p>Člen \(\mathrm d\psi/\mathrm dt\) je transformační napětí, \(j\omega_k\psi\) rotační napětí. Rotační napětí vzájemně váže osy x a y a obsahuje součin \(\omega\psi\), proto je model nelineární a řeší se simulací.</p></article>
+
+<article id="a4"><h3>Model v simulaci a moment</h3>
+<p>Simulace počítá ve statorových osách (\(\omega_k = 0\)) se stavy \(\boldsymbol\psi_1,\boldsymbol\psi_2,\Omega\):</p>
+\[\frac{\mathrm d\boldsymbol\psi_1}{\mathrm dt}=\mathbf u_1-R_1\mathbf i_1,\qquad \frac{\mathrm d\boldsymbol\psi_2}{\mathrm dt}=-R_2\mathbf i_2+j\omega\boldsymbol\psi_2,\qquad J\frac{\mathrm d\Omega}{\mathrm dt}=M-M_z\]
+<p>Proudy se v každém kroku dopočítají z toků inverzí matice indukčností (\(L_1 = L_h + L_{1\sigma},\ L_2 = L_h + L_{2\sigma}\)):</p>
+\[\boldsymbol\psi_1 = L_1\mathbf i_1 + L_h\mathbf i_2,\quad \boldsymbol\psi_2 = L_2\mathbf i_2 + L_h\mathbf i_1\;\Rightarrow\; \mathbf i_1=\frac{L_2\boldsymbol\psi_1-L_h\boldsymbol\psi_2}{L_1L_2-L_h^2},\quad \mathbf i_2=\frac{L_1\boldsymbol\psi_2-L_h\boldsymbol\psi_1}{L_1L_2-L_h^2}\]
+\[M=\tfrac32\,p_p\,\mathrm{Im}\left(\boldsymbol\psi_1^*\mathbf i_1\right)=\tfrac32\,p_p\left(\psi_{1\alpha}i_{1\beta}-\psi_{1\beta}i_{1\alpha}\right)\]
+<p>Skripta píší \(\boldsymbol\psi_1 = L_1\mathbf i_1 - L_{1h}\mathbf i_2\): rotorový proud tam má opačnou orientaci, fyzika je stejná.</p></article>
+
+<article id="a5"><h3>Ustálený stav: odvození T-schématu</h3><figure class="sch" data-fig="tsch"></figure>
+<p>V synchronních osách (\(\omega_k = \omega_1\)) jsou v ustáleném stavu všechny vektory konstantní, derivace odpadnou a \(\omega_1-\omega = s\omega_1\):</p>
+\[\mathbf U_1 = R_1\mathbf I_1 + j\omega_1\boldsymbol\Psi_1,\qquad 0 = R_2\mathbf I_2 + js\omega_1\boldsymbol\Psi_2\;\big/\!:s\;\Rightarrow\; 0=\frac{R_2}{s}\mathbf I_2 + j\omega_1\boldsymbol\Psi_2\]
+<p>Toky rozepíšeme na rozptylové a společnou část, \(\boldsymbol\Psi_1 = L_{1\sigma}\mathbf I_1 + L_h(\mathbf I_1+\mathbf I_2)\), \(\boldsymbol\Psi_2 = L_{2\sigma}\mathbf I_2 + L_h(\mathbf I_1+\mathbf I_2)\), a označíme \(X = \omega_1L\):</p>
+\[\mathbf U_1=(R_1+jX_{1\sigma})\mathbf I_1 + jX_h\mathbf I_\mu,\qquad 0=\left(\frac{R_2}{s}+jX_{2\sigma}\right)\mathbf I_2 + jX_h\mathbf I_\mu,\qquad \mathbf I_\mu=\mathbf I_1+\mathbf I_2\]
+<p>To jsou přesně dvě smyčky T-schématu: \(R_1, X_{1\sigma}\) v sérii, příčná \(X_h\) a rotorová větev \(X_{2\sigma}, R_2/s\). Výkon v \(R_2/s\) je \(P_\delta\), moment \(M = P_\delta/\Omega_1\):</p>
+\[M=\frac{3p_p}{\omega_1}\,I_2^2\,\frac{R_2}{s}\quad(\text{efektivní hodnoty})\]</article>
+
+<article id="a6"><h3>Klossův vztah</h3>
+<p>Zanedbáme \(R_1\) a magnetizační proud (\(X_h\to\infty\)). Pak \(I_2 = U_1/\sqrt{(R_2/s)^2+X^2}\) s \(X = X_{1\sigma}+X_{2\sigma}\):</p>
+\[M=\frac{3p_pU_1^2}{\omega_1}\cdot\frac{R_2/s}{(R_2/s)^2+X^2}\]
+<p>Maximum podle proměnné \(R_2/s\) nastane při \(R_2/s = X\) (derivace čitatele a jmenovatele):</p>
+\[s_{zv}=\frac{R_2}{X_{1\sigma}+X_{2\sigma}},\qquad M_{max}=\frac{3p_pU_1^2}{2\omega_1X}=\frac{3p_p}{2(L_{1\sigma}+L_{2\sigma})}\left(\frac{U_1}{\omega_1}\right)^2\]
+<p>Podíl \(M/M_{max}\) po vydělení čitatele i jmenovatele \(XR_2/s\):</p>
+\[\frac{M}{M_{max}}=\frac{2X\,R_2/s}{(R_2/s)^2+X^2}=\frac{2}{\dfrac{s}{s_{zv}}+\dfrac{s_{zv}}{s}},\qquad s\ll s_{zv}:\; M\approx\frac{2M_{max}}{s_{zv}}\,s\]
+<p>Odtud: \(M_{max}\) nezávisí na \(R_2\) a roste s \((U_1/\omega_1)^2\); \(s_{zv}\) je úměrný \(R_2\) a na napětí nezávisí. Panel „Motor“ ukazuje přesný výpočet z T-schématu i zjednodušené vzorce.</p></article>
+
+<article id="a7"><h3>Frekvenční řízení U/f</h3><figure class="sch" data-fig="inv"></figure>
+<p>Pro malý odpor statoru je \(\mathbf U_1\approx j\omega_1\boldsymbol\Psi_1\), tedy \(\Psi_1\approx U_1/\omega_1\). Konstantní poměr U/f drží konstantní tok, a tím i \(M_{max}\); charakteristiky se s frekvencí posouvají rovnoběžně a stejný moment znamená stejnou rotorovou frekvenci \(f_2\) (stejný pokles rychlosti v rad/s).</p>
+<p>Při nízké frekvenci je \(\omega_1L\) malé a úbytek \(R_1I_1\) už není zanedbatelný: tok by klesl. Proto se přidává kompenzace \(U_0\). Nad \(f_N\) napětí dál růst nemůže: tok klesá s \(1/f_1\), moment při jmenovitém proudu s \(1/f_1\) a \(M_{max}\) s \(1/f_1^2\).</p>
+\[U_1 = U_0 + (U_N-U_0)\,\frac{f_1}{f_N}\ \ (f_1\le f_N),\qquad f_1 = f + f_2,\ \ f=\frac{p_p\Omega}{2\pi}\]</article>
+
+<article id="a8"><h3>Vektorové řízení: odvození</h3><figure class="sch" data-fig="foc"></figure>
+<p>Z rotorové tokové rovnice vyjádříme \(\mathbf i_2 = (\boldsymbol\psi_2-L_h\mathbf i_1)/L_2\) a dosadíme do rotorové napěťové rovnice v osách (d, q) (\(\omega_k=\omega_1,\ \omega_2 = \omega_1-\omega\)):</p>
+\[0=\frac{R_2}{L_2}\left(\boldsymbol\psi_2-L_h\mathbf i_1\right)+\frac{\mathrm d\boldsymbol\psi_2}{\mathrm dt}+j\omega_2\boldsymbol\psi_2\]
+<p>Osu d položíme do rotorového toku, \(\boldsymbol\psi_2 = \psi_2 + j0\). Reálná a imaginární část dají (\(\tau_2 = L_2/R_2\)):</p>
+\[\tau_2\frac{\mathrm d\psi_2}{\mathrm dt}+\psi_2=L_h\,i_{1d},\qquad \omega_2=\frac{L_h\,i_{1q}}{\tau_2\,\psi_2}\]
+<p>Statorový tok zapíšeme přes rotorový: \(\boldsymbol\psi_1 = \sigma L_1\mathbf i_1 + \frac{L_h}{L_2}\boldsymbol\psi_2\) s \(\sigma L_1 = L_1 - L_h^2/L_2\). Protože \(\mathrm{Im}(\mathbf i_1^*\mathbf i_1) = 0\), zbude v momentu jen</p>
+\[M=\tfrac32\,p_p\frac{L_h}{L_2}\,\psi_2\,i_{1q}\;\overset{\text{ustáleně}}{=}\;K\,i_{1d}\,i_{1q},\qquad K=\tfrac32\,p_p\frac{L_h^2}{L_2}\]
+<p><b>i<sub>1d</sub></b> vytváří tok se zpožděním \(\tau_2\) (jako buzení DC motoru), <b>i<sub>1q</sub></b> mění moment okamžitě (jako proud kotvy). Úhel osy d regulátor nezná přímo, počítá ho: \(\vartheta_1 = \int(p_p\Omega + \omega_2)\,\mathrm dt\) (nepřímé řízení s čidlem rychlosti).</p>
+<p>Statorová rovnice v (d, q) ukazuje, co musí proudové regulátory překonat:</p>
+\[\begin{aligned}u_{1d}&=R_1i_{1d}+\sigma L_1\frac{\mathrm di_{1d}}{\mathrm dt}-\omega_1\sigma L_1i_{1q}+\frac{L_h}{L_2}\frac{\mathrm d\psi_2}{\mathrm dt}\\ u_{1q}&=R_1i_{1q}+\sigma L_1\frac{\mathrm di_{1q}}{\mathrm dt}+\omega_1\sigma L_1i_{1d}+\omega_1\frac{L_h}{L_2}\psi_2\end{aligned}\]
+<p>Rotační členy s \(\omega_1\) se přičtou dopředu (<b>odvazbení</b>), zbytek je člen 1. řádu \(\frac{1}{R_\sigma(1+s\,\sigma L_1/R_\sigma)}\) s \(R_\sigma = R_1 + R_2(L_h/L_2)^2\) (rotorová část pochází z \(\mathrm d\psi_2/\mathrm dt\) v ose d) a nastaví se podle optimálního modulu stejně jako proud kotvy DC motoru.</p>
+<div class="scroll"><table><thead><tr><th>DC motor</th><th>Asynchronní motor ve (d, q)</th></tr></thead><tbody>
+<tr><td>budicí proud i<sub>f</sub>, zpoždění τ<sub>f</sub></td><td>i<sub>1d</sub>, zpoždění τ<sub>2</sub></td></tr>
+<tr><td>proud kotvy i<sub>q</sub></td><td>i<sub>1q</sub></td></tr>
+<tr><td>M = ξ i<sub>q</sub></td><td>M = 3/2 p<sub>p</sub> (L<sub>h</sub>/L<sub>2</sub>) ψ<sub>2</sub> i<sub>1q</sub></td></tr>
+<tr><td>komutátor drží pole a proud kolmo</td><td>transformace s úhlem ϑ<sub>1</sub> drží i<sub>1q</sub> kolmo na ψ<sub>2</sub></td></tr></tbody></table></div></article>
+</div></div></template>
