@@ -397,6 +397,22 @@ table.vz td:last-child{color:var(--mut);font-size:14.5px}
 .dosc{grid-column:1/-1}.osccv{width:100%;height:260px;display:block;background:var(--bg);border-radius:8px}
 .osct{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;margin:4px 0 8px;font-size:13px}
 .osc-u{color:var(--mut)}.osc-a{color:var(--red)}.osc-b{color:var(--och)}.osc-c{color:var(--blu)}.osc-r{color:var(--grn,#2a8a4a)}
+
+/* transformace a řízení */
+.tfgrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:14px;align-items:start}.tfgrid #tf-ctl{grid-column:1/-1;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:14px}
+@media (max-width:900px){.tfgrid{grid-template-columns:1fr}}
+.tfp,.tft{width:100%;height:auto;display:block}.tfbg{fill:var(--bg)}.tfcir{fill:none;stroke:var(--rule);stroke-dasharray:4 4}
+.tfax{stroke-width:1.2;stroke-dasharray:6 5}.tfa{stroke:var(--red)}.tfb{stroke:var(--och)}.tfc{stroke:var(--blu)}.tfaf{fill:var(--red)}.tfbf{fill:var(--och)}.tfcf{fill:var(--blu)}
+.tfat{fill:var(--red)}.tfbt{fill:var(--och)}.tfct{fill:var(--blu)}.tfv{stroke:var(--ink)}.tfvf{fill:var(--ink)}.tfd{stroke:#7a3fb0}.tfdf{fill:#7a3fb0}.tfq{stroke:#1f8a70}.tfqf{fill:#1f8a70}
+.tfdx{stroke:#7a3fb0;stroke-width:1;stroke-dasharray:2 3}.tfqx{stroke:#1f8a70;stroke-width:1;stroke-dasharray:2 3}.tfdt{fill:#7a3fb0}.tfqt{fill:#1f8a70}
+.tfpr{stroke:var(--mut);stroke-width:1;stroke-dasharray:2 2}.tftr{fill:none;stroke:var(--mut);stroke-width:1.5;opacity:.6}
+.tfl{fill:none;stroke-width:2}.tfal,.tfbe{stroke-width:1.2!important}.tfal{stroke:#7a3fb0;stroke-dasharray:5 3}.tfbe{stroke:#1f8a70;stroke-dasharray:5 3}.tf0{stroke:var(--mut);stroke-dasharray:1 3}.tfl.tfd,.tfl.tfq{stroke-width:3}
+.tfcur{stroke:var(--ink);stroke-width:1}.tfin{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.tfin input,.tfin1 input{width:100%;font:inherit;padding:6px 8px;border:1px solid var(--rule);border-radius:8px;background:var(--panel);color:var(--ink)}
+.tfin1{display:block;margin:0 0 8px}.lsteps2 li{margin:6px 0}.lapplot svg{width:100%;height:auto}
+.ctlg{display:grid;grid-template-columns:minmax(260px,340px) minmax(0,1fr);gap:14px;align-items:start}@media (max-width:900px){.ctlg{grid-template-columns:1fr}}
+.ctlg #cs-ctl select{width:100%;margin:4px 0 8px}.ctlg .ldiag{margin:0}
+.plane{width:100%;max-width:320px;display:block;margin:auto}.pl-uns{fill:var(--red);fill-opacity:.06}.pl-st{fill:var(--panel);stroke:var(--ink);stroke-width:1.2}.pl-x{stroke:var(--red);stroke-width:2.5}.pl-o{fill:none;stroke:var(--blu);stroke-width:2}
+.mini .mpt2{fill:var(--red)}
 </style>
 <script>window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']]},svg:{fontCache:'global'},startup:{typeset:false}};</script>
 <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-svg.js"></script>
@@ -3473,8 +3489,9 @@ MODS.vzt = { label: 'Důležité vztahy', chap: 'přehled vzorců', tpl: 'tpl-vz
 MODS.lab = { label: 'Laboratoř', chap: 'rozběh motoru', ch: [] };
 MODS.faz = { label: 'Fázorové diagramy', chap: 'interaktivně', ch: [] };
 MODS.pole = { label: 'Točivé pole', chap: 'interaktivně', ch: [] };
+MODS.trf = { label: 'Transformace a řízení', chap: 'Laplace, Z, dq', ch: [] };
 MODS.zk = { label: 'Zkoušení', chap: 'všetečné otázky', ch: [] };
-const TAB_ORDER = ['uvod', 'vzt', 'mech', 'tep', 'reg', 'dc', 'ser', 'am', 'sm', 'spec', 'lab', 'pole', 'faz', 'opak', 'zk', 'stroje'];
+const TAB_ORDER = ['uvod', 'vzt', 'mech', 'tep', 'reg', 'dc', 'ser', 'am', 'sm', 'spec', 'lab', 'pole', 'faz', 'trf', 'opak', 'zk', 'stroje'];
 
 /* ===== Laboratoř: stroj simulovaný živě, motor i generátor ===== */
 const LAB = { m: 'am', gen: false, sp: 0.2, J: 1, load: 0, lt: 'react', run: true };
@@ -4323,8 +4340,10 @@ function miniPlot(o) {
   const W = 420, H = 280, m = { l: 52, r: 14, t: 14, b: 40 }, [x0, x1] = o.xr, [y0, y1] = o.yr;
   const X = x => m.l + (W - m.l - m.r) * (x - x0) / (x1 - x0), Y = y => H - m.b - (H - m.t - m.b) * (y - y0) / (y1 - y0), f = v => v.toFixed(1);
   let g = '';
-  for (const t of ticks(x0, x1, 5)) g += `<line x1="${f(X(t))}" x2="${f(X(t))}" y1="${m.t}" y2="${H - m.b}" class="mgr"/><text x="${f(X(t))}" y="${H - m.b + 16}" text-anchor="middle" class="mtx">${fmt(t, Math.abs(x1 - x0) < 5 ? 1 : 0)}</text>`;
-  for (const t of ticks(y0, y1, 5)) g += `<line x1="${m.l}" x2="${W - m.r}" y1="${f(Y(t))}" y2="${f(Y(t))}" class="mgr"/><text x="${m.l - 6}" y="${f(Y(t) + 4)}" text-anchor="end" class="mtx">${fmt(t, Math.abs(y1 - y0) < 5 ? 1 : 0)}</text>`;
+  const xt = o.xlog ? Array.from({ length: Math.floor(x1) - Math.ceil(x0) + 1 }, (_, k) => Math.ceil(x0) + k) : ticks(x0, x1, 5);
+  const dec = a => a.length > 1 ? Math.max(0, -Math.floor(Math.log10(Math.abs(a[1] - a[0]) * 1.0001))) : 0, xd = dec(xt), yt = ticks(y0, y1, 5), yd = dec(yt);
+  for (const t of xt) g += `<line x1="${f(X(t))}" x2="${f(X(t))}" y1="${m.t}" y2="${H - m.b}" class="mgr"/><text x="${f(X(t))}" y="${H - m.b + 16}" text-anchor="middle" class="mtx">${o.xlog ? fmt(10 ** t, t < 0 ? -t : 0) : fmt(t, xd)}</text>`;
+  for (const t of yt) g += `<line x1="${m.l}" x2="${W - m.r}" y1="${f(Y(t))}" y2="${f(Y(t))}" class="mgr"/><text x="${m.l - 6}" y="${f(Y(t) + 4)}" text-anchor="end" class="mtx">${fmt(t, yd)}</text>`;
   if (x0 < 0 && x1 > 0) g += `<line x1="${f(X(0))}" x2="${f(X(0))}" y1="${m.t}" y2="${H - m.b}" class="max"/>`;
   if (y0 < 0 && y1 > 0) g += `<line x1="${m.l}" x2="${W - m.r}" y1="${f(Y(0))}" y2="${f(Y(0))}" class="max"/>`;
   for (const fl of o.fills || []) { const p = fl.pts.filter(q => isFinite(q[0]) && isFinite(q[1])); if (p.length > 2) g += `<path d="M${p.map(q => f(X(clamp(q[0], x0, x1))) + ' ' + f(Y(clamp(q[1], y0, y1)))).join('L')}Z" class="${fl.c}"/>`; }
@@ -5221,6 +5240,579 @@ document.addEventListener('change', e => {
   if (t.id === 'tr-sp') TR.sp = +t.value; else if (t.id === 'tr-ang') TR.ang = t.value; else if (t.id === 'tr-w') TR.win = +t.value; else if (t.dataset.trch) TR.chs[t.dataset.trch] = t.checked;
 });
 
+/* ===== Transformace souřadnic: abc → αβ0 (Clarke) → dq (Park) ===== */
+const TF = { A: [1, 1, 1], dph: [0, 0, 0], h5: 0, off: 0, seq: '+', fr: 'sync', k: 0.5, th0: 0, inv: 'amp', sp: 0.5, run: true, t: 0, show: { parts: true, proj: true, dq: true, trace: true } };
+let tfRaf = 0, tfLast = 0, tfHist = [];
+const TFW = 2 * Math.PI;  /* úhlový kmitočet vizualizace: 1 perioda = 1 s „modelového“ času */
+function tfSig(t) {
+  const s = TF.seq === '+' ? 1 : -1;
+  return [0, 1, 2].map(k => TF.A[k] * Math.cos(TFW * t - s * k * 2 * Math.PI / 3 + TF.dph[k] * DEG) + TF.h5 * Math.cos(5 * (TFW * t - s * k * 2 * Math.PI / 3)) + TF.off);
+}
+function tfClarke(i, inv) {
+  const K = inv === 'pow' ? Math.sqrt(2 / 3) : 2 / 3, K0 = inv === 'pow' ? 1 / Math.sqrt(3) : 1 / 3;
+  return { al: K * (i[0] - 0.5 * i[1] - 0.5 * i[2]), be: K * (SQ3 / 2) * (i[1] - i[2]), z: K0 * (i[0] + i[1] + i[2]) };
+}
+function tfPark(al, be, th) { return { d: al * Math.cos(th) + be * Math.sin(th), q: -al * Math.sin(th) + be * Math.cos(th) }; }
+function tfInvPark(d, q, th) { return { al: d * Math.cos(th) - q * Math.sin(th), be: d * Math.sin(th) + q * Math.cos(th) }; }
+function tfInvClarke(al, be, z, inv) {
+  const K = inv === 'pow' ? Math.sqrt(2 / 3) : 1, K0 = inv === 'pow' ? 1 / Math.sqrt(3) : 1;
+  return [K * al + K0 * z, K * (-0.5 * al + SQ3 / 2 * be) + K0 * z, K * (-0.5 * al - SQ3 / 2 * be) + K0 * z];
+}
+function tfTheta(t) { return TF.fr === 'sync' ? TFW * t + TF.th0 * DEG : TF.fr === 'slow' ? TF.k * TFW * t + TF.th0 * DEG : TF.th0 * DEG; }
+function tfState(t) { const i = tfSig(t), c = tfClarke(i, TF.inv), th = tfTheta(t), p = tfPark(c.al, c.be, th); return { t, i, ...c, th, ...p }; }
+
+function tfPlane(S) {
+  const W = 460, cx = 230, cy = 230, R = 140, f = v => v.toFixed(1), amp = TF.inv === 'pow' ? Math.sqrt(1.5) : 1;
+  const sc = R / Math.max(1.6 * amp, 0.2), P = (x, y) => [cx + sc * x, cy - sc * y];
+  const ln = (a, b, cls, st = '') => { const [x1, y1] = P(...a), [x2, y2] = P(...b); return `<line x1="${f(x1)}" y1="${f(y1)}" x2="${f(x2)}" y2="${f(y2)}" class="${cls}" ${st}/>`; };
+  const ar = (a, b, cls, w) => { const [x1, y1] = P(...a), [x2, y2] = P(...b); return `<line x1="${f(x1)}" y1="${f(y1)}" x2="${f(x2)}" y2="${f(y2)}" class="${cls}" style="stroke-width:${w}" marker-end="url(#tfa-${cls})"/>`; };
+  const tx = (p, t, cls = 'b', anc = 'middle') => { const [x, y] = P(...p); return `<text x="${f(x)}" y="${f(y)}" text-anchor="${anc}" class="${cls}">${t}</text>`; };
+  const cols = ['tfa', 'tfb', 'tfc'], ang = [0, 120, 240].map(a => a * DEG), Lr = 1.55 * amp;
+  let g = `<defs>${['tfa', 'tfb', 'tfc', 'tfv', 'tfd', 'tfq'].map(c => `<marker id="tfa-${c}" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="13" markerHeight="13" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="${c}f"/></marker>`).join('')}</defs>`;
+  g += `<circle cx="${cx}" cy="${cy}" r="${f(sc * amp)}" class="tfcir"/>`;
+  ang.forEach((a, k) => { g += ln([-Lr * Math.cos(a), -Lr * Math.sin(a)], [Lr * Math.cos(a), Lr * Math.sin(a)], 'tfax ' + cols[k]) + tx([1.68 * amp * Math.cos(a), 1.68 * amp * Math.sin(a) - 0.04], 'osa ' + 'abc'[k], 'b ' + cols[k] + 't'); });
+  g += tx([1.62 * amp, 0.12], 'α', 'b') + tx([0.1, 1.6 * amp], 'β', 'b');
+  if (TF.show.trace && tfHist.length > 1) { g += `<path d="M${tfHist.map(h => P(h.al, h.be).map(f).join(' ')).join('L')}" class="tftr"/>`; }
+  /* skládání: příspěvky fází K·i_k ve směru os */
+  const K = TF.inv === 'pow' ? Math.sqrt(2 / 3) : 2 / 3;
+  if (TF.show.parts) { let p = [0, 0]; S.i.forEach((v, k) => { const q = [p[0] + K * v * Math.cos(ang[k]), p[1] + K * v * Math.sin(ang[k])]; g += ar(p, q, cols[k], 3); p = q; }); }
+  /* projekce na osy fází */
+  if (TF.show.proj) ang.forEach((a, k) => { const pr = S.al * Math.cos(a) + S.be * Math.sin(a), q = [pr * Math.cos(a), pr * Math.sin(a)]; g += ln([S.al, S.be], q, 'tfpr') + `<circle cx="${f(P(...q)[0])}" cy="${f(P(...q)[1])}" r="4" class="${cols[k]}f"/>`; });
+  /* dq */
+  if (TF.show.dq) {
+    const th = S.th, d = [Math.cos(th), Math.sin(th)], q = [-Math.sin(th), Math.cos(th)], L = 1.45 * amp;
+    g += ln([-L * d[0], -L * d[1]], [L * d[0], L * d[1]], 'tfdx') + ln([-L * q[0], -L * q[1]], [L * q[0], L * q[1]], 'tfqx');
+    g += tx([1.52 * amp * d[0], 1.52 * amp * d[1]], 'd', 'b tfdt') + tx([1.52 * amp * q[0], 1.52 * amp * q[1]], 'q', 'b tfqt');
+    g += ar([0, 0], [S.d * d[0], S.d * d[1]], 'tfd', 5) + ar([S.d * d[0], S.d * d[1]], [S.al, S.be], 'tfq', 5);
+  }
+  g += ar([0, 0], [S.al, S.be], 'tfv', 4) + `<circle cx="${cx}" cy="${cy}" r="4" class="dot"/>`;
+  return `<svg viewBox="0 0 ${W} ${W}" class="sch tfp" role="img" aria-label="Prostorový vektor v rovině αβ">${g}</svg>`;
+}
+function tfTime(S) {
+  const W = 620, H = 340, x0 = 40, x1 = W - 10, Tw = 2, t0 = S.t - Tw, f = v => v.toFixed(1), amp = TF.inv === 'pow' ? Math.sqrt(1.5) : 1;
+  const yA = (v, top, h, m) => top + h / 2 - (h / 2 - 6) * v / m, X = t => x0 + (x1 - x0) * (t - t0) / Tw;
+  const m1 = Math.max(1.2, Math.max(...TF.A) + Math.abs(TF.h5) + Math.abs(TF.off)), m2 = 1.6 * amp;
+  let g = '';
+  const panel = (top, h, m, series, lab) => {
+    let s = `<rect x="${x0}" y="${top}" width="${x1 - x0}" height="${h}" class="tfbg"/><line x1="${x0}" x2="${x1}" y1="${top + h / 2}" y2="${top + h / 2}" class="max"/><text x="${x0 - 6}" y="${top + 14}" text-anchor="end" class="sm">${fmt(m, 1)}</text><text x="${x0 + 6}" y="${top + 14}" class="sm">${lab}</text>`;
+    for (const [fn, cls] of series) { let d = ''; for (let k = 0; k <= 240; k++) { const t = t0 + Tw * k / 240, v = fn(t); d += (k ? 'L' : 'M') + f(X(t)) + ' ' + f(yA(v, top, h, m)); } s += `<path d="${d}" class="tfl ${cls}"/>`; }
+    return s;
+  };
+  const st = t => tfState(t);
+  g += panel(4, 160, m1, [[t => tfSig(t)[0], 'tfa'], [t => tfSig(t)[1], 'tfb'], [t => tfSig(t)[2], 'tfc']], 'i_a, i_b, i_c');
+  g += panel(174, 160, m2, [[t => st(t).al, 'tfal'], [t => st(t).be, 'tfbe'], [t => st(t).d, 'tfd'], [t => st(t).q, 'tfq'], [t => st(t).z, 'tf0']], 'α, β (tenké) · d, q (silné) · 0 (tečkovaně)');
+  g += `<line x1="${f(X(S.t))}" x2="${f(X(S.t))}" y1="4" y2="${H - 6}" class="tfcur"/>`;
+  return `<svg viewBox="0 0 ${W} ${H}" class="sch tft" role="img" aria-label="Časové průběhy">${figSub(g)}</svg>`;
+}
+function tfVals(S) {
+  const r = (a, b) => `<tr><td>${sub(a)}</td><td>${b}</td></tr>`, n = v => fmt(v, 3);
+  return `<table class="fzout">${r('i_a, i_b, i_c', S.i.map(n).join(' ; '))}${r('i_α, i_β', n(S.al) + ' ; ' + n(S.be))}${r('i_0 (netočivá)', n(S.z))}${r('|i|, úhel vektoru', n(Math.hypot(S.al, S.be)) + ' ; ' + fmt(Math.atan2(S.be, S.al) / DEG, 0) + '°')}${r('θ (natočení osy d)', fmt(((S.th / DEG) % 360 + 360) % 360, 0) + '°')}${r('i_d, i_q', n(S.d) + ' ; ' + n(S.q))}</table>`;
+}
+function tfCtlHTML() {
+  const seg = (attr, cur, opts) => `<span class="seg">${opts.map(([k, t]) => `<button type="button" ${attr}="${k}" aria-pressed="${cur === k}">${t}</button>`).join('')}</span>`;
+  const sl = (id, l, a, b, st, v, u = '') => `<label class="lsl"><span><span>${sub(l)}</span> <b id="tfv-${id}">${fmt(v, st < 1 ? 2 : 0)} ${u}</b></span><input type="range" data-tf="${id}" min="${a}" max="${b}" step="${st}" value="${v}"></label>`;
+  return `<div class="lgrp"><p class="lgh">Průběhy fází</p>${sl('A0', 'Amplituda fáze a', 0, 1.5, 0.05, TF.A[0])}${sl('A1', 'Amplituda fáze b', 0, 1.5, 0.05, TF.A[1])}${sl('A2', 'Amplituda fáze c', 0, 1.5, 0.05, TF.A[2])}
+${sl('d1', 'Fázová chyba fáze b', -60, 60, 5, TF.dph[1], '°')}${sl('h5', '5. harmonická (amplituda)', 0, 0.4, 0.02, TF.h5)}${sl('off', 'Stejnosměrná složka ve všech fázích', -0.5, 0.5, 0.05, TF.off)}
+<div class="lrow"><span>Sled fází</span>${seg('data-tfs', TF.seq, [['+', 'sousledný a–b–c'], ['-', 'zpětný a–c–b']])}</div></div>
+<div class="lgrp"><p class="lgh">Soustava dq</p><div class="lrow">${seg('data-tff', TF.fr, [['sync', 'točí se s polem (ω)'], ['slow', 'pomaleji (k·ω)'], ['fix', 'stojí']])}</div>
+${TF.fr === 'slow' ? sl('k', 'Rychlost soustavy k', -1, 2, 0.05, TF.k, '× ω') : ''}${sl('th0', 'Počáteční natočení θ₀', -180, 180, 5, TF.th0, '°')}
+<div class="lrow"><span>Konstanta</span>${seg('data-tfi', TF.inv, [['amp', '2/3 (amplitudová)'], ['pow', '√(2/3) (výkonová)']])}</div>
+<div class="lrow"><label>Rychlost<select id="tf-sp">${[[1, '1 perioda/s'], [0.5, '2 s/perioda'], [0.25, '4 s/perioda'], [0.1, '10 s/perioda']].map(([v, t]) => `<option value="${v}"${v === TF.sp ? ' selected' : ''}>${t}</option>`).join('')}</select></label><button type="button" class="btn" id="tf-go">${TF.run ? '❚❚ Zastavit' : '▶ Spustit'}</button><button type="button" class="btn" id="tf-step">+1/24 periody</button></div>
+<div class="lrow osct">${[['parts', 'skládání z fází'], ['proj', 'průměty na osy fází'], ['dq', 'osy d, q'], ['trace', 'stopa vektoru']].map(([k, t]) => `<label class="chk"><input type="checkbox" data-tfsh="${k}"${TF.show[k] ? ' checked' : ''}> ${t}</label>`).join('')}</div></div>
+<div class="lgrp"><p class="lgh">Rychlé pokusy</p><div class="lrow trpre">${TF_PRE.map((p, i) => `<button type="button" class="btn" data-tfp="${i}">${p[0]}</button>`).join('')}</div><p class="note" id="tf-pn">${TF.note || 'Zvolte pokus, nebo měňte parametry. Co sledovat: v rovině vektor, vpravo průběhy.'}</p></div>`;
+}
+const TF_PRE = [
+  ['Souměrná soustava', { A: [1, 1, 1], dph: [0, 0, 0], h5: 0, off: 0, seq: '+', fr: 'sync', th0: 0 }, 'Vektor opisuje kružnici o poloměru amplitudy (při konstantě 2/3), v soustavě dq jsou i_d a i_q konstantní. Průmět vektoru na osu každé fáze je přesně okamžitá hodnota proudu této fáze.'],
+  ['Soustava dq stojí', { A: [1, 1, 1], dph: [0, 0, 0], h5: 0, off: 0, seq: '+', fr: 'fix', th0: 0 }, 'Stojící soustava dq s θ = 0 je totožná s αβ: i_d = i_α, i_q = i_β kmitají síťovým kmitočtem. Park „zastaví“ vektor jen tehdy, když se točí s ním.'],
+  ['Zpětný sled', { A: [1, 1, 1], dph: [0, 0, 0], h5: 0, off: 0, seq: '-', fr: 'sync', th0: 0 }, 'Při prohození fází se vektor točí opačně. V soustavě dq, která se točí dopředu, je vidět jako vektor rotující dvojnásobnou rychlostí: i_d, i_q kmitají kmitočtem 2f.'],
+  ['Nesouměrnost', { A: [1, 0.6, 1], dph: [0, 0, 0], h5: 0, off: 0, seq: '+', fr: 'sync', th0: 0 }, 'Stopa je elipsa: sousledná složka (kružnice dopředu) + zpětná (kružnice dozadu). V dq je střední hodnota sousledná složka a kmitání 2f zpětná.'],
+  ['Stejnosměrná složka (netočivá)', { A: [1, 1, 1], dph: [0, 0, 0], h5: 0, off: 0.3, seq: '+', fr: 'sync', th0: 0 }, 'Stejná hodnota ve všech fázích se do vektoru vůbec nepromítne (příspěvky tří os se vyruší) a objeví se jen v nulové složce i₀. Proto prostorový vektor nestačí, pokud teče proud nulovým vodičem.'],
+  ['5. harmonická', { A: [1, 1, 1], dph: [0, 0, 0], h5: 0.2, off: 0, seq: '+', fr: 'sync', th0: 0 }, '5. harmonická je zpětná: vektor obíhá kružnici s „šesticípou“ deformací. V dq (točící se s 1. harmonickou) se projeví kmitáním 6f – typický průběh u diodových usměrňovačů a měničů.'],
+  ['Natočení dq o 90°', { A: [1, 1, 1], dph: [0, 0, 0], h5: 0, off: 0, seq: '+', fr: 'sync', th0: 90 }, 'Volba θ₀ jen přerozdělí vektor mezi d a q, jeho velikost se nemění. Ve vektorovém řízení se θ volí tak, aby osa d ležela ve směru toku: pak i_d tvoří tok a i_q moment.'],
+];
+function renderDq(el) {
+  el.innerHTML = `<div class="trf"><h3 style="margin-top:0">Transformace souřadnic: abc → αβ → dq</h3><p class="lead">Pomůcka k prostorovému vektoru, Clarkeově a Parkově transformaci. Nahoře živá ukázka, pod ní kalkulačka, vzorce a nejčastější chyby.</p>
+<nav class="toc scroll" aria-label="Obsah"><a href="#tf-live">Ukázka</a><a href="#tf-calc">Kalkulačka</a><a href="#tf-eq">Vzorce</a><a href="#tf-why">Proč a k čemu</a><a href="#tf-pit">Chyby a pasti</a><a href="#tf-q">Otázky</a></nav>
+<h4 id="tf-live">Živá ukázka</h4>
+<div class="tfgrid"><div class="lgrp"><div id="tf-pl"></div><div id="tf-val"></div></div><div class="lgrp"><div id="tf-tm"></div></div><div id="tf-ctl">${tfCtlHTML()}</div></div>
+<h3 id="tf-calc">Kalkulačka</h3><div class="cols2">
+<div class="lgrp"><p class="lgh">abc → αβ0 → dq</p><div class="tfin">${['ia', 'ib', 'ic', 'thc'].map((k, j) => `<label>${sub(['i_a', 'i_b', 'i_c', 'θ [°]'][j])}<input type="number" step="any" id="tfc-${k}" value="${[1, -0.5, -0.5, 0][j]}"></label>`).join('')}</div><div id="tfc-out1"></div></div>
+<div class="lgrp"><p class="lgh">dq0 → αβ → abc</p><div class="tfin">${['d', 'q', 'z', 'th2'].map((k, j) => `<label>${sub(['i_d', 'i_q', 'i_0', 'θ [°]'][j])}<input type="number" step="any" id="tfc-${k}" value="${[1, 0, 0, 30][j]}"></label>`).join('')}</div><div id="tfc-out2"></div></div></div>
+<p class="note">Obě kalkulačky používají konstantu zvolenou v ukázce (teď ${TF.inv === 'pow' ? 'výkonovou √(2/3)' : 'amplitudovou 2/3'}).</p>
+${TF_THEORY}</div>`;
+  typeset(el); tfCalc(); tfDraw(); tfStart();
+}
+function tfCalc() {
+  const v = id => +($('#tfc-' + id) || {}).value || 0, n = x => fmt(x, 4), r = (a, b) => `<tr><td>${sub(a)}</td><td>${b}</td></tr>`;
+  const i = [v('ia'), v('ib'), v('ic')], c = tfClarke(i, TF.inv), p = tfPark(c.al, c.be, v('thc') * DEG);
+  const o1 = $('#tfc-out1'); if (o1) o1.innerHTML = `<table class="fzout">${r('i_α', n(c.al))}${r('i_β', n(c.be))}${r('i_0', n(c.z))}${r('|i| = √(i_α² + i_β²)', n(Math.hypot(c.al, c.be)))}${r('úhel vektoru', fmt(Math.atan2(c.be, c.al) / DEG, 2) + '°')}${r('i_d', n(p.d))}${r('i_q', n(p.q))}</table>`;
+  const ab = tfInvPark(v('d'), v('q'), v('th2') * DEG), x = tfInvClarke(ab.al, ab.be, v('z'), TF.inv);
+  const o2 = $('#tfc-out2'); if (o2) o2.innerHTML = `<table class="fzout">${r('i_α', n(ab.al))}${r('i_β', n(ab.be))}${r('i_a', n(x[0]))}${r('i_b', n(x[1]))}${r('i_c', n(x[2]))}${r('kontrola i_a + i_b + i_c', n(x[0] + x[1] + x[2]))}</table>`;
+}
+function tfDraw() {
+  const S = tfState(TF.t), a = $('#tf-pl'); if (!a) return;
+  a.innerHTML = tfPlane(S); $('#tf-tm').innerHTML = tfTime(S); $('#tf-val').innerHTML = tfVals(S);
+}
+function tfLoop(ts) {
+  tfRaf = 0; if (tab !== 'trf' || !$('#tf-pl')) { tfLast = 0; return; }
+  const dt = tfLast ? Math.min(0.05, (ts - tfLast) / 1000) : 0; tfLast = ts;
+  if (TF.run && dt) { TF.t += dt * TF.sp; const S = tfState(TF.t); tfHist.push({ al: S.al, be: S.be }); if (tfHist.length > 160) tfHist.shift(); tfDraw(); }
+  tfRaf = requestAnimationFrame(tfLoop);
+}
+function tfStart() { if (!tfRaf) { tfLast = 0; tfRaf = requestAnimationFrame(tfLoop); } }
+function tfReset() { tfHist = []; $('#tf-ctl').innerHTML = tfCtlHTML(); tfDraw(); tfCalc(); }
+document.addEventListener('click', e => {
+  if (tab !== 'trf') return; const b = e.target.closest('button'); if (!b) return; const d = b.dataset;
+  if (b.id === 'tf-go') { TF.run = !TF.run; b.textContent = TF.run ? '❚❚ Zastavit' : '▶ Spustit'; }
+  else if (b.id === 'tf-step') { TF.t += 1 / 24; const S = tfState(TF.t); tfHist.push({ al: S.al, be: S.be }); tfDraw(); }
+  else if (d.tfs) { TF.seq = d.tfs; tfReset(); }
+  else if (d.tff) { TF.fr = d.tff; tfReset(); }
+  else if (d.tfi) { TF.inv = d.tfi; tfReset(); const n = $('.trf .note'); if (n) n.textContent = 'Obě kalkulačky používají konstantu zvolenou v ukázce (teď ' + (TF.inv === 'pow' ? 'výkonovou √(2/3)' : 'amplitudovou 2/3') + ').'; }
+  else if (d.tfp) { const [, o, note] = TF_PRE[+d.tfp]; Object.assign(TF, JSON.parse(JSON.stringify(o))); TF.note = note; tfReset(); }
+});
+document.addEventListener('input', e => {
+  if (tab !== 'trf') return; const t = e.target, k = t.dataset.tf;
+  if (k) {
+    const v = +t.value; if (k[0] === 'A') TF.A[+k[1]] = v; else if (k === 'd1') TF.dph[1] = v; else TF[k] = v;
+    const o = $('#tfv-' + k); if (o) o.textContent = fmt(v, +t.step < 1 ? 2 : 0) + (k === 'd1' || k === 'th0' ? ' °' : k === 'k' ? ' × ω' : ''); tfHist = []; tfDraw();
+  } else if (t.id && t.id.startsWith('tfc-')) tfCalc();
+});
+document.addEventListener('change', e => {
+  if (tab !== 'trf') return; const t = e.target;
+  if (t.id === 'tf-sp') TF.sp = +t.value; else if (t.dataset.tfsh) { TF.show[t.dataset.tfsh] = t.checked; tfDraw(); }
+});
+const TF_THEORY = `
+<h3 id="tf-eq">Vzorce</h3>
+<div class="arts"><div class="art"><h4>Prostorový vektor (Clarke, amplitudově invariantní)</h4>
+<p>\\[ \\underline{i} = i_\\alpha + j\\,i_\\beta = \\tfrac{2}{3}\\left(i_a + \\underline{a}\\,i_b + \\underline{a}^2 i_c\\right),\\qquad \\underline{a} = e^{j120^\\circ} \\]</p>
+<p>\\[ \\begin{bmatrix} i_\\alpha \\\\ i_\\beta \\\\ i_0 \\end{bmatrix} = \\frac{2}{3}\\begin{bmatrix} 1 & -\\tfrac12 & -\\tfrac12 \\\\ 0 & \\tfrac{\\sqrt3}{2} & -\\tfrac{\\sqrt3}{2} \\\\ \\tfrac12 & \\tfrac12 & \\tfrac12 \\end{bmatrix} \\begin{bmatrix} i_a \\\\ i_b \\\\ i_c \\end{bmatrix} \\]</p>
+<p>Bez nulové složky (i_a + i_b + i_c = 0) stačí dvě fáze: \\( i_\\alpha = i_a,\\; i_\\beta = (i_a + 2 i_b)/\\sqrt3 \\).</p></div>
+<div class="art"><h4>Zpětná transformace</h4>
+<p>\\[ i_a = i_\\alpha + i_0,\\quad i_b = -\\tfrac12 i_\\alpha + \\tfrac{\\sqrt3}{2} i_\\beta + i_0,\\quad i_c = -\\tfrac12 i_\\alpha - \\tfrac{\\sqrt3}{2} i_\\beta + i_0 \\]</p>
+<p>Tedy \\( i_k = \\mathrm{Re}\\{\\underline{i}\\,e^{-j(k-1)120^\\circ}\\} + i_0 \\): okamžitá hodnota fáze je průmět vektoru na osu této fáze.</p></div>
+<div class="art"><h4>Park: do soustavy natočené o θ</h4>
+<p>\\[ \\underline{i}_{dq} = i_d + j\\,i_q = \\underline{i}\\,e^{-j\\vartheta} \\]</p>
+<p>\\[ \\begin{bmatrix} i_d \\\\ i_q \\end{bmatrix} = \\begin{bmatrix} \\cos\\vartheta & \\sin\\vartheta \\\\ -\\sin\\vartheta & \\cos\\vartheta \\end{bmatrix} \\begin{bmatrix} i_\\alpha \\\\ i_\\beta \\end{bmatrix},\\qquad \\begin{bmatrix} i_\\alpha \\\\ i_\\beta \\end{bmatrix} = \\begin{bmatrix} \\cos\\vartheta & -\\sin\\vartheta \\\\ \\sin\\vartheta & \\cos\\vartheta \\end{bmatrix} \\begin{bmatrix} i_d \\\\ i_q \\end{bmatrix} \\]</p></div>
+<div class="art"><h4>Výkon a moment v transformovaných veličinách</h4>
+<p>\\[ p = u_a i_a + u_b i_b + u_c i_c = \\tfrac32\\,\\mathrm{Re}\\{\\underline{u}\\,\\underline{i}^*\\} + 3 u_0 i_0 = \\tfrac32 (u_d i_d + u_q i_q) + 3u_0 i_0 \\]</p>
+<p>\\[ M = \\tfrac32\\,p_p\\,(\\psi_d i_q - \\psi_q i_d) \\]</p>
+<p>Při výkonově invariantní konstantě \\( \\sqrt{2/3} \\) koeficient 3/2 zmizí, ale vektor je \\( \\sqrt{3/2} \\)krát delší než amplituda.</p></div>
+<div class="art"><h4>Napěťová rovnice v rotující soustavě</h4>
+<p>\\[ \\underline{u} = R\\,\\underline{i} + \\frac{d\\underline{\\psi}}{dt} \\;\\Rightarrow\\; \\underline{u}_{dq} = R\\,\\underline{i}_{dq} + \\frac{d\\underline{\\psi}_{dq}}{dt} + j\\,\\omega_k\\,\\underline{\\psi}_{dq} \\]</p>
+<p>Člen \\( j\\omega_k\\underline{\\psi} \\) (ω_k = rychlost soustavy) vzniká derivací \\( e^{j\\vartheta} \\): \\( u_d = R i_d + \\dot\\psi_d - \\omega_k \\psi_q,\\; u_q = R i_q + \\dot\\psi_q + \\omega_k \\psi_d \\). To jsou „vazební“ členy, které se ve vektorovém řízení kompenzují.</p></div>
+<div class="art"><h4>Jak se soustava volí</h4><ul><li>Stojící (αβ, ω_k = 0): model asynchronního stroje, odhad toku, PWM.</li><li>S rotorem (ω_k = p·Ω): synchronní stroj, osa d v ose pólů – parametry X_d, X_q jsou pak konstantní.</li><li>S tokem rotoru (ω_k = ω_1): vektorové řízení asynchronního motoru, osa d = směr ψ_2.</li></ul></div></div>
+<h3 id="tf-why">Proč a k čemu</h3>
+<ul class="lt"><li><b>Tři fáze → jeden komplexní signál.</b> Ve trojvodičové soustavě je součet proudů nulový, takže stačí dvě nezávislé veličiny. Prostorový vektor je zapíše jako jedno komplexní číslo, které má i fyzikální význam: ukazuje, kam míří výsledné magnetické pole vinutí.</li>
+<li><b>Proč 2/3.</b> Tři fáze, každá s amplitudou Î, dají součet 3/2·Î (viz točivé pole); konstanta 2/3 to vrátí na Î. Délka vektoru je pak přímo amplituda fázové veličiny a průměty na osy fází dávají okamžité hodnoty.</li>
+<li><b>Proč Park.</b> V soustavě, která se točí s vektorem, jsou střídavé veličiny konstantní. Regulátory PI pak regulují stejnosměrné veličiny bez fázového zpoždění, jako u stejnosměrného motoru: i_d ↔ budicí proud, i_q ↔ proud kotvy.</li>
+<li><b>Synchronní stroj.</b> V soustavě spojené s rotorem přestanou indukčnosti záviset na natočení (u vyniklých pólů L_d ≠ L_q), rovnice jsou lineární s konstantními koeficienty.</li></ul>
+<h3 id="tf-pit">Chyby a pasti</h3>
+<ul class="lt"><li><b>Konstanta.</b> Při 2/3 je výkon 3/2·(u_d i_d + u_q i_q); při √(2/3) jen (u_d i_d + u_q i_q). Míchání obou dá chybu 1,5× ve výkonu i momentu.</li>
+<li><b>Fázové vs. sdružené.</b> Transformují se fázové veličiny. Délka napěťového vektoru = amplituda fázového napětí, tj. U·√2/√3 (400 V → 326 V).</li>
+<li><b>Směr osy q.</b> Obvykle q předbíhá d o 90° (i_dq = i·e^{−jθ}). Některé knihy používají q za d nebo transformaci se sinem (osa a na q) – výsledky se liší znaménkem nebo záměnou d a q.</li>
+<li><b>Elektrický vs. mechanický úhel.</b> θ v Parkově transformaci je elektrický: θ = p·θ_mech.</li>
+<li><b>Nulová složka.</b> Prostorový vektor ji nevidí. Stejnosměrná složka nebo 3. harmonická společná všem fázím se neprojeví v i_α, i_β.</li>
+<li><b>Fázor ≠ prostorový vektor.</b> Fázor popisuje jednu sinusovou veličinu v ustáleném stavu (efektivní hodnota, točí se ω), prostorový vektor všechny tři fáze v libovolném okamžiku i přechodném ději. V ustáleném souměrném stavu platí i = √2·I_fázor·e^{jωt}.</li></ul>
+<h3 id="tf-q">Otázky na zkoušku</h3>
+${[['Co je prostorový vektor a jak z něj získám okamžitý proud fáze b?', 'Komplexní veličina 2/3(i_a + a·i_b + a²·i_c). Proud fáze b je průmět vektoru na osu b (natočenou o 120°), plus nulová složka: i_b = Re{i·e^{−j120°}} + i_0.'],
+['Proč jsou v soustavě dq ustálené veličiny konstantní?', 'Souměrná sinusová soustava dává vektor stálé délky točící se úhlovou rychlostí ω. Soustava dq se točí stejně, takže vektor je vůči ní v klidu.'],
+['Co uvidím v dq, když je v síti zpětná složka?', 'Kmitání s dvojnásobným kmitočtem 2f (zpětný vektor se vůči soustavě točí rychlostí −2ω). Sousledná složka je střední hodnota.'],
+['Proč se ve vztahu pro moment objevuje 3/2?', 'Kvůli amplitudově invariantní konstantě 2/3: skutečný výkon tří fází je 3/2·Re{u·i*}. Při výkonově invariantní transformaci je koeficient 1.'],
+['Odkud se v rovnicích v dq berou členy ω·ψ?', 'Z derivace součinu: ψ = ψ_dq·e^{jθ} ⇒ dψ/dt = (dψ_dq/dt + jω_k·ψ_dq)·e^{jθ}. Jsou to rotační (pohybová) napětí, která vazbou spojují osy d a q.'],
+['Jaký je rozdíl mezi Clarkeovou a Parkovou transformací?', 'Clarke převádí tři fáze na dvě kolmé osy, které stojí (αβ). Park otáčí tuto dvojici o úhel θ (dq). Park bez Clarke nemá smysl, Clarke bez Parka ano (stojící soustava).'],
+['Proč ve vektorovém řízení asynchronního motoru potřebuji znát polohu toku, a ne rotoru?', 'Rotor se točí se skluzem vůči poli. Rozklad na tokotvornou a momentotvornou složku platí jen v soustavě spojené s tokem rotoru; poloha toku = poloha rotoru + integrál skluzové rychlosti (nepřímé řízení) nebo odhad z modelu.']].map(([q, a]) => `<details class="zq"><summary><span class="zqt">${sub(q)}</span></summary><div class="zqa"><p>${sub(a)}</p></div></details>`).join('')}`;
+
+/* ===== Záložka Transformace a řízení: Laplace, analogové a diskrétní řízení, (dq v trf.js) ===== */
+let TRV = 'lap';
+/* ---------- polynomy (koeficienty vzestupně) a komplexní kořeny ---------- */
+const pTrim = p => { const q = p.slice(); while (q.length > 1 && Math.abs(q[q.length - 1]) < 1e-14) q.pop(); return q; };
+const pAdd = (a, b) => pTrim(Array.from({ length: Math.max(a.length, b.length) }, (_, i) => (a[i] || 0) + (b[i] || 0)));
+const pMul = (a, b) => { const r = new Array(a.length + b.length - 1).fill(0); a.forEach((x, i) => b.forEach((y, j) => { r[i + j] += x * y; })); return pTrim(r); };
+const pScale = (a, k) => a.map(x => x * k);
+const pPow = (a, n) => { let r = [1]; for (let i = 0; i < n; i++) r = pMul(r, a); return r; };
+const pEvalC = (p, z) => { let r = Cx(0, 0); for (let i = p.length - 1; i >= 0; i--) r = cadd(cmul(r, z), Cx(p[i], 0)); return r; };
+function pRoots(p) {
+  p = pTrim(p); const n = p.length - 1; if (n < 1) return [];
+  const a = p.map(x => x / p[n]); let z = Array.from({ length: n }, (_, k) => cpol(0.4 + 0.9 * Math.max(1, Math.abs(a[0]) ** (1 / n)), 2 * Math.PI * k / n + 0.4));
+  for (let it = 0; it < 500; it++) {
+    let mx = 0;
+    z = z.map((zi, i) => { let den = Cx(1, 0); z.forEach((zj, j) => { if (i !== j) den = cmul(den, csub(zi, zj)); }); const d = cdiv(pEvalC(a, zi), cabs(den) < 1e-300 ? Cx(1e-12, 0) : den); mx = Math.max(mx, cabs(d)); return csub(zi, d); });
+    if (mx < 1e-13) break;
+  }
+  return z.map(r => Cx(r.re, Math.abs(r.im) < 1e-7 * Math.max(1, cabs(r)) ? 0 : r.im)).sort((x, y) => y.re - x.re || y.im - x.im);
+}
+/* ---------- jednoduchý parser výrazů v s ---------- */
+function parseS(str) {
+  const src = str.replace(/\s+/g, '').replace(/,/g, '.').replace(/·|×/g, '*'); let i = 0;
+  const peek = () => src[i], err = m => { throw new Error(m); };
+  const num = () => { const m = /^\d*\.?\d+(e[+-]?\d+)?/i.exec(src.slice(i)); if (!m) err('čekám číslo'); i += m[0].length; return +m[0]; };
+  const prim = () => { const c = peek(); if (c === '(') { i++; const v = expr(); if (peek() !== ')') err('chybí )'); i++; return v; } if (c === 's') { i++; return [0, 1]; } if (/[\d.]/.test(c || '')) return [num()]; err('neočekávaný znak „' + (c || 'konec') + '“'); };
+  const pw = () => { let b = prim(); if (peek() === '^') { i++; const e = num(); if (e !== Math.round(e) || e < 0 || e > 12) err('mocnina musí být celé číslo 0–12'); b = pPow(b, e); } return b; };
+  const un = () => { if (peek() === '-') { i++; return pScale(un(), -1); } if (peek() === '+') { i++; return un(); } return pw(); };
+  const term = () => { let v = un(); for (;;) { const c = peek(); if (c === '*') { i++; v = pMul(v, un()); } else if (c === '/') { i++; const d = un(); if (d.length !== 1) err('dělit lze jen číslem'); v = pScale(v, 1 / d[0]); } else if (c === '(' || c === 's' || /[\d.]/.test(c || '')) v = pMul(v, un()); else return v; } };
+  const expr = () => { let v = term(); while (peek() === '+' || peek() === '-') { const c = src[i++]; const t = term(); v = pAdd(v, c === '+' ? t : pScale(t, -1)); } return v; };
+  if (!src) err('prázdný výraz'); const r = expr(); if (i < src.length) err('nadbytečný znak „' + src[i] + '“'); return pTrim(r);
+}
+/* ---------- Laplace: rozklad na parciální zlomky ---------- */
+function pShiftC(p, z) {   /* Taylorovy koeficienty polynomu kolem z (komplexně) */
+  let c = p.map(x => Cx(x, 0)); const out = [];
+  for (let k = 0; k < p.length; k++) { let r = Cx(0, 0); const q = new Array(c.length).fill(Cx(0, 0)); for (let i = c.length - 1; i >= 0; i--) { r = cadd(cmul(r, z), c[i]); q[i] = r; } out.push(q[0]); c = q.slice(1); if (!c.length) break; }
+  return out;
+}
+function cpolyMul(a, b) { const r = new Array(a.length + b.length - 1).fill(0).map(() => Cx(0, 0)); a.forEach((x, i) => b.forEach((y, j) => { r[i + j] = cadd(r[i + j], cmul(x, y)); })); return r; }
+function cpShift(cp, z) { /* Taylor komplexního polynomu */ let c = cp.slice(); const out = []; while (c.length) { let r = Cx(0, 0); const q = []; for (let i = c.length - 1; i >= 0; i--) { r = cadd(cmul(r, z), c[i]); q[i] = r; } out.push(q[0]); c = q.slice(1); } return out; }
+function lapDecomp(N, D) {
+  N = pTrim(N); D = pTrim(D); if (D.length < 2) throw new Error('jmenovatel musí obsahovat s');
+  let K0 = 0;
+  if (N.length >= D.length) { if (N.length > D.length) throw new Error('stupeň čitatele je větší než jmenovatele – obraz není ryze lomený (v originále by byly derivace δ)'); K0 = N[N.length - 1] / D[D.length - 1]; N = pTrim(pAdd(N, pScale(D, -K0))); if (N.length >= D.length) N = N.slice(0, D.length - 1); }
+  const rs = pRoots(D), lead = D[D.length - 1], tol = 1e-4, grp = [];
+  for (const r of rs) { const g = grp.find(g => cabs(csub(g.p, r)) < tol * Math.max(1, cabs(r))); if (g) { g.m++; g.sum = cadd(g.sum, r); } else grp.push({ p: r, m: 1, sum: r }); }
+  grp.forEach(g => { g.p = csc(g.sum, 1 / g.m); if (Math.abs(g.p.im) < 1e-7) g.p.im = 0; });
+  const terms = [];
+  for (const g of grp) {
+    let Dr = [Cx(lead, 0)]; for (const h of grp) if (h !== g) for (let k = 0; k < h.m; k++) Dr = cpolyMul(Dr, [csc(h.p, -1), Cx(1, 0)]);
+    const nT = pShiftC(N.length ? N : [0], g.p), dT = cpShift(Dr, g.p), c = [];
+    for (let j = 0; j < g.m; j++) { let s = nT[j] || Cx(0, 0); for (let k = 1; k <= j; k++) s = csub(s, cmul(dT[k] || Cx(0, 0), c[j - k])); c.push(cdiv(s, dT[0])); }
+    for (let j = 0; j < g.m; j++) terms.push({ p: g.p, k: g.m - j, c: c[j] });
+  }
+  return { K0, terms, grp, rs };
+}
+function lapTime(dec, t) {
+  let v = 0; for (const T of dec.terms) { const f = t ** (T.k - 1) / fact(T.k - 1), e = cmul(T.c, cpol(Math.exp(T.p.re * t), T.p.im * t)); v += f * e.re; } return v;
+}
+const fact = n => n <= 1 ? 1 : n * fact(n - 1);
+const nf = (x, d = 4) => { const v = +x.toPrecision(d); return Math.abs(v) < 1e-10 ? '0' : String(v).replace('.', ','); };
+const cTex = z => Math.abs(z.im) < 1e-9 ? nf(z.re) : `(${nf(z.re)} ${z.im < 0 ? '-' : '+'} ${nf(Math.abs(z.im))}j)`;
+function lapTex(dec) {
+  const parts = [], seen = new Set();
+  const tk = k => k === 1 ? '' : k === 2 ? 't\\,' : `\\tfrac{t^{${k - 1}}}{${k - 1}!}\\,`;
+  for (const T of dec.terms) {
+    const key = nf(T.p.re) + '|' + nf(Math.abs(T.p.im)) + '|' + T.k; if (T.p.im < 0 && seen.has(key)) continue; seen.add(key);
+    if (cabs(T.c) < 1e-9) continue;
+    if (Math.abs(T.p.im) < 1e-9) { const e = Math.abs(T.p.re) < 1e-12 ? '' : `e^{${nf(T.p.re)}t}`, f = tk(T.k) + e; parts.push(f && Math.abs(Math.abs(T.c.re) - 1) < 1e-9 ? (T.c.re < 0 ? '-' : '') + f : `${nf(T.c.re)}${f ? '\\,' + f : ''}`); }
+    else { const s = T.p.re, w = Math.abs(T.p.im), A = 2 * T.c.re, B = -2 * T.c.im * Math.sign(T.p.im); const e = Math.abs(s) < 1e-12 ? '' : `e^{${nf(s)}t}`;
+      parts.push(`${tk(T.k)}${e}\\left(${nf(A)}\\cos ${nf(w)}t ${B < 0 ? '-' : '+'} ${nf(Math.abs(B))}\\sin ${nf(w)}t\\right)`); }
+  }
+  return ((dec.K0 ? nf(dec.K0) + '\\,\\delta(t) + ' : '') + (parts.join(' + ') || '0')).replace(/\+ -/g, '- ').replace(/\{-1t\}/g, '{-t}').replace(/\{1t\}/g, '{t}').replace(/\\,\s*$/, '');
+}
+function spTex(p, k) {
+  const b = Math.abs(p.im) < 1e-9 ? (Math.abs(p.re) < 1e-12 ? 's' : p.re < 0 ? `s + ${nf(-p.re)}` : `s - ${nf(p.re)}`) : `s - ${cTex(p)}`;
+  return k > 1 ? (b === 's' ? `s^{${k}}` : `(${b})^{${k}}`) : b;
+}
+function polyTex(p) {
+  const t = []; for (let i = p.length - 1; i >= 0; i--) { const c = p[i]; if (Math.abs(c) < 1e-14) continue; const a = Math.abs(c), cs = (a === 1 && i) ? '' : nf(a); t.push((c < 0 ? '- ' : t.length ? '+ ' : '') + cs + (i ? 's' + (i > 1 ? `^{${i}}` : '') : '')); }
+  return t.join(' ') || '0';
+}
+const LAP = { N: '2s+3', D: 's(s+1)(s+3)', T: 6 };
+const LAP_PRE = [['2s+3', 's(s+1)(s+3)', 'reálné jednoduché póly'], ['1', 's(0.5s+1)', 'skok na 1. řád (T = 0,5 s)'], ['4', 's(s^2+2s+4)', 'skok na 2. řád, kmitavý'], ['1', '(s+1)^2', 'dvojnásobný pól'], ['5', 's^2+25', 'netlumené kmity'], ['1', 's^2', 'rampa'], ['s+2', 's+1', 'čitatel stejného stupně (δ)'], ['10', 's(s-1)', 'nestabilní pól (koncová hodnota neplatí)']];
+function lapCalcHTML() {
+  let dec, N, D, err = '';
+  try { N = parseS(LAP.N); D = parseS(LAP.D); dec = lapDecomp(N, D); } catch (e) { err = e.message; }
+  if (err) return `<p class="dgn" style="color:var(--red)">Chyba: ${err}</p>`;
+  const rows = [];
+  rows.push(`<li><b>Zadání.</b> \\( F(s) = \\dfrac{${polyTex(N)}}{${polyTex(D)}} \\)</li>`);
+  if (dec.K0) rows.push(`<li><b>Čitatel má stejný stupeň</b>, nejdřív se vydělí: \\( F(s) = ${nf(dec.K0)} + \\dots \\), konstanta dá \\( ${nf(dec.K0)}\\,\\delta(t) \\).</li>`);
+  rows.push(`<li><b>Póly</b> (kořeny jmenovatele): ${dec.grp.map(g => `\\( s = ${cTex(g.p)} \\)${g.m > 1 ? ` (násobnost ${g.m})` : ''}`).join(', ')}</li>`);
+  rows.push(`<li><b>Rozklad na parciální zlomky:</b> \\( F(s) = ${dec.K0 ? nf(dec.K0) + ' + ' : ''}${dec.terms.map(T => `\\dfrac{${cTex(T.c)}}{${spTex(T.p, T.k)}}`).join(' + ').replace(/\+ -/g, '- ')} \\)<br><span class="note">Koeficient u jednoduchého pólu: \\( c = \\lim_{s\\to p}(s-p)F(s) \\) (zakrývací metoda); u násobného pólu derivace.</span></li>`);
+  rows.push(`<li><b>Zpětná transformace člen po členu</b> podle slovníku: \\( \\dfrac{1}{s-p} \\to e^{pt},\\; \\dfrac{1}{(s-p)^k} \\to \\dfrac{t^{k-1}}{(k-1)!}e^{pt} \\); dvojice komplexně sdružených pólů dá tlumený sinus a kosinus.</li>`);
+  rows.push(`<li><b>Výsledek:</b> \\( f(t) = ${lapTex(dec)} \\quad (t \\ge 0) \\)</li>`);
+  const stab = dec.grp.every(g => g.p.re < -1e-9 || (cabs(g.p) < 1e-9 && g.m === 1)), hasZero = dec.grp.some(g => cabs(g.p) < 1e-9);
+  const fin = stab ? (hasZero ? (() => { const g = dec.terms.find(T => cabs(T.p) < 1e-9 && T.k === 1); return g ? g.c.re : 0; })() : 0) : NaN;
+  const f0 = N.length === D.length - 1 ? N[N.length - 1] / D[D.length - 1] : (N.length < D.length - 1 ? 0 : NaN);
+  rows.push(`<li><b>Kontrola větami o mezních hodnotách:</b> \\( f(0^+) = \\lim_{s\\to\\infty} sF(s) = ${isFinite(f0) ? nf(f0) : '\\infty'} \\); ${stab ? `\\( f(\\infty) = \\lim_{s\\to 0} sF(s) = ${nf(fin)} \\)` : 'koncovou hodnotu <b>nelze</b> větou určit: \\( sF(s) \\) má pól v pravé polorovině nebo na imaginární ose (mimo počátek), \\( f(t) \\) nemá limitu.'}</li>`);
+  const tEnd = LAP.T, pts = []; for (let k = 0; k <= 300; k++) { const t = tEnd * k / 300; pts.push([t, lapTime(dec, t)]); }
+  const ys = pts.map(p => p[1]).filter(isFinite), lo = Math.min(0, ...ys), hi = Math.max(0.1, ...ys), pad = (hi - lo) * 0.08 || 1;
+  const plot = miniPlot({ xr: [0, tEnd], yr: [lo - pad, hi + pad], xl: 't [s]', yl: 'f(t)', curves: [{ pts, c: 'mc1' }], hl: stab && isFinite(fin) ? [{ y: fin, c: 'mdl', t: 'f(∞)' }] : [], al: 'Originál f(t)' });
+  return `<ol class="lsteps2">${rows.join('')}</ol><div class="lapplot">${plot}</div>`;
+}
+const LAP_THEORY = `
+<div class="arts"><div class="art"><h4>Definice a k čemu to je</h4>
+<p>\\[ F(s) = \\mathcal{L}\\{f(t)\\} = \\int_0^\\infty f(t)\\,e^{-st}\\,dt,\\qquad s = \\sigma + j\\omega \\]</p>
+<p>Převede lineární diferenciální rovnici s konstantními koeficienty na <b>algebraickou</b> rovnici v s. Derivace se změní v násobení s, integrál v dělení s. Počáteční podmínky se objeví samy.</p>
+<p><b>Přenos</b> \\( G(s) = Y(s)/U(s) \\) při nulových počátečních podmínkách. Kořeny jmenovatele jsou <b>póly</b> (určují tvar a stabilitu odezvy), kořeny čitatele <b>nuly</b>.</p></div>
+<div class="art"><h4>Slovník (nejčastější obrazy)</h4><table class="vz"><tbody>
+<tr><td>\\( \\delta(t) \\)</td><td>\\( 1 \\)</td></tr><tr><td>\\( \\mathbf{1}(t) \\)</td><td>\\( \\dfrac1s \\)</td></tr><tr><td>\\( t \\)</td><td>\\( \\dfrac1{s^2} \\)</td></tr><tr><td>\\( \\dfrac{t^n}{n!} \\)</td><td>\\( \\dfrac1{s^{n+1}} \\)</td></tr>
+<tr><td>\\( e^{-at} \\)</td><td>\\( \\dfrac1{s+a} \\)</td></tr><tr><td>\\( t\\,e^{-at} \\)</td><td>\\( \\dfrac1{(s+a)^2} \\)</td></tr><tr><td>\\( 1-e^{-t/T} \\)</td><td>\\( \\dfrac1{s(Ts+1)} \\)</td></tr>
+<tr><td>\\( \\sin\\omega t \\)</td><td>\\( \\dfrac{\\omega}{s^2+\\omega^2} \\)</td></tr><tr><td>\\( \\cos\\omega t \\)</td><td>\\( \\dfrac{s}{s^2+\\omega^2} \\)</td></tr>
+<tr><td>\\( e^{-at}\\sin\\omega t \\)</td><td>\\( \\dfrac{\\omega}{(s+a)^2+\\omega^2} \\)</td></tr><tr><td>\\( e^{-at}\\cos\\omega t \\)</td><td>\\( \\dfrac{s+a}{(s+a)^2+\\omega^2} \\)</td></tr></tbody></table></div>
+<div class="art"><h4>Věty</h4><table class="vz"><tbody>
+<tr><td>linearita</td><td>\\( a f + b g \\to aF + bG \\)</td></tr>
+<tr><td>derivace</td><td>\\( f' \\to sF(s) - f(0^+) \\)</td></tr><tr><td>2. derivace</td><td>\\( f'' \\to s^2F - s f(0) - f'(0) \\)</td></tr>
+<tr><td>integrál</td><td>\\( \\int_0^t f\\,d\\tau \\to \\dfrac{F(s)}{s} \\)</td></tr>
+<tr><td>posun v čase (dopravní zpoždění)</td><td>\\( f(t-\\tau)\\mathbf{1}(t-\\tau) \\to e^{-s\\tau}F(s) \\)</td></tr>
+<tr><td>posun v obrazu (útlum)</td><td>\\( e^{-at}f(t) \\to F(s+a) \\)</td></tr>
+<tr><td>konvoluce</td><td>\\( (f*g)(t) \\to F(s)\\,G(s) \\)</td></tr>
+<tr><td>počáteční hodnota</td><td>\\( f(0^+) = \\lim_{s\\to\\infty} sF(s) \\)</td></tr>
+<tr><td>koncová hodnota</td><td>\\( f(\\infty) = \\lim_{s\\to 0} sF(s) \\) jen když póly \\( sF(s) \\) leží v levé polorovině</td></tr></tbody></table></div>
+<div class="art"><h4>Postup řešení rovnice (příklad: DC motor naprázdno)</h4>
+<p>\\( J\\dot\\Omega = c\\Phi\\,i,\\; U = R i + c\\Phi\\,\\Omega \\Rightarrow T_m\\dot\\Omega + \\Omega = U/c\\Phi \\), kde \\( T_m = JR/(c\\Phi)^2 \\).</p>
+<p>1) Transformace se skokem U: \\( T_m(s\\Omega - \\Omega_0) + \\Omega = \\dfrac{U}{c\\Phi\\,s} \\).<br>2) Vyjádření: \\( \\Omega(s) = \\dfrac{U/c\\Phi}{s(T_m s+1)} + \\dfrac{T_m\\Omega_0}{T_m s+1} \\).<br>3) Slovník: \\( \\Omega(t) = \\dfrac{U}{c\\Phi}(1-e^{-t/T_m}) + \\Omega_0 e^{-t/T_m} \\).</p></div>
+<div class="art"><h4>Póly a odezva</h4><ul class="lt"><li>Reálný záporný pól \\( -a \\): exponenciála s časovou konstantou \\( 1/a \\).</li><li>Komplexní dvojice \\( -\\sigma \\pm j\\omega \\): tlumené kmity, \\( \\omega \\) = kmitočet, \\( \\sigma \\) = rychlost útlumu, poměrné tlumení \\( \\xi = \\sigma/\\sqrt{\\sigma^2+\\omega^2} \\).</li><li>Pól v nule: integrátor (rampa na skok). Pól v pravé polorovině: nestabilita.</li><li>Dominantní jsou póly nejblíž imaginární ose – doznívají nejpomaleji.</li><li>Statické zesílení \\( K = G(0) \\); ustálená odchylka na skok v uzavřené smyčce \\( e_\\infty = 1/(1+K_0) \\), s integrátorem v otevřené smyčce nulová (astatismus).</li></ul></div></div>`;
+
+/* ---------- soustavy a regulátory ---------- */
+const CS = { pl: 'o2', K: 2, T1: 1, T2: 0.2, tau: 0.1, reg: 'PI', Kp: 1, Ti: 1, Td: 0.1, N: 10, umax: 0, dist: 0.5, Ts: 0.05, meth: 'tustin', cdel: false };
+const PLANTS = {
+  o1: { n: '1. řád  K/(T₁s+1)', p: ['K', 'T1'], G: P => [[P.K], [1, P.T1]], tau: 0, info: P => ({ K: P.K, T1: P.T1, Ts: 0, I: false }) },
+  o2: { n: '2. řád  K/((T₁s+1)(T₂s+1))', p: ['K', 'T1', 'T2'], G: P => [[P.K], pMul([1, P.T1], [1, P.T2])], tau: 0, info: P => ({ K: P.K, T1: Math.max(P.T1, P.T2), Ts: Math.min(P.T1, P.T2), I: false }) },
+  it: { n: 'integrátor  K/(s(T₂s+1))', p: ['K', 'T2'], G: P => [[P.K], [0, 1, P.T2]], tau: 0, info: P => ({ K: P.K, T1: 0, Ts: P.T2, I: true }) },
+  dl: { n: '1. řád + zpoždění  K·e^{−τs}/(T₁s+1)', p: ['K', 'T1', 'tau'], G: P => [[P.K], [1, P.T1]], tau: 1, info: P => ({ K: P.K, T1: P.T1, Ts: P.tau, I: false }) },
+  dci: { n: 'DC motor: proud kotvy (měnič T_μ = 1,7 ms, R_a = 0,4 Ω, T_a = 25 ms)', p: [], G: () => [[2.5], pMul([1, 0.025], [1, 0.0017])], tau: 0, info: () => ({ K: 2.5, T1: 0.025, Ts: 0.0017, I: false }) },
+  dcw: { n: 'DC motor: otáčky (uzavřená proudová smyčka 1/(2T_μs+1), cΦ/J = 4)', p: [], G: () => [[4], [0, 1, 0.0034]], tau: 0, info: () => ({ K: 4, T1: 0, Ts: 0.0034, I: true }) },
+};
+const PNAME = { K: ['K', 0.2, 10, 0.1, ''], T1: ['T₁', 0.05, 5, 0.05, 's'], T2: ['T₂', 0.01, 2, 0.01, 's'], tau: ['τ', 0, 1, 0.01, 's'] };
+function ctlTune(kind) {
+  const P = PLANTS[CS.pl], I = P.info(CS);
+  if (kind === 'om') { if (I.I) return 'Optimum modulu je pro soustavy bez integrátoru; pro integrační soustavu použijte symetrické optimum.'; CS.reg = 'PI'; CS.Ti = I.T1; CS.Kp = I.T1 / (2 * I.K * I.Ts); return `Optimum modulu: T_i = T₁ = ${nf(CS.Ti)} s (kompenzuje velkou časovou konstantu), K_p = T₁/(2K·T_σ) = ${nf(CS.Kp)}. Očekávaný překmit asi 4 %.`; }
+  if (kind === 'so') { if (!I.I) return 'Symetrické optimum je pro soustavy s integrátorem (otáčková smyčka).'; CS.reg = 'PI'; CS.Ti = 4 * I.Ts; CS.Kp = 1 / (2 * I.K * I.Ts); return `Symetrické optimum: T_i = 4T_σ = ${nf(CS.Ti)} s, K_p = 1/(2K·T_σ) = ${nf(CS.Kp)}. Překmit na skok žádané hodnoty asi 43 %, porucha se ale vyreguluje rychle.`; }
+}
+/* stavový popis soustavy (řídicí kanonický tvar) */
+function ssOf(num, den) {
+  const n = den.length - 1, a = den.map(x => x / den[n]), b = num.map(x => x / den[n]);
+  return { n, f: (x, u) => { const dx = new Array(n); for (let i = 0; i < n - 1; i++) dx[i] = x[i + 1]; let s = u; for (let i = 0; i < n; i++) s -= a[i] * x[i]; dx[n - 1] = s; return dx; }, y: x => { let s = 0; for (let i = 0; i < n; i++) s += (b[i] || 0) * x[i]; return s; } };
+}
+function ctlSetup() {
+  const P = PLANTS[CS.pl], [num, den] = P.G(CS), tau = P.tau ? CS.tau : 0, I = P.info(CS);
+  const Tsum = (I.T1 || 0) + I.Ts + tau, tEnd = I.I ? Math.max(30 * I.Ts, 8 * CS.Ti) : Math.max(8 * Tsum, 3 * CS.Ti);
+  return { num, den, tau, tEnd, ss: ssOf(num, den), I };
+}
+/* spojitá simulace: skok w = 1 v t = 0, porucha na vstupu soustavy v polovině */
+function ctlSim(S, disc) {
+  const ss = S.ss, n = ss.n, tEnd = S.tEnd, dt = Math.min(tEnd / 6000, (disc ? CS.Ts : tEnd) / 20), Tf = CS.Td / CS.N, reg = CS.reg;
+  let x = new Array(n).fill(0), I = 0, Dx = 0, t = 0, u = 0, eP = 0, Dk = 0, Ik = 0, uHold = 0, nextS = 0, uNext = 0;
+  const buf = [], nb = Math.max(1, Math.round(S.tau / dt)), out = [], dist = () => t >= tEnd * CS.dist ? 0.5 : 0, sat = v => CS.umax > 0 ? clamp(v, -CS.umax, CS.umax) : v;
+  const hasI = reg.includes('I'), hasD = reg.includes('D'), every = Math.max(1, Math.floor(tEnd / dt / 600));
+  let step = 0;
+  while (t <= tEnd) {
+    const y = ss.y(x), e = 1 - y;
+    if (!disc) {
+      const dterm = hasD ? CS.Kp * CS.Td / Tf * (e - Dx) : 0;   /* D = K_p T_d s/(T_f s+1) na e: stav Dx sleduje e */
+      const uu = CS.Kp * e + (hasI ? I : 0) + dterm; u = sat(uu);
+      if (hasI && (CS.umax <= 0 || u === uu || Math.sign(e) !== Math.sign(uu))) I += dt * CS.Kp / CS.Ti * e;
+      if (hasD) Dx += dt * (e - Dx) / Tf;
+    } else if (t >= nextS - 1e-12) {
+      nextS += CS.Ts;
+      /* PSD */
+      const T = CS.Ts; let Ii = Ik;
+      if (hasI) Ii = CS.meth === 'fe' ? Ik + CS.Kp * T / CS.Ti * eP : CS.meth === 'be' ? Ik + CS.Kp * T / CS.Ti * e : Ik + CS.Kp * T / (2 * CS.Ti) * (e + eP);
+      if (hasD) Dk = CS.meth === 'tustin' ? ((2 * Tf - T) * Dk + 2 * CS.Kp * CS.Td * (e - eP)) / (2 * Tf + T) : (Tf * Dk + CS.Kp * CS.Td * (e - eP)) / (Tf + T);
+      const uu = CS.Kp * e + (hasI ? Ii : 0) + (hasD ? Dk : 0), us = sat(uu);
+      if (!(CS.umax > 0 && us !== uu && Math.sign(e) === Math.sign(uu))) Ik = Ii;
+      eP = e; if (CS.cdel) { uHold = uNext; uNext = us; } else uHold = us;
+      u = uHold;
+    }
+    buf.push(u); const ud = buf.length > nb && S.tau > 0 ? buf.shift() : (S.tau > 0 ? 0 : u);
+    const uin = (S.tau > 0 ? ud : u) + dist();
+    if (step % every === 0) out.push([t, y, u]);
+    /* RK4 soustavy */
+    const k1 = ss.f(x, uin), k2 = ss.f(x.map((v, i) => v + dt / 2 * k1[i]), uin), k3 = ss.f(x.map((v, i) => v + dt / 2 * k2[i]), uin), k4 = ss.f(x.map((v, i) => v + dt * k3[i]), uin);
+    x = x.map((v, i) => v + dt / 6 * (k1[i] + 2 * k2[i] + 2 * k3[i] + k4[i]));
+    t += dt; step++;
+    if (!isFinite(y) || Math.abs(y) > 1e6) break;
+  }
+  return out;
+}
+function ctlMetrics(out, tEnd) {
+  const half = out.filter(p => p[0] < tEnd * CS.dist), ymax = Math.max(...half.map(p => p[1])), yend = half.length ? half[half.length - 1][1] : NaN;
+  let ts = NaN; for (let i = half.length - 1; i >= 0; i--) if (Math.abs(half[i][1] - 1) > 0.02) { ts = half[i][0]; break; }
+  return { os: Math.max(0, (ymax - 1) * 100), ts, ess: 1 - yend };
+}
+/* otevřená smyčka L(jω) a regulátor jako přenos */
+function regTF() {
+  const Kp = CS.Kp, Ti = CS.Ti, Td = CS.Td, Tf = Td / CS.N, r = CS.reg;
+  if (r === 'P') return [[Kp], [1]];
+  if (r === 'PI') return [[Kp, Kp * Ti], [0, Ti]];
+  if (r === 'PD') return [pScale(pAdd([1, Tf], [0, Td]), Kp), [1, Tf]];
+  return [pScale(pAdd(pAdd(pMul([0, Ti], [1, Tf]), [1, Tf]), [0, 0, Ti * Td]), Kp), pMul([0, Ti], [1, Tf])];
+}
+function ctlBode(S) {
+  const [nr, dr] = regTF(), N = pMul(nr, S.num), D = pMul(dr, S.den), pts = [], ph = [];
+  const T = [S.I.T1, S.I.Ts, S.tau, CS.Ti].filter(x => x > 0), lo = Math.floor(Math.log10(0.05 / Math.max(...T))), hi = Math.ceil(Math.log10(20 / Math.min(...T)));
+  let prev = null, off = 0, wc = NaN, pm = NaN, w180 = NaN, gm = NaN, lastM = null;
+  for (let k = 0; k <= 400; k++) {
+    const lw = lo + (hi - lo) * k / 400, w = 10 ** lw, L = cdiv(pEvalC(N, Cx(0, w)), pEvalC(D, Cx(0, w))), m = 20 * Math.log10(cabs(L));
+    let a = carg(L) / DEG - w * S.tau / DEG; if (prev !== null) { while (a + off - prev > 180) off -= 360; while (a + off - prev < -180) off += 360; } a += off; prev = a;
+    pts.push([lw, m]); ph.push([lw, a]);
+    if (lastM !== null && lastM.m > 0 && m <= 0 && isNaN(wc)) { wc = w; pm = 180 + a; }
+    if (lastM !== null && lastM.a > -180 && a <= -180 && isNaN(w180)) { w180 = w; gm = -m; }
+    lastM = { m, a };
+  }
+  return { pts, ph, lo, hi, wc, pm, w180, gm };
+}
+/* póly uzavřené smyčky: matice systému sestavená z lineární mapy (zpoždění Padé 1. řádu) */
+function charPoly(A) {   /* Faddeev–LeVerrier, vrací koeficienty vzestupně */
+  const n = A.length; let M = A.map((r, i) => r.map((_, j) => i === j ? 1 : 0)); const c = new Array(n + 1).fill(0); c[n] = 1;
+  let AM = null;
+  for (let k = 1; k <= n; k++) { AM = A.map((r, i) => M[0].map((_, j) => r.reduce((s, v, l) => s + v * M[l][j], 0))); const tr = AM.reduce((s, r, i) => s + r[i], 0); c[n - k] = -tr / k; M = AM.map((r, i) => r.map((v, j) => v + (i === j ? c[n - k] : 0))); }
+  return c;
+}
+function eig(A) { return A.length ? pRoots(charPoly(A)) : []; }
+function ctlPolesC(S) {
+  const ss = S.ss, n = ss.n, hasI = CS.reg.includes('I'), hasD = CS.reg.includes('D'), Tf = CS.Td / CS.N, dl = S.tau > 0;
+  const m = n + (hasI ? 1 : 0) + (hasD ? 1 : 0) + (dl ? 1 : 0);
+  const F = z => { const x = z.slice(0, n); let j = n; const I = hasI ? z[j++] : 0, Dx = hasD ? z[j++] : 0, pd = dl ? z[j++] : 0; const e = -ss.y(x);
+    const u = CS.Kp * e + I + (hasD ? CS.Kp * CS.Td / Tf * (e - Dx) : 0), uin = dl ? pd - u : u, d = ss.f(x, uin);
+    if (hasI) d.push(CS.Kp / CS.Ti * e); if (hasD) d.push((e - Dx) / Tf); if (dl) d.push(-(2 / S.tau) * pd + (4 / S.tau) * u); return d; };
+  const A = []; for (let i = 0; i < m; i++) { const z = new Array(m).fill(0); z[i] = 1; A.push(F(z)); }
+  return eig(A[0] ? A[0].map((_, i) => A.map(c => c[i])) : []);
+}
+function ctlPolesD(S) {
+  const ss = S.ss, n = ss.n, T = CS.Ts, hasI = CS.reg.includes('I'), hasD = CS.reg.includes('D'), Tf = CS.Td / CS.N, nd = Math.min(12, Math.round(S.tau / T)) + (CS.cdel ? 1 : 0);
+  /* diskrétní model soustavy s tvarovačem 0. řádu: integrace přes T */
+  const integ = (x, u) => { const h = T / 40; for (let k = 0; k < 40; k++) { const k1 = ss.f(x, u), k2 = ss.f(x.map((v, i) => v + h / 2 * k1[i]), u), k3 = ss.f(x.map((v, i) => v + h / 2 * k2[i]), u), k4 = ss.f(x.map((v, i) => v + h * k3[i]), u); x = x.map((v, i) => v + h / 6 * (k1[i] + 2 * k2[i] + 2 * k3[i] + k4[i])); } return x; };
+  const m = n + 3 + nd;
+  const F = z => { const x = z.slice(0, n), Ik = z[n], Dk = z[n + 1], eP = z[n + 2], q = z.slice(n + 3); const e = -ss.y(x);
+    let Ii = Ik; if (hasI) Ii = CS.meth === 'fe' ? Ik + CS.Kp * T / CS.Ti * eP : CS.meth === 'be' ? Ik + CS.Kp * T / CS.Ti * e : Ik + CS.Kp * T / (2 * CS.Ti) * (e + eP);
+    let D2 = Dk; if (hasD) D2 = CS.meth === 'tustin' ? ((2 * Tf - T) * Dk + 2 * CS.Kp * CS.Td * (e - eP)) / (2 * Tf + T) : (Tf * Dk + CS.Kp * CS.Td * (e - eP)) / (Tf + T);
+    const u = CS.Kp * e + (hasI ? Ii : 0) + (hasD ? D2 : 0), seq = [u, ...q], uin = seq[nd], qn = seq.slice(0, nd);
+    return [...integ(x, uin), Ii, D2, e, ...qn]; };
+  const A = []; for (let i = 0; i < m; i++) { const z = new Array(m).fill(0); z[i] = 1; A.push(F(z)); }
+  const M = A[0].map((_, i) => A.map(c => c[i]));
+  return eig(M).filter(p => cabs(p) > 1e-9 || true);
+}
+function planeSVG(P, kind, extra = []) {
+  const W = 300, c = 150, f = v => v.toFixed(1);
+  let R; if (kind === 'z') R = 1.4; else { const m = Math.max(1, ...P.map(p => Math.max(Math.abs(p.re), Math.abs(p.im)))); R = m * 1.25; }
+  const X = x => c + (c - 16) * x / R, Y = y => c - (c - 16) * y / R;
+  let g = `<rect x="0" y="0" width="${W}" height="${W}" class="tfbg"/>`;
+  if (kind === 's') g += `<rect x="${c}" y="0" width="${c}" height="${W}" class="pl-uns"/><text x="${W - 6}" y="16" text-anchor="end" class="sm">nestabilní</text>`;
+  else g += `<rect x="0" y="0" width="${W}" height="${W}" class="pl-uns"/><circle cx="${c}" cy="${c}" r="${f(X(1) - c)}" class="pl-st"/><text x="${W - 6}" y="16" text-anchor="end" class="sm">mimo kruh: nestabilní</text>`;
+  g += `<line x1="0" x2="${W}" y1="${c}" y2="${c}" class="max"/><line x1="${c}" x2="${c}" y1="0" y2="${W}" class="max"/>`;
+  g += `<text x="${W - 6}" y="${c - 6}" text-anchor="end" class="sm">Re</text><text x="${c + 6}" y="14" class="sm">Im</text><text x="${f(X(R * 0.8))}" y="${c + 16}" text-anchor="middle" class="sm">${nf(R * 0.8, 2)}</text>`;
+  for (const p of extra) g += `<circle cx="${f(X(p.re))}" cy="${f(Y(p.im))}" r="6" class="pl-o"/>`;
+  for (const p of P) { const x = X(clamp(p.re, -R, R)), y = Y(clamp(p.im, -R, R)); g += `<path d="M${f(x - 6)} ${f(y - 6)}L${f(x + 6)} ${f(y + 6)}M${f(x - 6)} ${f(y + 6)}L${f(x + 6)} ${f(y - 6)}" class="pl-x"/>`; }
+  return `<svg viewBox="0 0 ${W} ${W}" class="mini plane" role="img" aria-label="Póly v rovině ${kind}">${g}</svg>`;
+}
+function ctlCtlHTML(disc) {
+  const P = PLANTS[CS.pl], seg = (attr, cur, opts) => `<span class="seg">${opts.map(([k, t]) => `<button type="button" ${attr}="${k}" aria-pressed="${cur === k}">${t}</button>`).join('')}</span>`;
+  const sl = (id, l, a, b, st, v, u = '', log) => `<label class="lsl"><span><span>${sub(l)}</span> <b id="csv-${id}">${nf(v, 3)} ${u}</b></span><input type="range" data-cs="${id}"${log ? ' data-log="1"' : ''} min="${log ? Math.log10(a) : a}" max="${log ? Math.log10(b) : b}" step="${log ? 0.01 : st}" value="${log ? Math.log10(v) : v}"></label>`;
+  return `<div class="lgrp"><p class="lgh">Soustava</p><select id="cs-pl">${Object.entries(PLANTS).map(([k, p]) => `<option value="${k}"${k === CS.pl ? ' selected' : ''}>${p.n}</option>`).join('')}</select>
+${P.p.map(k => { const [l, a, b, st, u] = PNAME[k]; return sl(k, l, a, b, st, CS[k], u); }).join('')}</div>
+<div class="lgrp"><p class="lgh">Regulátor</p><div class="lrow">${seg('data-csr', CS.reg, [['P', 'P'], ['PI', 'PI'], ['PD', 'PD'], ['PID', 'PID']])}</div>
+${sl('Kp', 'K_p', 0.01, 1000, 0, CS.Kp, '', true)}${CS.reg.includes('I') ? sl('Ti', 'T_i', 0.0005, 20, 0, CS.Ti, 's', true) : ''}${CS.reg.includes('D') ? sl('Td', 'T_d', 0.0005, 5, 0, CS.Td, 's', true) : ''}
+<div class="lrow"><button type="button" class="btn" data-cst="om">Optimum modulu</button><button type="button" class="btn" data-cst="so">Symetrické optimum</button></div>
+${sl('umax', 'Omezení akční veličiny (0 = bez)', 0, 50, 0.5, CS.umax)}<p class="note" id="cs-tn">${CS.tn || 'Žádaná hodnota skočí v čase 0 na 1, v polovině času přijde porucha 0,5 na vstup soustavy.'}</p></div>
+${disc ? `<div class="lgrp"><p class="lgh">Číslicový regulátor</p>${sl('Ts', 'Perioda vzorkování T', 0.0002, 2, 0, CS.Ts, 's', true)}<div class="lrow"><span>Diskretizace</span>${seg('data-csm', CS.meth, [['fe', 'Euler dopředný'], ['be', 'Euler zpětný'], ['tustin', 'Tustin']])}</div>
+<label class="chk"><input type="checkbox" id="cs-cd"${CS.cdel ? ' checked' : ''}> výpočet trvá jednu periodu (akční zásah až v dalším kroku)</label></div>` : ''}`;
+}
+function ctlDraw(disc) {
+  const S = ctlSetup(), o = ctlSim(S, false), mt = ctlMetrics(o, S.tEnd), sh = $('#cs-out'); if (!sh) return;
+  let od = null, md = null; if (disc) { od = ctlSim(S, true); md = ctlMetrics(od, S.tEnd); }
+  const all = (od || o).concat(o), ymx = Math.max(1.2, ...all.map(p => p[1]).filter(isFinite)), ymn = Math.min(0, ...all.map(p => p[1]).filter(isFinite));
+  const yr = [Math.max(ymn, -3), Math.min(ymx * 1.05, 4)];
+  const ycur = disc ? [{ pts: o.map(p => [p[0], p[1]]), c: 'mdl' }, { pts: od.map(p => [p[0], p[1]]), c: 'mc1' }] : [{ pts: o.map(p => [p[0], p[1]]), c: 'mc1' }];
+  const sampled = disc ? od.filter((p, i, a) => i === 0 || Math.floor(p[0] / CS.Ts) !== Math.floor(a[i - 1][0] / CS.Ts)).slice(0, 400).map(p => ({ x: p[0], y: p[1], r: 2.5, c: 'mpt2' })) : [];
+  const plotY = miniPlot({ xr: [0, S.tEnd], yr, xl: 't [s]', yl: 'y (regulovaná)', curves: ycur, hl: [{ y: 1, c: 'mld', t: 'w' }], vl: [{ x: S.tEnd * CS.dist, c: 'mdl', t: 'porucha' }], pts: sampled, al: 'Přechodová charakteristika' });
+  const us = (od || o).map(p => p[2]).filter(isFinite), ul = Math.max(1, ...us.map(Math.abs)) * 1.1;
+  const plotU = miniPlot({ xr: [0, S.tEnd], yr: [-ul, ul], xl: 't [s]', yl: 'u (akční)', curves: [{ pts: (od || o).map(p => [p[0], p[2]]), c: 'mc2' }], al: 'Akční veličina' });
+  const B = ctlBode(S);
+  const plotM = miniPlot({ xr: [B.lo, B.hi], xlog: true, yr: [-60, 60], xl: 'ω [rad/s]', yl: '|L| [dB]', curves: [{ pts: B.pts, c: 'mc1' }], vl: isFinite(B.wc) ? [{ x: Math.log10(B.wc), c: 'mdl', t: 'ω_c' }] : [], al: 'Bode – amplituda' });
+  const plotP = miniPlot({ xr: [B.lo, B.hi], xlog: true, yr: [-360, 0], xl: 'ω [rad/s]', yl: 'φ [°]', curves: [{ pts: B.ph, c: 'mc3' }], hl: [{ y: -180, c: 'mld', t: '−180°' }], vl: isFinite(B.wc) ? [{ x: Math.log10(B.wc), c: 'mdl' }] : [], al: 'Bode – fáze' });
+  const pc = ctlPolesC(S);
+  let poles = '';
+  if (!disc) poles = `<div class="lgrp ldg"><p class="lgh">Póly uzavřené smyčky (rovina s)</p>${planeSVG(pc, 's')}<p class="note">${pc.length ? pc.map(p => cTex(p)).join(', ').replace(/[()]/g, '') : ''}${S.tau ? ' · zpoždění nahrazeno Padého aproximací 1. řádu' : ''}</p></div>`;
+  else { const pd = ctlPolesD(S), map = pc.map(p => cpol(Math.exp(p.re * CS.Ts), p.im * CS.Ts)), mx = Math.max(...pd.map(cabs)), st = mx < 1 + 1e-4; poles = `<div class="lgrp ldg"><p class="lgh">Póly uzavřené smyčky (rovina z)</p>${planeSVG(pd, 'z', map)}<p class="note">× póly číslicové smyčky, ○ póly spojité smyčky přepočtené z = e^{sT}. ${st ? 'Všechny uvnitř jednotkové kružnice: stabilní.' : '<b>Pól mimo jednotkovou kružnici: nestabilní.</b>'} Největší |z| = ${nf(mx, 5)}.</p></div>`; }
+  const m = (l, v) => `<tr><td>${sub(l)}</td><td>${v}</td></tr>`;
+  sh.innerHTML = `<div class="ldiag"><div class="lgrp ldg"><p class="lgh">Odezva na skok žádané hodnoty a poruchu</p>${plotY}<p class="note">${disc ? 'Čárkovaně spojitý regulátor, plně číslicový; tečky = vzorky.' : ''}</p></div>
+<div class="lgrp ldg"><p class="lgh">Akční veličina</p>${plotU}<table class="fzout">${m('Překmit', nf(mt.os, 3) + ' %' + (disc ? ' → ' + nf(md.os, 3) + ' %' : ''))}${m('Doba regulace (±2 %)', (isFinite(mt.ts) ? nf(mt.ts, 3) + ' s' : '–') + (disc ? ' → ' + (isFinite(md.ts) ? nf(md.ts, 3) + ' s' : '–') : ''))}${m('Ustálená odchylka', nf(mt.ess, 3))}</table></div>
+<div class="lgrp ldg"><p class="lgh">Bodeho diagram otevřené smyčky</p>${plotM}${plotP}<table class="fzout">${m('Řezný kmitočet ω_c', isFinite(B.wc) ? nf(B.wc, 3) + ' rad/s' : '–')}${m('Fázová bezpečnost', isFinite(B.pm) ? nf(B.pm, 3) + '°' : '–')}${m('Amplitudová bezpečnost', isFinite(B.gm) ? nf(B.gm, 3) + ' dB' : '∞')}${disc ? m('Zpoždění vzorkováním ≈ T/2 (+T výpočet)', nf(CS.Ts / 2 * (CS.cdel ? 3 : 1), 3) + ' s → fáze −' + (isFinite(B.wc) ? nf(B.wc * CS.Ts / 2 * (CS.cdel ? 3 : 1) / DEG, 3) : '?') + '° při ω_c') : ''}</table></div>${poles}</div>`;
+}
+const AN_THEORY = `
+<div class="arts"><div class="art"><h4>Regulátory</h4><table class="vz"><tbody>
+<tr><td>P</td><td>\\( K_p \\)</td><td>trvalá odchylka u statické soustavy</td></tr>
+<tr><td>PI</td><td>\\( K_p\\left(1+\\dfrac{1}{T_i s}\\right) \\)</td><td>odstraní ustálenou odchylku, přidá fázi −90° na nízkých ω</td></tr>
+<tr><td>PD</td><td>\\( K_p\\left(1+\\dfrac{T_d s}{T_f s+1}\\right) \\)</td><td>předbíhá, zrychlí, ale zesiluje šum</td></tr>
+<tr><td>PID</td><td>\\( K_p\\left(1+\\dfrac{1}{T_i s}+\\dfrac{T_d s}{T_f s+1}\\right) \\)</td><td>\\( T_f = T_d/N \\), N ≈ 5–20</td></tr></tbody></table></div>
+<div class="art"><h4>Uzavřená smyčka</h4><p>\\[ \\frac{Y}{W} = \\frac{C G}{1 + C G},\\qquad \\frac{Y}{D} = \\frac{G}{1+CG},\\qquad L(s) = C(s)G(s) \\]</p><p>Charakteristická rovnice \\( 1 + L(s) = 0 \\) dává póly uzavřené smyčky. Stabilní, když všechny leží v levé polorovině.</p><p><b>Fázová bezpečnost</b> \\( \\varphi_m = 180^\\circ + \\arg L(j\\omega_c) \\), kde \\( |L(j\\omega_c)| = 1 \\). Orientačně 60–70° ≈ malý překmit, 45° ≈ 20 %, 30° ≈ 35–40 %.</p></div>
+<div class="art"><h4>Optimum modulu</h4><p>Soustava \\( \\dfrac{K}{(T_1 s+1)(T_\\sigma s+1)} \\), \\( T_1 \\gg T_\\sigma \\). PI regulátor zkrátí velkou časovou konstantu: \\( T_i = T_1 \\), \\( K_p = \\dfrac{T_1}{2KT_\\sigma} \\).</p><p>Uzavřená smyčka \\( \\dfrac{1}{2T_\\sigma^2 s^2 + 2T_\\sigma s + 1} \\approx \\dfrac{1}{2T_\\sigma s+1} \\); překmit 4,3 %, φ_m ≈ 63°. Použití: proudová smyčka.</p></div>
+<div class="art"><h4>Symetrické optimum</h4><p>Soustava s integrátorem \\( \\dfrac{K}{s(T_\\sigma s+1)} \\). \\( T_i = 4T_\\sigma \\), \\( K_p = \\dfrac{1}{2KT_\\sigma} \\). Fázová charakteristika je symetrická kolem \\( \\omega_c = 1/(2T_\\sigma) \\), φ_m ≈ 37°.</p><p>Překmit na skok žádané hodnoty asi 43 % (proto filtr žádané hodnoty \\( 1/(4T_\\sigma s+1) \\)), poruchu ale vyreguluje rychle. Použití: otáčková smyčka.</p></div>
+<div class="art"><h4>Proč kaskáda</h4><p>Vnitřní (proudová) smyčka je rychlá a z vnější vypadá jako \\( 1/(2T_\\mu s+1) \\). Vnější regulátor pak vidí jednoduchou soustavu a omezení jeho výstupu omezí proud (moment). Vnitřní smyčka musí být aspoň 3–5× rychlejší.</p></div>
+<div class="art"><h4>Integrátor a omezení (wind-up)</h4><p>Když je akční veličina v omezení, integrátor by dál integroval odchylku a po návratu by způsobil velký překmit. Řešení: zastavit integraci při omezení (clamping) nebo zpětný výpočet. Vyzkoušejte omezení akční veličiny.</p></div></div>`;
+const DIS_THEORY = `
+<div class="arts"><div class="art"><h4>Z-transformace</h4><p>\\[ X(z) = \\mathcal{Z}\\{x[k]\\} = \\sum_{k=0}^{\\infty} x[k]\\,z^{-k},\\qquad z = e^{sT} \\]</p><table class="vz"><tbody>
+<tr><td>\\( \\delta[k] \\)</td><td>\\( 1 \\)</td></tr><tr><td>\\( \\mathbf{1}[k] \\)</td><td>\\( \\dfrac{z}{z-1} \\)</td></tr><tr><td>\\( kT \\)</td><td>\\( \\dfrac{Tz}{(z-1)^2} \\)</td></tr><tr><td>\\( a^k \\)</td><td>\\( \\dfrac{z}{z-a} \\)</td></tr><tr><td>\\( e^{-akT} \\)</td><td>\\( \\dfrac{z}{z-e^{-aT}} \\)</td></tr>
+<tr><td>\\( x[k-1] \\)</td><td>\\( z^{-1}X(z) \\) (zpoždění o krok)</td></tr><tr><td>\\( x[k+1] \\)</td><td>\\( zX(z) - z\\,x[0] \\)</td></tr>
+<tr><td>koncová hodnota</td><td>\\( x[\\infty] = \\lim_{z\\to1}(z-1)X(z) \\)</td></tr><tr><td>počáteční hodnota</td><td>\\( x[0] = \\lim_{z\\to\\infty} X(z) \\)</td></tr></tbody></table></div>
+<div class="art"><h4>Vzorkování a tvarovač</h4><p>Regulátor čte vzorky každých T sekund a výstup drží do dalšího kroku (tvarovač 0. řádu, ZOH):</p><p>\\[ G(z) = (1-z^{-1})\\,\\mathcal{Z}\\left\\{\\frac{G(s)}{s}\\right\\} \\]</p><p>Tvarovač se chová přibližně jako zpoždění \\( T/2 \\): ubírá fázi \\( \\omega T/2 \\). Další perioda přibude, pokud se výpočet výsledku použije až v dalším kroku.</p></div>
+<div class="art"><h4>Přepočet spojitého regulátoru</h4><table class="vz"><tbody>
+<tr><td>Euler dopředný</td><td>\\( s \\approx \\dfrac{z-1}{T} \\)</td><td>může zobrazit stabilní pól mimo kruh</td></tr>
+<tr><td>Euler zpětný</td><td>\\( s \\approx \\dfrac{z-1}{zT} \\)</td><td>vždy stabilní, ale tlumí</td></tr>
+<tr><td>Tustin (bilineární)</td><td>\\( s \\approx \\dfrac{2}{T}\\dfrac{z-1}{z+1} \\)</td><td>levá polorovina → kruh, nejvěrnější</td></tr></tbody></table>
+<p>PSD (rychlostní tvar, Tustin): \\( u_k = u_{k-1} + K_p\\left[(e_k - e_{k-1}) + \\dfrac{T}{2T_i}(e_k + e_{k-1})\\right] \\).</p></div>
+<div class="art"><h4>Rovina z</h4><ul class="lt"><li>Stabilita: všechny póly uvnitř jednotkové kružnice \\( |z| < 1 \\).</li><li>\\( z = e^{sT} \\): imaginární osa → jednotková kružnice, levá polorovina → vnitřek, počátek s = 0 → z = 1.</li><li>Pól na záporné reálné ose (z < 0): střídání znaménka každý krok – „zvonění“ regulátoru.</li><li>Čím menší T, tím blíž jsou póly bodu 1 a tím víc se číslicová regulace podobá spojité.</li></ul></div>
+<div class="art"><h4>Volba periody vzorkování</h4><ul class="lt"><li>Shannonova–Kotelnikovova věta: \\( f_s > 2 f_{max} \\), jinak vzniká aliasing (vyšší kmitočty se „přeloží“ na nižší).</li><li>Prakticky: \\( T \\approx (0{,}1 \\text{ až } 0{,}2)/\\omega_c \\), nebo 10–20 vzorků na dobu náběhu.</li><li>Proudové smyčky měničů: T = perioda PWM (50–200 µs), otáčkové 1–2 ms.</li><li>Před převodníkem antialiasingový filtr.</li></ul></div></div>`;
+/* aliasing */
+const AL = { f: 9, fs: 10 };
+function aliasSVG() {
+  const T = 1, fa = Math.abs(AL.f - AL.fs * Math.round(AL.f / AL.fs)), pts = [], al = [], sm = [];
+  for (let k = 0; k <= 600; k++) { const t = T * k / 600; pts.push([t, Math.sin(2 * Math.PI * AL.f * t)]); al.push([t, Math.sin(2 * Math.PI * (AL.f - AL.fs * Math.round(AL.f / AL.fs)) * t)]); }
+  for (let k = 0; k * (1 / AL.fs) <= T; k++) { const t = k / AL.fs; sm.push({ x: t, y: Math.sin(2 * Math.PI * AL.f * t), r: 4 }); }
+  return miniPlot({ xr: [0, T], yr: [-1.3, 1.3], xl: 't [s]', yl: 'signál', curves: [{ pts, c: 'mdl' }, { pts: al, c: 'mc1' }], pts: sm, al: 'Aliasing' }) + `<p class="dgn">Signál ${nf(AL.f)} Hz vzorkovaný ${nf(AL.fs)} Hz: ze vzorků se jeví jako ${nf(fa)} Hz${AL.fs > 2 * AL.f ? ' – bez aliasingu (f_s > 2f).' : ' – <b>aliasing</b> (f_s ≤ 2f).'}</p>`;
+}
+/* ---------- vykreslení záložky ---------- */
+function renderTrf(el) {
+  const tabs = [['lap', 'Laplaceova transformace'], ['an', 'Analogové řízení'], ['dis', 'Diskrétní řízení a Z'], ['dq', 'Clarke / Park (dq)']];
+  el.innerHTML = `<div class="wrap trfw"><h2>Transformace a řízení</h2><p class="lead">Pomůcka ke Laplaceově a Z-transformaci, spojité a číslicové regulaci a k transformacím souřadnic střídavých strojů.</p>
+<div class="cbar"><span class="seg">${tabs.map(([k, t]) => `<button type="button" data-trv="${k}" aria-pressed="${TRV === k}">${t}</button>`).join('')}</span></div><div id="trv-body"></div></div>`;
+  const b = $('#trv-body');
+  if (TRV === 'dq') { renderDq(b); return; }
+  if (TRV === 'lap') {
+    b.innerHTML = `<h3>Kalkulačka: zpětná transformace krok za krokem</h3><div class="cols2"><div class="lgrp"><p class="lgh">Obraz F(s) = čitatel / jmenovatel</p>
+<label class="tfin1">Čitatel<input id="lap-N" value="${LAP.N}" spellcheck="false" autocomplete="off"></label><label class="tfin1">Jmenovatel<input id="lap-D" value="${LAP.D}" spellcheck="false" autocomplete="off"></label>
+<label class="lsl"><span><span>Zobrazený čas</span> <b id="lap-Tv">${LAP.T} s</b></span><input type="range" id="lap-T" min="1" max="30" step="1" value="${LAP.T}"></label>
+<p class="note">Zápis: <code>s</code>, čísla, <code>+ − * ^</code>, závorky a násobení bez znaménka, např. <code>s(0.5s+1)^2</code> nebo <code>s^2+2s+5</code>.</p>
+<div class="lrow trpre">${LAP_PRE.map((p, i) => `<button type="button" class="btn" data-lapp="${i}" title="${p[2]}">${p[2]}</button>`).join('')}</div></div>
+<div class="lgrp" id="lap-out"></div></div><h3>Slovník, věty a postup</h3>${LAP_THEORY}${ctlQ('lap')}`;
+    lapRefresh(); typeset(b); return;
+  }
+  const disc = TRV === 'dis';
+  b.innerHTML = `<h3>${disc ? 'Číslicový regulátor naživo' : 'Regulační smyčka naživo'}</h3><div class="ctlg"><div id="cs-ctl">${ctlCtlHTML(disc)}</div><div id="cs-out"></div></div>
+${disc ? `<h3>Aliasing</h3><div class="cols2"><div class="lgrp">${[['f', 'Kmitočet signálu f', 0.5, 30, 0.5], ['fs', 'Vzorkovací kmitočet f_s', 1, 60, 0.5]].map(([k, l, a, bb, st]) => `<label class="lsl"><span><span>${sub(l)}</span> <b id="alv-${k}">${AL[k]} Hz</b></span><input type="range" data-al="${k}" min="${a}" max="${bb}" step="${st}" value="${AL[k]}"></label>`).join('')}</div><div class="lgrp" id="al-out">${aliasSVG()}</div></div>` : ''}
+<h3>Vzorce a pravidla</h3>${disc ? DIS_THEORY : AN_THEORY}${ctlQ(disc ? 'dis' : 'an')}`;
+  ctlDraw(disc); typeset(b);
+}
+function lapRefresh() { const o = $('#lap-out'); if (!o) return; o.innerHTML = lapCalcHTML(); typeset(o); }
+const CTL_Q = {
+  lap: [['Proč se v Laplaceově transformaci derivace změní v násobení s?', 'Integrací per partes: ∫f′e^{−st}dt = [f e^{−st}] + s∫f e^{−st}dt = sF(s) − f(0). Diferenciální rovnice se tak stane algebraickou.'],
+    ['Kdy nesmím použít větu o koncové hodnotě?', 'Když má sF(s) pól v pravé polorovině nebo na imaginární ose (mimo jednoduchý pól v nule v F). Pak f(t) limitu nemá (roste nebo kmitá) a věta dá nesmyslné číslo – např. 1/(s−1) by „dala“ 0.'],
+    ['Co určuje tvar přechodového děje: póly, nebo nuly?', 'Póly určují, jaké exponenciály a kmity v odezvě jsou (a stabilitu). Nuly určují, jak velký podíl má každá z nich (koeficienty rozkladu); nula v pravé polorovině způsobí podkmit (odezva začne opačným směrem).'],
+    ['Proč dopravní zpoždění nelze zapsat jako podíl polynomů?', 'Jeho obraz e^{−sτ} je transcendentní funkce, má nekonečně mnoho „pólů“. Pro výpočet pólů se nahrazuje Padého aproximací (1 − sτ/2)/(1 + sτ/2); fázi ubírá ωτ, amplitudu nemění.'],
+    ['Jaký je rozdíl mezi přenosem a obrazem odezvy?', 'Přenos G(s) = Y(s)/U(s) je vlastnost systému (při nulových počátečních podmínkách). Obraz odezvy Y(s) = G(s)·U(s) navíc obsahuje vstup, např. pro skok G(s)/s.']],
+  an: [['Proč PI regulátor odstraní trvalou odchylku a P ne?', 'V ustáleném stavu musí být vstup integrátoru nulový, jinak by se výstup měnil. Vstupem je odchylka, takže je nulová. P regulátor potřebuje nenulovou odchylku, aby vůbec dal nějaký akční zásah.'],
+    ['Proč u otáčkové smyčky nefunguje optimum modulu?', 'Soustava už obsahuje integrátor (J·dΩ/dt). PI regulátor přidá druhý, fáze na nízkých kmitočtech je −180° a bez symetrického rozložení (T_i = 4T_σ) by byla smyčka na mezi stability.'],
+    ['Co je fázová bezpečnost a proč nestačí, že je smyčka stabilní?', 'Kolik fáze chybí do −180° na řezném kmitočtu. Malá bezpečnost znamená stabilní, ale silně kmitavou odezvu, a citlivost na změnu parametrů (zpoždění, zesílení).'],
+    ['Proč se D složka filtruje?', 'Čistá derivace má zesílení rostoucí s kmitočtem do nekonečna; šum měření by vybudil obrovskou akční veličinu. Filtr T_d/N omezí zesílení na vysokých kmitočtech na K_p(1+N).'],
+    ['Co je wind-up a jak se projeví?', 'Při omezené akční veličině integrátor dál roste. Když se odchylka změní znaménko, musí se integrátor nejdřív „vybít“ – výsledkem je velký překmit a pomalé ustálení. Řeší se zastavením integrace v omezení.']],
+  dis: [['Proč je číslicový regulátor horší než spojitý se stejnými parametry?', 'Tvarovač drží výstup po celou periodu: přidá zpoždění asi T/2 (a další T, pokud se výsledek použije až v dalším kroku). To ubere fázovou bezpečnost ωT/2 a zvětší překmit.'],
+    ['Kde jsou v rovině z stabilní póly a proč?', 'Uvnitř jednotkové kružnice: z = e^{sT} zobrazí levou polorovinu (Re s < 0) na |z| < 1. Odezva obsahuje členy z^k, které zanikají jen pro |z| < 1.'],
+    ['Proč Tustinova metoda zachová stabilitu a dopředný Euler ne?', 'Tustin zobrazí celou levou polorovinu přesně do jednotkového kruhu. Dopředný Euler z = 1 + sT posune pól o −1/T doprava, takže při velkém T může stabilní pól vyjít mimo kruh.'],
+    ['Co je aliasing a jak se mu brání?', 'Signál s kmitočtem nad f_s/2 dá stejné vzorky jako nižší kmitočet; regulátor pak „vidí“ falešný signál. Brání se analogovým filtrem před převodníkem a dostatečně vysokým f_s.'],
+    ['Jak zvolit periodu vzorkování proudové smyčky?', 'Typicky synchronně s PWM (jednou nebo dvakrát za periodu), aby se měřila střední hodnota proudu bez zvlnění. Musí být výrazně kratší než elektrická časová konstanta a T_σ smyčky.']],
+};
+function ctlQ(k) { return `<h3>Otázky na zkoušku</h3>${CTL_Q[k].map(([q, a]) => `<details class="zq"><summary><span class="zqt">${sub(q)}</span></summary><div class="zqa"><p>${sub(a)}</p></div></details>`).join('')}`; }
+let csT = 0;
+function ctlRedraw(full) { const disc = TRV === 'dis'; if (full) $('#cs-ctl').innerHTML = ctlCtlHTML(disc); clearTimeout(csT); csT = setTimeout(() => ctlDraw(disc), 30); }
+document.addEventListener('click', e => {
+  if (tab !== 'trf') return; const b = e.target.closest('button'); if (!b) return; const d = b.dataset;
+  if (d.trv) { TRV = d.trv; renderTrf($('#cards')); }
+  else if (d.lapp) { const p = LAP_PRE[+d.lapp]; LAP.N = p[0]; LAP.D = p[1]; $('#lap-N').value = p[0]; $('#lap-D').value = p[1]; lapRefresh(); }
+  else if (d.csr) { CS.reg = d.csr; CS.tn = ''; ctlRedraw(true); }
+  else if (d.cst) { CS.tn = ctlTune(d.cst); ctlRedraw(true); }
+  else if (d.csm) { CS.meth = d.csm; ctlRedraw(true); }
+});
+let lapT = 0;
+document.addEventListener('input', e => {
+  if (tab !== 'trf') return; const t = e.target;
+  if (t.id === 'lap-N' || t.id === 'lap-D') { LAP[t.id.slice(4)] = t.value; clearTimeout(lapT); lapT = setTimeout(lapRefresh, 300); }
+  else if (t.id === 'lap-T') { LAP.T = +t.value; $('#lap-Tv').textContent = t.value + ' s'; clearTimeout(lapT); lapT = setTimeout(lapRefresh, 100); }
+  else if (t.dataset.cs) { const k = t.dataset.cs, v = t.dataset.log ? 10 ** +t.value : +t.value; CS[k] = v; const o = $('#csv-' + k); if (o) o.textContent = nf(v, 3) + ' ' + (PNAME[k] ? PNAME[k][4] : ['Ti', 'Td', 'Ts'].includes(k) ? 's' : ''); ctlRedraw(false); }
+  else if (t.dataset.al) { AL[t.dataset.al] = +t.value; $('#alv-' + t.dataset.al).textContent = t.value + ' Hz'; $('#al-out').innerHTML = aliasSVG(); }
+});
+document.addEventListener('change', e => {
+  if (tab !== 'trf') return; const t = e.target;
+  if (t.id === 'cs-pl') { CS.pl = t.value; const I = PLANTS[CS.pl].info(CS); CS.tn = ''; CS.Ts = Math.max(I.Ts, 0.05 * (I.T1 || 0)) / 4; ctlTune(I.I ? 'so' : 'om'); CS.tn = 'Regulátor nastaven automaticky (' + (I.I ? 'symetrické optimum' : 'optimum modulu') + '). Zkuste ho rozladit.'; ctlRedraw(true); }
+  else if (t.id === 'cs-cd') { CS.cdel = t.checked; ctlRedraw(false); }
+});
+
 /* ===== Záložka Točivé pole ===== */
 const PO = { wt: 0, play: true, spd: 90, I: [1, 1, 1], ph: [0, -120, 120], geo: '3f', vec: true, seq: true, trail: true, pre: 'sym' };
 const PO_PRE = {
@@ -5595,6 +6187,7 @@ function renderCards() {
   if (tab === 'faz' && typeof renderFaz === 'function') { renderFaz(el); return; }
   if (tab === 'pole') { renderPole(el); return; }
   if (tab === 'zk') { renderZk(el); return; }
+  if (tab === 'trf') { renderTrf(el); return; }
   const list = CARDS.map((c, i) => [c, i]).filter(([c]) => m.ch.includes(c[0]));
   el.innerHTML = list.length ? `<div class="wrap"><h2>Otázky k ověření (kap. ${m.chap})</h2><div class="qgrid">${list.map(([c, i]) => cardHTML(c, i)).join('')}</div></div>` : '';
 }

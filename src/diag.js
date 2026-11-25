@@ -6,8 +6,10 @@ function miniPlot(o) {
   const W = 420, H = 280, m = { l: 52, r: 14, t: 14, b: 40 }, [x0, x1] = o.xr, [y0, y1] = o.yr;
   const X = x => m.l + (W - m.l - m.r) * (x - x0) / (x1 - x0), Y = y => H - m.b - (H - m.t - m.b) * (y - y0) / (y1 - y0), f = v => v.toFixed(1);
   let g = '';
-  for (const t of ticks(x0, x1, 5)) g += `<line x1="${f(X(t))}" x2="${f(X(t))}" y1="${m.t}" y2="${H - m.b}" class="mgr"/><text x="${f(X(t))}" y="${H - m.b + 16}" text-anchor="middle" class="mtx">${fmt(t, Math.abs(x1 - x0) < 5 ? 1 : 0)}</text>`;
-  for (const t of ticks(y0, y1, 5)) g += `<line x1="${m.l}" x2="${W - m.r}" y1="${f(Y(t))}" y2="${f(Y(t))}" class="mgr"/><text x="${m.l - 6}" y="${f(Y(t) + 4)}" text-anchor="end" class="mtx">${fmt(t, Math.abs(y1 - y0) < 5 ? 1 : 0)}</text>`;
+  const xt = o.xlog ? Array.from({ length: Math.floor(x1) - Math.ceil(x0) + 1 }, (_, k) => Math.ceil(x0) + k) : ticks(x0, x1, 5);
+  const dec = a => a.length > 1 ? Math.max(0, -Math.floor(Math.log10(Math.abs(a[1] - a[0]) * 1.0001))) : 0, xd = dec(xt), yt = ticks(y0, y1, 5), yd = dec(yt);
+  for (const t of xt) g += `<line x1="${f(X(t))}" x2="${f(X(t))}" y1="${m.t}" y2="${H - m.b}" class="mgr"/><text x="${f(X(t))}" y="${H - m.b + 16}" text-anchor="middle" class="mtx">${o.xlog ? fmt(10 ** t, t < 0 ? -t : 0) : fmt(t, xd)}</text>`;
+  for (const t of yt) g += `<line x1="${m.l}" x2="${W - m.r}" y1="${f(Y(t))}" y2="${f(Y(t))}" class="mgr"/><text x="${m.l - 6}" y="${f(Y(t) + 4)}" text-anchor="end" class="mtx">${fmt(t, yd)}</text>`;
   if (x0 < 0 && x1 > 0) g += `<line x1="${f(X(0))}" x2="${f(X(0))}" y1="${m.t}" y2="${H - m.b}" class="max"/>`;
   if (y0 < 0 && y1 > 0) g += `<line x1="${m.l}" x2="${W - m.r}" y1="${f(Y(0))}" y2="${f(Y(0))}" class="max"/>`;
   for (const fl of o.fills || []) { const p = fl.pts.filter(q => isFinite(q[0]) && isFinite(q[1])); if (p.length > 2) g += `<path d="M${p.map(q => f(X(clamp(q[0], x0, x1))) + ' ' + f(Y(clamp(q[1], y0, y1)))).join('L')}Z" class="${fl.c}"/>`; }
