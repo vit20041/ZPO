@@ -2151,6 +2151,84 @@ const ST_SOL = [
  'I_R = I·X/|R + jX| = 32·0,524/0,585 = 28,6 A, I_L = 32·0,262/0,585 = 14,3 A.']
 ];
 
+/* ===== Elektrické stroje: všetečné otázky (vlastní formulace, k látce knihy Voženílek a kol.) ===== */
+/* [část, otázka, krátká odpověď, vysvětlení, scénář v laboratoři (nepovinné)] */
+const ST_VS = [
+  /* I. úvod */
+  [1, 'Proč elektromagnet vždy táhne kotvu tak, aby se vzduchová mezera zmenšila?', 'Soustava se pohybuje směrem, ve kterém roste indukčnost (klesá magnetický odpor). Síla je F = ∂W′/∂x při stálém proudu.', 'Při stálém proudu dodá zdroj při pohybu energii 2·ΔW: polovina zvětší energii pole, polovina se změní v mechanickou práci. Proto je síla úměrná i²·dL/dx a nezávisí na směru proudu – elektromagnet na střídavý proud táhne taky, jen s pulzující silou (proto bručí a má závit nakrátko).'],
+  [1, 'Sílu lze spočítat z energie, nebo z koenergie. Proč u energie je znaménko minus?', 'F = −∂W/∂x při stálém spřaženém toku, F = +∂W′/∂x při stálém proudu. Obě dávají stejnou sílu.', 'Při stálém toku (obvod rozpojený, zdroj nic nedodá) se mechanická práce bere z energie pole, ta proto klesá. Při stálém proudu dodává energii zdroj a koenergie roste. V lineárním obvodu W = W′, takže se liší jen tím, co držíme konstantní.'],
+  [1, 'Jak se dělí ztráty v železe a proč jedny závisí na f a druhé na f²?', 'Hysterezní ~ f·B^n (n asi 1,6–2), každou periodu se jednou oběhne hysterezní smyčka. Vířivé ~ f²·B²·d², indukované napětí v plechu je úměrné f·B a ztráty jeho kvadrátu.', 'Vířivé ztráty se omezí tenkými plechy (0,35–0,5 mm, d²) a legováním křemíkem (větší rezistivita), hysterezní kvalitním materiálem s úzkou smyčkou. Proto u měničů s vyšším kmitočtem rostou hlavně vířivé ztráty.'],
+  [1, 'Proč se nedělají stroje s indukcí ve vzduchové mezeře 2 T?', 'Indukce v zubech je asi dvakrát větší než v mezeře (zuby jsou užší než rozteč). Při 2 T v mezeře by zuby byly hluboko v nasycení.', 'Sycení by vyžadovalo obrovský magnetizační proud a ztráty v železe. Typicky je v mezeře 0,7–1 T a v zubech 1,5–1,8 T.'],
+  [1, 'Proč mají velké stroje lepší účinnost než malé?', 'Při zvětšení rozměrů k-krát roste výkon zhruba s k⁴ (objem D²l a s ním i dovolené elektrické a magnetické využití), ale ztráty jen s k³.', 'Z toho plyne i problém: plocha pro chlazení roste jen s k², takže velké stroje potřebují intenzivní chlazení (vodík, voda ve vodičích). Malé stroje mají poměrně velké ztráty, ale chladí se snadno.'],
+  [1, 'Proč se stroj stejných rozměrů dimenzuje na výkon úměrný otáčkám?', 'Z Essonova vztahu P ~ C·D²l·n: rozměry (objem rotoru) určují moment, výkon je moment krát otáčky.', 'Proto jsou pomaluběžné stroje (vodní generátory, přímé pohony) pro stejný výkon mnohem větší a dražší než rychloběžné.'],
+  [1, 'Je magnetický obvod stroje lineární?', 'Přibližně ano, dokud se nenasytí železo: většina magnetického napětí padá na vzduchovou mezeru, která je lineární.', 'Proto mají stroje magnetizační charakteristiku nejprve téměř přímou (přímka vzduchové mezery) a pak ohnutou. Pracovní bod bývá na „koleni“.'],
+  /* II. DC */
+  [2, 'Kolik paralelních větví má smyčkové a kolik vlnové vinutí a proč na tom záleží?', 'Jednoduché smyčkové 2a = 2p (tolik větví jako pólů), jednoduché vlnové vždy 2a = 2.', 'Smyčkové se hodí pro velké proudy a malá napětí, vlnové pro velká napětí a malé proudy. Smyčkové vinutí navíc potřebuje vyrovnávací spojky.'],
+  [2, 'K čemu jsou u smyčkového vinutí vyrovnávací spojky?', 'Větve pod různými póly nemají kvůli nepřesnostem (výstřednost, rozdílné mezery) přesně stejné napětí. Bez spojek by se rozdíly vyrovnávaly proudy přes kartáče a komutátor by jiskřil.', 'Spojky propojují místa vinutí, která by měla mít stejný potenciál, takže vyrovnávací proudy tečou jimi, ne kartáči.'],
+  [2, 'Kam se posouvá magnetická neutrála a kam se musí posunout kartáče u stroje bez komutačních pólů?', 'Reakce kotvy posune neutrálu u generátoru ve směru otáčení, u motoru proti směru. Kartáče se posouvají ve stejném smyslu.', 'Posunutí kartáčů ale vytvoří podélnou složku reakce kotvy, která v obou případech hlavní tok zeslabuje, a správná poloha platí jen pro jedno zatížení. Proto se používají komutační póly.'],
+  [2, 'Proč má příčná reakce kotvy demagnetizační účinek, když je kolmá na hlavní pole?', 'Pod jednou hranou pólu pole zesiluje, pod druhou zeslabuje. Kvůli sycení je zesílení menší než zeslabení, výsledný tok tedy klesne.', 'V nenasyceném stroji by se účinky přesně vyrušily. Kompenzační vinutí v pólových nástavcích reakci pod póly ruší celou.'],
+  [2, 'Proč derivační dynamo při zkratu dá jen malý proud?', 'Při zkratu klesne napětí na svorkách na nulu, a tím i budicí proud. Stroj se odbudí a proud dává jen remanentní napětí.', 'Zatěžovací charakteristika derivačního dynama se proto při velkém proudu „vrací“ (kritický proud). Cize buzené dynamo by do zkratu dalo proud U_i/R_a, mnohonásobek jmenovitého.'],
+  [2, 'Derivační dynamo se nabudí při otáčení vpravo. Co se stane při otáčení vlevo?', 'Nenabudí se. Remanentní napětí změní polaritu a budicí proud pak remanentní tok zeslabuje.', 'Při změně směru otáčení je potřeba přehodit vývody budicího vinutí (nebo kotvy). Cize buzené dynamo jen změní polaritu napětí.'],
+  [2, 'Proč přímá komutace nejiskří a zpožděná ano?', 'Při přímé (lineární) komutaci klesá proud v cívce rovnoměrně a v okamžiku odchodu lamely je proud v ní nulový. Při zpožděné komutaci zbývá proud, který se musí přerušit na odbíhající hraně kartáče obloukem.', 'Zpoždění způsobuje reaktanční napětí cívky. Komutační pól ho ruší napětím opačného směru; kartáče s větším přechodovým odporem (uhlík) komutaci také pomáhají (odporová komutace).'],
+  [2, 'Proč má komutační pól nenasycený magnetický obvod s větší vzduchovou mezerou?', 'Jeho napětí musí být úměrné proudu kotvy při každém zatížení. To zajistí jen lineární (nenasycený) magnetický obvod.', 'Komutační pól je proto zapojený v sérii s kotvou a dimenzovaný s rezervou na přetížení.'],
+  [2, 'Proč univerzální motor běží na střídavý proud, ale derivační motor s napájením kotvy i buzení ze střídavé sítě skoro ne?', 'U sériového motoru je proud kotvy i budicí stejný, mění znaménko současně a moment ~ i² má kladnou střední hodnotu. U derivačního má budicí vinutí velkou indukčnost a jeho proud je posunutý skoro o 90°, střední moment je malý.', 'Univerzální motor navíc musí mít lamelovaný stator a jiskří víc kvůli transformačnímu napětí v komutujících cívkách.'],
+  [2, 'Proč se úbytek na kartáčích bere jako stálé napětí asi 2 V, a ne jako odpor?', 'Přechodový odpor uhlík–měď s proudovou hustotou klesá, takže úbytek je v provozním rozsahu skoro nezávislý na proudu (asi 1 V na kartáč).', 'U strojů na malé napětí (desítky voltů) je to významná ztráta, u strojů na stovky voltů zanedbatelná.'],
+  [2, 'Co je kompaundní stroj a proč se dělá překompaundované dynamo?', 'Má derivační (nebo cizí) i sériové budicí vinutí. Sériové vinutí s proudem zatížení zvětšuje tok a vyrovnává úbytek napětí.', 'Překompaundované dynamo má sériové vinutí silnější, aby vyrovnalo i úbytek na vedení ke spotřebiči. Protikompaundní zapojení (sériové proti derivačnímu) dává strmě klesající charakteristiku pro svařování.'],
+  [2, 'Jak funguje Ward–Leonardova soustava a proč se dnes nepoužívá?', 'Asynchronní (nebo synchronní) motor pohání dynamo, jehož napětím (buzením) se řídí otáčky stejnosměrného motoru. Umí čtyřkvadrantový provoz včetně rekuperace.', 'Potřebuje tři stroje s instalovaným výkonem asi trojnásobným a má horší účinnost. Nahradily ji tyristorové usměrňovače a pulzní měniče.'],
+  /* III. transformátory */
+  [3, 'Odkud je číslo 4,44 ve vztahu U = 4,44·f·N·Φ_m?', 'Z efektivní hodnoty sinusového indukovaného napětí: U = ω·N·Φ_m/√2 = (2π/√2)·f·N·Φ_m ≈ 4,44·f·N·Φ_m.', 'Vztah platí jen pro sinusový tok. Ukazuje hlavní věc: při daném napětí a kmitočtu je tok pevně dán, nezávisle na zatížení.'],
+  [3, 'Proč je proud naprázdno transformátoru nesinusový a co s tím má společného zapojení do trojúhelníku?', 'Kvůli sycení potřebuje sinusový tok špičatý magnetizační proud s výraznou 3. harmonickou. Ve trojúhelníku může 3. harmonická téct uvnitř vinutí.', 'U zapojení Yy bez vyvedeného uzlu 3. harmonická téct nemůže, tok je pak nesinusový a v napětí se objeví 3. harmonická (u skupinových a plášťových transformátorů výrazně). Proto mívá jedno vinutí trojúhelník nebo terciární vinutí v trojúhelníku.'],
+  [3, 'Proč se Yyn transformátor nehodí pro velkou jednofázovou (nesouměrnou) zátěž proti nulovému vodiči?', 'Proud v nulovém vodiči sekundáru nemá na primární straně (Y bez nulového vodiče) protějšek. Nevyvážené ampérzávity vytvoří tok netočivé (nulové) složky, který se uzavírá mimo jádro.', 'Uzel napětí se posune, napětí fází jsou nesouměrná a nádoba se ohřívá. Pro rozvodné sítě se proto používá Dyn nebo Yzn.'],
+  [3, 'Při přepočtu sekundáru na primár se odpor násobí p², proud dělí p. Co se tím zachovává?', 'Výkony a ztráty: R′·I′² = p²R·(I/p)² = R·I², a stejně jalové výkony. Napětí se násobí p, aby platilo S′ = S.', 'Přepočet je jen matematický trik, aby šlo transformátor nahradit obvodem bez ideálního transformátoru (náhradní schéma do T).'],
+  [3, 'Proč je autotransformátor výhodný jen pro převod blízký 1?', 'Část výkonu se přenáší přímo galvanicky, transformuje se jen typový výkon S_typ = S·(1 − 1/p). Při p = 1,1 stačí transformátor na 9 % výkonu, při p = 10 už na 90 %.', 'Nevýhoda: obě strany jsou galvanicky spojené, takže porucha vinutí může přenést vyšší napětí na nižší stranu a zkratový proud je velký (malé u_k).'],
+  [3, 'Proč se nesmí rozpojit sekundár měřicího transformátoru proudu?', 'Primární proud je dán sítí. Bez sekundárních ampérzávitů celý magnetizuje jádro, tok vzroste mnohonásobně, jádro se přesytí a na sekundáru vzniknou napěťové špičky stovek až tisíců voltů.', 'Hrozí úraz a zničení izolace; jádro se navíc přehřívá. Proto se nepoužívaný měřicí transformátor proudu zkratuje.'],
+  [3, 'A proč se naopak nesmí zkratovat sekundár měřicího transformátoru napětí?', 'Ten pracuje jako zdroj napětí s malou impedancí; zkrat by dal velký proud a transformátor zničil.', 'Měřicí transformátor napětí pracuje skoro naprázdno (voltmetry), měřicí transformátor proudu skoro nakrátko (ampérmetry).'],
+  [3, 'Jaké jsou podmínky paralelního chodu transformátorů a co se stane, když se nedodrží převod?', 'Stejný převod, stejný hodinový úhel, napětí nakrátko asi ±10 %, poměr výkonů nejvýš asi 1:3. Při rozdílném převodu teče vyrovnávací proud už naprázdno.', 'Rozdílné hodinové úhly (např. 30°) by daly vyrovnávací proud řádově zkratový. Rozdílné u_k vedou k nerovnoměrnému dělení zatížení.'],
+  [3, 'Dva transformátory se stejným výkonem pracují paralelně, jeden má u_k = 4 %, druhý 6 %. Který se přetíží?', 'Ten s menším u_k: zatížení se dělí nepřímo úměrně u_k.', 'Oba mají stejný úbytek napětí, a ten je úměrný u_k·(I/I_N). Transformátor s 4 % proto ponese 1,5× větší poměrný proud než ten s 6 %.'],
+  [3, 'Může napětí transformátoru při zatížení vzrůst?', 'Ano, při kapacitní zátěži. Úbytek ΔU ≈ I·(R_k·cos φ + X_k·sin φ) je pro kapacitní φ záporný.', 'Podobně stoupá napětí na konci dlouhého nezatíženého vedení (Ferrantiho jev). Při induktivní zátěži napětí klesá víc než při činné.'],
+  [3, 'Proč ztráty v železe transformátoru nezávisí na zatížení?', 'Tok určuje napětí a kmitočet (U ≈ 4,44·f·N·Φ), ne proud zátěže. Zátěžný proud v sekundáru je kompenzován proudem v primáru.', 'Proto je transformátor připojený k síti pořád ztrátový, i když nic nenapájí, a proto se navrhuje s maximem účinnosti pod jmenovitým zatížením.'],
+  [3, 'Proč má trojfázový jádrový transformátor nesouměrný proud naprázdno?', 'Magnetická cesta prostředního sloupku je kratší než krajních, potřebuje menší magnetizační proud.', 'Při zatížení je nesouměrnost zanedbatelná, protože proud naprázdno je jen malá část jmenovitého.'],
+  [3, 'Proč mají transformátory olej a k čemu je konzervátor?', 'Olej izoluje a odvádí teplo z vinutí do nádoby a chladičů. Konzervátor vyrovnává změny objemu oleje s teplotou a omezuje styk oleje se vzduchem.', 'V potrubí ke konzervátoru bývá plynové (Buchholzovo) relé, které zachytí plyny z rozkladu oleje při vnitřní poruše.'],
+  /* IV. úvod do střídavých strojů */
+  [4, 'Proč se vinutí rozkládá do více drážek na pól a fázi?', 'Pole je blíž sinusovce, vyšší harmonické se potlačí, vinutí se lépe chladí. Platí se za to činitelem rozložení k_q < 1.', 'Činitel vinutí k_v = k_y·k_q (zkrácení krát rozložení). Pro základní harmonickou bývá 0,9–0,96, pro 5. a 7. jen několik procent.'],
+  [4, 'Proč se drážky rotoru (klece) dělají šikmé?', 'Zešikmení o jednu drážkovou rozteč potlačí drážkové harmonické: zmenší parazitní momenty, hluk a „lepení“ rotoru při rozběhu.', 'Cenou je mírně větší rozptylová reaktance a příčné proudy mezi tyčemi.'],
+  [4, 'Proč v točivém poli trojfázového vinutí chybí 3. harmonická?', '3. prostorová harmonická fáze k má tvar i_k·cos(3θ − 3·k·120°) = i_k·cos 3θ: u všech tří fází leží stejně. Výsledek je (i_a + i_b + i_c)·cos 3θ, a součet souměrných proudů je v každém okamžiku nula.', 'Zbývají harmonické 5, 7, 11, 13…; 5. se točí proti směru základní vlny rychlostí n_s/5, 7. po směru rychlostí n_s/7.'],
+  [4, 'Jakou rychlostí a kam se točí 5. a 7. harmonická pole?', '5. proti směru základní vlny, 7. po směru, obě rychlostí n_s/ν.', 'Obecně harmonické 6k + 1 se točí souhlasně, 6k − 1 nesouhlasně. Vytvářejí asynchronní přívěsné momenty se „sedly“ v momentové charakteristice.'],
+  [4, 'Jak velká jsou dvě točivá pole, na která se rozloží pulzující pole jedné fáze?', 'Každé má poloviční amplitudu pulzujícího pole a točí se opačně rychlostí ω/p.', 'Ve trojfázovém vinutí se sousledné poloviny sčítají (3 × ½ = 3/2), zpětné se ruší.'],
+  /* V. asynchronní */
+  [5, 'Proč se v náhradním schématu asynchronního stroje píše R₂′/s, a ne R₂′?', 'Rotorový obvod pracuje s kmitočtem s·f, jeho napětí je s·U_i a reaktance s·X₂. Vydělením rovnice skluzem dostaneme obvod se síťovým kmitočtem a odporem R₂′/s.', 'R₂′/s = R₂′ + R₂′·(1 − s)/s: první část jsou skutečné ztráty v rotoru, druhá je „zátěžný odpor“, na kterém se ztrácí právě mechanický výkon.'],
+  [5, 'Proč je místo konce fázoru proudu asynchronního motoru kružnice (kruhový diagram)?', 'Při stálých parametrech se mění jen R₂′/s; impedance pak leží na přímce a proud I = U/Z, tedy převrácená hodnota přímky, leží na kružnici.', 'Na kružnici jsou body s = 0 (naprázdno), s = 1 (nakrátko) a s = ±∞. Přímka výkonu spojuje body s = 0 a s = 1, přímka momentu body s = 0 a s = ∞. Vzdálenost bodu od nich odečte výkon a moment.'],
+  [5, 'Proč se kroužkový motor s přerušenou fází rotoru rozbíhá jen na polovinu otáček (Görgesův jev)?', 'Jednofázový proud v rotoru vytvoří vůči rotoru dvě protiběžná pole. Zpětné z nich se vůči statoru točí rychlostí (1 − 2s)·n_s a v okolí s = 0,5 vytváří moment, který motor brzdí.', 'V momentové charakteristice vznikne sedlo kolem poloviny otáček; při zatížení motor na polovině otáček „zůstane viset“ a hřeje se.'],
+  [5, 'Proč se motor s nevhodným počtem drážek může „přilepit“ při nízkých otáčkách a nerozběhnout se?', 'Drážkové harmonické statoru a rotoru vytvářejí synchronní přívěsné momenty při určitých otáčkách. Pokud jsou větší než zbývající moment, rotor se na nich zastaví.', 'Navrhuje se proto vhodný poměr počtu drážek statoru a rotoru a zešikmení drážek.'],
+  [5, 'Jak se z měření naprázdno oddělí ztráty mechanické od ztrát v železe?', 'Měří se příkon naprázdno při postupně snižovaném napětí a vynese se v závislosti na U². Prodloužením k U = 0 zbude mechanická ztráta (tření a ventilace), ztráty v železe jsou ~ U².', 'Ztráty ve vinutí statoru naprázdno se předem odečtou (R₁·I₀²). Otáčky se při zkoušce téměř nemění, proto jsou mechanické ztráty stálé.'],
+  [5, 'Proč se zkouška nakrátko asynchronního motoru dělá při sníženém napětí a proč přepočet na plné napětí dá spíš menší záběrový proud, než je skutečný?', 'Při plném napětí by tekl proud 5–7 I_N a motor by se rychle přehřál. Přepočítává se lineárně, ale při plném proudu se nasytí rozptylové cesty (zuby), rozptylová reaktance klesne a proud je ve skutečnosti větší.', 'Ze zkoušky nakrátko se určí R_k a X_k (součty statoru a rotoru), z nich parametry náhradního schématu.'],
+  [5, 'Proč se rozběhový kondenzátor jednofázového motoru po rozběhu odpojuje?', 'Kondenzátor velký pro rozběh (souměrné pole při s = 1) by za chodu dal pomocné fázi příliš velký proud a pole by bylo zase nesouměrné.', 'Motory mají buď dvojici kondenzátorů (rozběhový a běhový), nebo jen menší běhový za cenu menšího záběrového momentu. Odpojuje se odstředivým nebo proudovým spínačem.'],
+  [5, 'Proč mají mnohapólové (pomaluběžné) asynchronní motory horší účiník?', 'Pólová rozteč je malá, ale vzduchová mezera kvůli výrobě zůstává podobná. Poměr mezery k rozteči roste a s ním poměrný magnetizační proud.', 'Proto se pro pomalé pohony spíš volí rychloběžný motor s převodovkou nebo synchronní stroj.'],
+  [5, 'Jak funguje dvojitá klec?', 'Horní klec má velký odpor a malou rozptylovou reaktanci, dolní malý odpor a velkou reaktanci. Při rozběhu (s ≈ 1, kmitočet rotoru 50 Hz) teče proud hlavně horní klecí, za chodu (s·f ≈ 1 Hz) dolní.', 'Výsledkem je velký záběrový moment při rozumném proudu a zároveň malý skluz a dobrá účinnost za chodu. Podobně funguje hluboká drážka díky skinefektu.'],
+  [5, 'Proč je tok asynchronního motoru naprázdno a při plném zatížení skoro stejný, i když rotor najednou vede velký proud?', 'Napětí sítě drží tok (U ≈ 4,44·f·N·k_v·Φ). Ampérzávity rotoru se vyrovnají přídavným proudem statoru, jako u transformátoru.', 'Mírně tok klesá jen kvůli rostoucímu úbytku na R₁ a X₁σ.'],
+  [5, 'Proč se kroužkové motory používaly pro těžké rozběhy, a proč dnes skoro ne?', 'Vnější odpor v rotoru zvětší záběrový moment a zmenší proud a odvede ztráty rozběhu mimo stroj. Dnes totéž (a lépe, bez ztrát) zvládne kmitočtový měnič s klecovým motorem.', 'Kroužkové stroje zůstaly hlavně jako dvojitě napájené generátory ve větrných elektrárnách, kde měnič v rotoru stačí dimenzovat jen na skluzový výkon.'],
+  /* VI. synchronní */
+  [6, 'Co je poměr nakrátko a proč se rovná 1/X_d (v p.j.)?', 'k_c = I_f0/I_fk: budicí proud pro jmenovité napětí naprázdno ku budicímu proudu pro jmenovitý proud nakrátko. Pro nenasycený stroj je to právě převrácená synchronní reaktance.', 'Velký poměr nakrátko (malá X_d) znamená větší statickou stabilitu a menší úbytek napětí, ale větší mezeru a tedy větší budič a dražší stroj. Turboalternátory mají k_c asi 0,4–0,7, hydroalternátory 0,8–1,5.'],
+  [6, 'Proč je charakteristika nakrátko synchronního stroje přímka, i když naprázdno se stroj sytí?', 'Při zkratu je proud skoro čistě induktivní, reakce kotvy je podélná a demagnetizační. Výsledný tok v mezeře je jen tolik, aby pokryl malý úbytek na rozptylové reaktanci, stroj je nenasycený.', 'Proto se z charakteristik naprázdno a nakrátko určuje nenasycená X_d a pro nasycený stav se používá Potierova metoda.'],
+  [6, 'K čemu je Potierův trojúhelník?', 'Z charakteristiky naprázdno a zatěžovací charakteristiky při cos φ = 0 oddělí rozptylovou (Potierovu) reaktanci a budicí proud odpovídající reakci kotvy.', 'Umožní pak určit potřebný budicí proud pro libovolné zatížení i se sycením, přesněji než nenasycená X_d.'],
+  [6, 'Proč samostatně pracující synchronní generátor při induktivní zátěži napětí ztrácí a při kapacitní ho zvyšuje?', 'Induktivní proud vytváří podélnou reakci kotvy, která tok zeslabuje; kapacitní ho zesiluje.', 'Při velké kapacitní zátěži (dlouhé nezatížené vedení) se může generátor samobudit i bez buzení. Při činné zátěži je reakce převážně příčná a napětí klesá méně.'],
+  [6, 'Proč je změna napětí alternátoru mezi chodem naprázdno a zatížením tak velká (desítky procent)?', 'Synchronní reaktance je velká (1–2 p.j.): při jmenovitém proudu je úbytek na ní větší než jmenovité napětí.', 'U sítě to nevadí, protože napětí drží regulátor buzení. Pro ostrovní provoz je nutná rychlá regulace buzení.'],
+  [6, 'Proč má stroj s vyniklými póly X_q < X_d?', 'V příčné ose (mezi póly) je velká vzduchová mezera, magnetický odpor je větší a pro stejný proud vznikne menší tok.', 'Rozdíl reaktancí vytváří reluktanční moment ~ sin 2β. U turboalternátoru s hladkým rotorem je X_q ≈ X_d.'],
+  [6, 'Proč nesouměrné zatížení vadí synchronnímu stroji?', 'Zpětná složka proudu vytváří pole točící se proti rotoru, v rotoru indukuje proudy dvojnásobného kmitočtu, které ho ohřívají (hlavně povrch, klíny, tlumič).', 'Proto mají generátory povolený poměr zpětné složky (několik procent) a ochranu proti nesouměrnosti. Tlumicí vinutí tyto proudy přebírá.'],
+  [6, 'Jaký je rozdíl mezi fázováním na tmavo a na světlo a co znamená, že světlo „obíhá“?', 'Na tmavo jsou všechny tři žárovky mezi stejnojmennými fázemi: při správném sledu blikají současně a spíná se, když zhasnou. Na točivé světlo je jedna žárovka mezi stejnojmennými fázemi a dvě křížem: při správném sledu světlo obíhá, rychlost oběhu je rozdíl kmitočtů a směr ukazuje, který stroj je rychlejší.', 'Spíná se, když zhasne žárovka mezi stejnojmennými fázemi. Obíhá-li světlo v zapojení na tmavo (nebo blikají-li všechny současně v zapojení na točivé světlo), je sled fází špatně a stroj se připojit nesmí.'],
+  [6, 'Jak se budí synchronní generátor a co je bezkartáčový budič?', 'Stejnosměrným proudem do rotoru: dříve přes stejnosměrné dynamo (budič) a kroužky, dnes statickým tyristorovým budičem přes kroužky, nebo bezkartáčově.', 'Bezkartáčový budič je malý alternátor s otočnou kotvou na stejné hřídeli, jeho výstup usměrňují diody na rotoru přímo do budicího vinutí. Odpadnou kroužky, ale budicí proud nejde rychle snížit.'],
+  [6, 'Synchronní stroj se zátěžným úhlem 0°: co dělá?', 'Nepřenáší činný výkon (jen kryje ztráty), ale může dodávat nebo odebírat jalový výkon podle buzení – pracuje jako synchronní kompenzátor.', 'Přebuzený se chová jako kondenzátor, podbuzený jako tlumivka.'],
+  [6, 'K čemu všemu je u synchronního stroje tlumicí vinutí?', 'Tlumí kývání rotoru, umožní asynchronní rozběh motoru, přebírá proudy od zpětného pole při nesouměrnosti a zmenšuje rázovou reaktanci X″_d.', 'Je to vlastně klec v pólových nástavcích. V synchronizmu jím neteče proud, uplatní se jen při změnách.'],
+  /* VII. komutátorové */
+  [7, 'Proč střídavý komutátorový motor jiskří víc než stejnosměrný?', 'V komutující cívce se navíc indukuje transformační napětí od pulzujícího hlavního toku. To nezávisí na otáčkách, kdežto komutační pól umí rušit jen napětí úměrné proudu a otáčkám.', 'Úplná kompenzace platí jen pro jedny otáčky. Proto se v trakci používal snížený kmitočet 16⅔ Hz (menší transformační napětí).'],
+  [7, 'Proč má univerzální motor na střídavém napájení menší otáčky než na stejnosměrném při stejném napětí a zátěži?', 'Část napětí pokryje úbytek na reaktanci vinutí; na indukované napětí (a tedy otáčky) zbude méně.', 'Navíc sycení špičkami proudu zmenší střední tok. U malých spotřebičů (vrtačky, vysavače) se to vyrovná konstrukcí.'],
+  [7, 'Proč má univerzální motor velké otáčky naprázdno a čím je omezuje?', 'Je to sériový motor: s malou zátěží klesá proud i tok a otáčky rostou. Omezuje je jen tření a ventilace (vlastní ventilátor a převodovka spotřebiče).', 'Proto se univerzální motory používají tam, kde je vždy nějaká zátěž nebo se snesou vysoké otáčky (10–30 tisíc ot/min).'],
+];
+let stvsOpen = false;
+function stVsHTML(list) {
+  return list.map(i => { const [p, q, a, e, s] = ST_VS[i]; return `<details class="zq"${stvsOpen ? ' open' : ''}><summary><span class="zqt">${sub(q)}</span><span class="zqg">${ST_PARTS[p].split(' (')[0]}</span></summary><div class="zqa"><p><b>Odpověď.</b> ${sub(a)}</p><p><b>Proč.</b> ${sub(e)}</p>${s ? `<p class="zqr"><a href="#lab" data-scn-go="${s}">Vyzkoušet v laboratoři</a></p>` : ''}</div></details>`; }).join('');
+}
+
 /* ===== Schémata a průřezy (vlastní kresby) ===== */
 const FIG = {};
 {
@@ -3761,11 +3839,12 @@ function labMeters() {
       : [['x1', 'Frekvence f₁', 'Hz'], ['x2', 'Skluz s', '%'], ['x3', 'Výkon M·Ω', 'kW'], ['t', 'Čas simulace', 's']] };
 }
 function renderLab(el) {
+  if (LAB.m === 'tr') { renderTr(el); return; }
   if (!L || L.m !== LAB.m || L.gen !== LAB.gen) { labInit(); labGaugeInit(); }
   const { meters, extra } = labMeters();
   el.innerHTML = `<div class="wrap lab"><h2>Laboratoř: stroj naživo</h2><p class="lead">Stroj se počítá průběžně a běží, dokud ho nevypnete; za chodu můžete přepínat napájení, zátěž i buzení. Ručky ukazují okamžité hodnoty${L.m === 'sm' ? '' : ' (u střídavého stroje efektivní)'}; červená šipka je osa magnetického pole${L.m === 'dc' ? '' : ' statoru'}, bílý pruh značka na rotoru.</p>
 <div class="lbar">
-<label>Stroj<select id="lb-m">${[['am', 'asynchronní 400 V'], ['dc', 'stejnosměrný 440 V'], ['sm', 'synchronní s vyniklými póly']].map(([k, t]) => `<option value="${k}"${L.m === k ? ' selected' : ''}>${t}</option>`).join('')}</select></label>
+<label>Stroj<select id="lb-m">${[['am', 'asynchronní 400 V'], ['dc', 'stejnosměrný 440 V'], ['sm', 'synchronní s vyniklými póly'], ['tr', 'transformátor']].map(([k, t]) => `<option value="${k}"${L.m === k ? ' selected' : ''}>${t}</option>`).join('')}</select></label>
 <label>Režim<span class="seg">${[['mot', 'motor'], ['gen', L.m === 'dc' ? 'dynamo' : 'generátor']].map(([k, t]) => `<button type="button" data-lgen="${k}" aria-pressed="${(k === 'gen') === L.gen}">${t}</button>`).join('')}</span></label>
 <label>Zpomalení<select id="lb-sp">${[[1, 'skutečný čas'], [0.5, '2×'], [0.2, '5×'], [0.1, '10×'], [0.05, '20×'], [0.02, '50×'], [0.01, '100×'], [0.005, '200×'], [0.002, '500×']].map(([v, t]) => `<option value="${v}"${+v === LAB.sp ? ' selected' : ''}>${t}</option>`).join('')}</select></label>
 <label>Setrvačnost<select id="lb-J">${[0.5, 1, 2, 4].map(v => `<option value="${v}"${v === LAB.J ? ' selected' : ''}>${fmt(v, 1)}× J</option>`).join('')}</select></label>
@@ -4794,6 +4873,354 @@ document.addEventListener('input', e => {
 });
 document.addEventListener('change', e => { const id = e.target.dataset && e.target.dataset.fz; if (id && e.target.tagName === 'SELECT') { fazV[fazK][id] = e.target.value; fazDraw(); } });
 
+/* ===== Hodinový úhel trojfázového transformátoru ===== */
+const HOD_PRE = [['x', 'vlastní zapojení'], ['Yy0', 'Yy0'], ['Yy6', 'Yy6'], ['Yd1', 'Yd1'], ['Yd5', 'Yd5'], ['Yd11', 'Yd11'], ['Dy1', 'Dy1'], ['Dy5', 'Dy5'], ['Dy11', 'Dy11'], ['Dd0', 'Dd0'], ['Dd6', 'Dd6'], ['Yz1', 'Yz1'], ['Yz5', 'Yz5'], ['Yz11', 'Yz11'], ['Dz0', 'Dz0']];
+function hodCalc(v) {
+  const ph = k => ((k % 3) + 3) % 3, U = [0, 1, 2].map(k => cpol(1, -k * 120 * DEG));       /* svorky A, B, C (sousledně) */
+  const V = [0, 1, 2].map(k => v.pr === 'Y' ? U[k] : v.pr === 'D1' ? csub(U[k], U[ph(k + 1)]) : csub(U[k], U[ph(k - 1)]));
+  const sg = v.pol === '-' ? -1 : 1, W = V.map(x => csc(x, sg * (v.pr === 'Y' ? 1 : 1 / SQ3)));   /* napětí cívek sekundáru (stejný sloupek) */
+  const w = k => W[ph(k)];
+  let u, coils;   /* coils: [od, do, sloupek] pro kreslení */
+  const O = Cx(0, 0);
+  if (v.se === 'y') { u = [0, 1, 2].map(k => w(k)); coils = [0, 1, 2].map(k => [O, u[k], k]); }
+  else if (v.se === 'd1') { u = [0, 1, 2].map(k => csc(csub(w(k), w(k - 1)), 1 / 3)); coils = [0, 1, 2].map(k => [u[ph(k + 1)], u[k], k]); }
+  else if (v.se === 'd2') { u = [0, 1, 2].map(k => csc(csub(w(k), w(k + 1)), 1 / 3)); coils = [0, 1, 2].map(k => [u[ph(k - 1)], u[k], k]); }
+  else { const o = v.se === 'z1' ? 1 : -1; u = [0, 1, 2].map(k => csc(csub(w(k), w(k + o)), 0.5)); coils = []; for (let k = 0; k < 3; k++) { const m = csc(w(k), 0.5); coils.push([O, m, k], [m, u[k], ph(k + o)]); } }
+  /* přeznačení svorek sekundáru a→b→c */
+  const sh = +v.sh; if (sh) { const u2 = [0, 1, 2].map(k => u[ph(k + sh)]); u = u2; }
+  let h = Math.round(((carg(U[0]) - carg(u[0])) / DEG) / 30); h = ((h % 12) + 12) % 12;
+  const pc = v.pr === 'Y' ? [0, 1, 2].map(k => [O, U[k], k]) : [0, 1, 2].map(k => [v.pr === 'D1' ? U[ph(k + 1)] : U[ph(k - 1)], U[k], k]);
+  return { u, U, h, pc, coils, sh };
+}
+function hodSVG(r, v) {
+  const col = ['var(--red)', 'var(--och)', 'var(--blu)'], f = x => x.toFixed(1);
+  const draw = (cx, cy, R, coils, T, names, lab) => {
+    let g = `<text x="${cx}" y="${cy - R - 28}" text-anchor="middle" class="b">${lab}</text>`;
+    for (const [a, b, k] of coils) g += `<line x1="${f(cx + R * a.re)}" y1="${f(cy - R * a.im)}" x2="${f(cx + R * b.re)}" y2="${f(cy - R * b.im)}" style="stroke:${col[k]};stroke-width:5;stroke-linecap:round"/>`;
+    T.forEach((p, k) => { g += `<circle cx="${f(cx + R * p.re)}" cy="${f(cy - R * p.im)}" r="5" class="dot"/><text x="${f(cx + (R + 18) * p.re / Math.max(cabs(p), 1e-6) * Math.max(cabs(p), 0.4))}" y="${f(cy - (R + 18) * p.im / Math.max(cabs(p), 1e-6) * Math.max(cabs(p), 0.4) + 5)}" text-anchor="middle" class="b">${names[k]}</text>`; });
+    return g;
+  };
+  /* natočení: fázor A svisle nahoru (12 h) */
+  const rot = x => cmul(x, cpol(1, 90 * DEG)), U = r.U.map(rot), u = r.u.map(rot), rc = c => c.map(([a, b, k]) => [rot(a), rot(b), k]);
+  const sU = 1 / Math.max(...U.map(cabs)), su = 1 / Math.max(...u.map(cabs)), sc = (c, s) => c.map(([a, b, k]) => [csc(a, s), csc(b, s), k]);
+  let g = draw(130, 200, 95, sc(rc(r.pc), sU), U.map(x => csc(x, sU)), ['A', 'B', 'C'], 'vstup (VN): ' + (v.pr === 'Y' ? 'Y' : 'D'));
+  g += draw(380, 200, 95, sc(rc(r.coils), su), u.map(x => csc(x, su)), ['a', 'b', 'c'], 'výstup (NN): ' + v.se[0]);
+  /* ciferník */
+  const cx = 590, cy = 200, R = 80; g += `<circle cx="${cx}" cy="${cy}" r="${R}" style="fill:var(--panel);stroke:var(--ink);stroke-width:2"/><text x="${cx}" y="${cy - R - 28}" text-anchor="middle" class="b">hodinový úhel</text>`;
+  for (let k = 0; k < 12; k++) { const a = k * 30 * DEG; g += `<text x="${f(cx + (R - 14) * Math.sin(a))}" y="${f(cy - (R - 14) * Math.cos(a) + 5)}" text-anchor="middle" class="sm">${k || 12}</text>`; }
+  const ah = r.h * 30 * DEG;
+  g += `<line x1="${cx}" y1="${cy}" x2="${cx}" y2="${cy - R + 4}" style="stroke:var(--ink);stroke-width:5"/><line x1="${cx}" y1="${cy}" x2="${f(cx + (R - 30) * Math.sin(ah))}" y2="${f(cy - (R - 30) * Math.cos(ah))}" style="stroke:var(--red);stroke-width:7;stroke-linecap:round"/><circle cx="${cx}" cy="${cy}" r="6" class="dot"/>`;
+  g += `<text x="${cx}" y="${cy + R + 26}" text-anchor="middle" class="b">U_A (dlouhá) · U_a (krátká)</text>`;
+  return `<svg viewBox="0 0 700 340" role="img" aria-label="Hodinový úhel transformátoru">${g}</svg>`;
+}
+FAZ.hod = {
+  n: 'Hodinový úhel',
+  p: [['pre', 'Předvolba', 'sel', HOD_PRE, 0, 'Yd1', ''], ['pr', 'Vinutí VN', 'sel', [['Y', 'hvězda Y'], ['D1', 'trojúhelník D (cívka A mezi A–B)'], ['D2', 'trojúhelník D (cívka A mezi A–C)']], 0, 'Y', ''],
+    ['se', 'Vinutí NN', 'sel', [['y', 'hvězda y'], ['d1', 'trojúhelník d (cívka a mezi a–b)'], ['d2', 'trojúhelník d (cívka a mezi a–c)'], ['z1', 'lomená hvězda z (a + −b)'], ['z2', 'lomená hvězda z (a + −c)']], 0, 'd1', ''],
+    ['pol', 'Smysl vinutí NN', 'sel', [['+', 'souhlasný'], ['-', 'opačný (začátek ↔ konec)']], 0, '+', ''], ['sh', 'Označení svorek NN', 'sel', [['0', 'a, b, c na sloupcích 1, 2, 3'], ['1', 'posunuto o jeden sloupek'], ['2', 'posunuto o dva sloupky']], 0, '0', '']],
+  calc(v) {
+    const r = hodCalc(v), name = (v.pr === 'Y' ? 'Y' : 'D') + v.se[0] + r.h;
+    return {
+      svg: hodSVG(r, v),
+      out: [['Skupina spojení', name], ['Hodinový úhel', r.h + ' h = ' + r.h * 30 + '° (NN se zpožďuje)'], ['Převod sdružených napětí', 'U_ab/U_AB ∝ ' + fmt(cabs(csub(r.u[0], r.u[1])) / cabs(csub(r.U[0], r.U[1])), 3) + ' (při stejném počtu závitů cívek)']],
+      note: 'Barva = sloupek jádra: cívky na stejném sloupku mají napětí ve fázi (nebo v protifázi při opačném smyslu vinutí). ' + (r.h % 2 ? 'Liché číslo: jedno vinutí je ve hvězdě a druhé v trojúhelníku (nebo z), posun o 30° nelze dosáhnout jen přeznačením svorek.' : 'Sudé číslo: obě vinutí stejného typu, nebo kombinace s lomenou hvězdou.') + ' Přeznačení svorek mění úhel o 4 h, opačný smysl vinutí o 6 h.'
+    };
+  },
+  txt: 'Hodinový úhel říká, o kolik násobků 30° se fázor napětí strany NN (svorka a) zpožďuje za fázorem napětí strany VN (svorka A). Dlouhá ručka (VN) ukazuje na 12, krátká (NN) na číslo skupiny. Postup: nakreslete fázory napětí cívek VN podle zapojení, cívky na stejném sloupku jádra mají na NN straně napětí stejného směru, pak je pospojujte podle zapojení NN a odečtěte úhel mezi fázorem A (od středu) a a (od středu). Paralelně lze spojit jen transformátory se stejným hodinovým úhlem.'
+};
+fazV.hod = {}; for (const p of FAZ.hod.p) fazV.hod[p[0]] = p[5];
+function hodPreset(name) {
+  if (name === 'x') return;
+  const P = name[0] === 'Y' ? ['Y'] : ['D1', 'D2'], S = name[1] === 'y' ? ['y'] : name[1] === 'd' ? ['d1', 'd2'] : ['z1', 'z2'], h = +name.slice(2);
+  for (const sh of ['0', '1', '2']) for (const pol of ['+', '-']) for (const pr of P) for (const se of S) { const v = { pr, se, pol, sh }; if (hodCalc(v).h === h) { Object.assign(fazV.hod, v); return; } }
+}
+hodPreset('Yd1');
+document.addEventListener('change', e => {
+  const id = e.target.dataset && e.target.dataset.fz; if (fazK !== 'hod' || !id) return;
+  if (id === 'pre') { hodPreset(e.target.value); renderFaz($('#cards')); }
+  else { fazV.hod.pre = 'x'; const s = document.querySelector('[data-fz="pre"]'); if (s) s.value = 'x'; }
+});
+
+/* ===== Laboratoř: transformátor (jednofázový časově, trojfázový a paralelní chod fázorově) ===== */
+const TRP = (() => {
+  const S = 2000, U1 = 230, U2 = 115, p = U1 / U2, I1N = S / U1, Zb = U1 / I1N, w = 2 * Math.PI * 50, uk = 0.05, pk = 0.025, i0 = 0.04, p0 = 0.01;
+  const Rk = pk * Zb, Xk = Math.sqrt(uk * uk - pk * pk) * Zb, Lk = Xk / w, Im = i0 * I1N, Lm = U1 / (w * Im), RFe = U1 * U1 / (p0 * S), psiN = U1 * Math.SQRT2 / w;
+  return { S, U1, U2, p, I1N, I2N: S / U2, Zb, w, uk, pk, i0, p0, R1: Rk / 2, R2: Rk / 2, Ls1: Lk / 2, Ls2: Lk / 2, Lm, RFe, psiN, psiK: 1.2 * psiN, Lsat: 0.012, eps: 0.04 * psiN };
+})();
+const TR = { on: false, U: 100, ang: 'rnd', rem: 0, load: 'open', I: 1, cf: 0.8, ch: 'ind', sp: 0.02, run: true, chs: { u1: true, i1: true, i2: true, psi: true }, win: 0.1 };
+let TS = null, trRaf = 0, trLast = 0;
+/* magnetizační charakteristika ψ → i (měkké koleno, nad ním „vzduchová“ indukčnost) */
+function trIm(ps) {
+  const P = TRP, a = Math.abs(ps), x = a - P.psiK, sq = Math.sqrt(x * x + P.eps * P.eps), g = (x + sq) / 2, dg = (1 + x / sq) / 2, k = 1 / P.Lsat - 1 / P.Lm;
+  return { i: Math.sign(ps) * (a / P.Lm + k * g), d: 1 / P.Lm + k * dg };
+}
+function trLoadZ() {
+  const P = TRP;
+  if (TR.load === 'open') return null;
+  if (TR.load === 'short') return { R: 0, L: 0, C: 0 };
+  const Z = (P.U2 / P.I2N) / Math.max(TR.I, 0.02) * P.p * P.p, ph = Math.acos(TR.cf), R = Z * TR.cf, X = Z * Math.sin(ph);   /* přepočteno na primár */
+  return TR.ch === 'ind' || X < 1e-9 ? { R, L: X / P.w, C: 0 } : { R, L: 0, C: 1 / (P.w * X) };
+}
+function trInit() {
+  TS = { t: 0, s: [TR.rem * TRP.psiN, TR.rem * TRP.psiN, 0], th0: 0, onT: -1, Z: trLoadZ(), acc: 0, trip: false, hot: 0,
+    per: { n: 0, su1: 0, si1: 0, sp1: 0, su2: 0, si2: 0, sp2: 0, t0: 0 }, m: { U1: 0, I1: 0, P1: 0, U2: 0, I2: 0, P2: 0, ipk: 0 }, pm: TR.rem * TRP.psiN,
+    osc: { t: new Float64Array(OSC_N), u1: new Float64Array(OSC_N), i1: new Float64Array(OSC_N), i2: new Float64Array(OSC_N), psi: new Float64Array(OSC_N), i: 0, n: 0 }, nextO: 0, hist: [] };
+}
+/* řešení ψ_m z toků ψ₁, ψ₂x (Newton), vrací proudy */
+function trSolve(s, Z) {
+  const P = TRP, Lt = Z ? P.Ls2 + Z.L : 0; let pm = TS.pm;
+  for (let it = 0; it < 8; it++) {
+    const m = trIm(pm), f = (s[0] - pm) / P.Ls1 - (Z ? (pm - s[1]) / Lt : 0) - m.i, df = -1 / P.Ls1 - (Z ? 1 / Lt : 0) - m.d, dp = f / df;
+    pm -= dp; if (Math.abs(dp) < 1e-9) break;
+  }
+  TS.pm = pm; return { pm, i1: (s[0] - pm) / P.Ls1, iL: Z ? (pm - s[1]) / Lt : 0, Lt };
+}
+function trDeriv(s, t, Z) {
+  const P = TRP, u1 = trU1(t), r = trSolve(s, Z);
+  return { d: [u1 - P.R1 * r.i1, Z ? (P.R2 + Z.R) * r.iL + s[2] : 0, Z && Z.C ? r.iL / Z.C : 0], r, u1 };
+}
+function trU1(t) { return TR.on && !TS.trip ? TR.U / 100 * TRP.U1 * Math.SQRT2 * Math.sin(TRP.w * (t - TS.onT) + TS.th0) : 0; }
+function trStep(dt) {
+  const s = TS.s, Z = TS.Z, t = TS.t;
+  if (!TR.on || TS.trip) { /* vypnuto: tok zůstane jako remanence, proudy nulové */ TS.s = [TS.pm, TS.pm, 0]; TS.t += dt; return { i1: 0, iL: 0, u1: 0, u2: 0, pm: TS.pm }; }
+  if (!Z) s[1] = TS.pm;
+  const k1 = trDeriv(s, t, Z), a = (x, k, h) => x.map((v, i) => v + h * k.d[i]);
+  const k2 = trDeriv(a(s, k1, dt / 2), t + dt / 2, Z), k3 = trDeriv(a(s, k2, dt / 2), t + dt / 2, Z), k4 = trDeriv(a(s, k3, dt), t + dt, Z);
+  for (let i = 0; i < 3; i++) s[i] += dt / 6 * (k1.d[i] + 2 * k2.d[i] + 2 * k3.d[i] + k4.d[i]);
+  TS.t += dt;
+  const r = trSolve(s, Z), u1 = trU1(TS.t), P = TRP;
+  /* napětí na svorkách sekundáru (přepočtené): u₂ = R_z·i + u_C + L_z·di/dt */
+  let u2 = 0;
+  if (Z) { const m = trIm(r.pm), d1 = u1 - P.R1 * r.i1, d2 = (P.R2 + Z.R) * r.iL + s[2], dpm = (d1 / P.Ls1 + d2 / r.Lt) / (1 / P.Ls1 + 1 / r.Lt + m.d), diL = (dpm - d2) / r.Lt; u2 = Z.R * r.iL + s[2] + Z.L * diL; }
+  else { const m = trIm(r.pm), d1 = u1 - P.R1 * r.i1; u2 = d1 / P.Ls1 / (1 / P.Ls1 + m.d); }
+  return { i1: r.i1 + u1 / P.RFe, iL: r.iL, u1, u2, pm: r.pm };
+}
+function trAdvance(simT) {
+  const dt = 2e-5, cap = 6000, P = TRP; TS.acc += simT; const n = Math.min(Math.floor(TS.acc / dt), cap); TS.acc = n === cap ? 0 : TS.acc - n * dt;
+  for (let k = 0; k < n; k++) {
+    const r = trStep(dt), q = TS.per, u2s = r.u2 / P.p, i2s = r.iL * P.p;
+    q.n++; q.su1 += r.u1 * r.u1; q.si1 += r.i1 * r.i1; q.sp1 += r.u1 * r.i1; q.su2 += u2s * u2s; q.si2 += i2s * i2s; q.sp2 += u2s * i2s;
+    TS.m.ipk = Math.max(TS.m.ipk * (1 - dt / 0.5), Math.abs(r.i1));
+    if (TS.t - q.t0 >= 0.02 - 1e-9) {
+      const N = q.n, m = TS.m; m.U1 = Math.sqrt(q.su1 / N); m.I1 = Math.sqrt(q.si1 / N); m.P1 = q.sp1 / N; m.U2 = Math.sqrt(q.su2 / N); m.I2 = Math.sqrt(q.si2 / N); m.P2 = q.sp2 / N;
+      TS.per = { n: 0, su1: 0, si1: 0, sp1: 0, su2: 0, si2: 0, sp2: 0, t0: TS.t };
+      /* jistič: tepelně (I > 3 I_N déle než 0,2 s) */
+      TS.hot = m.I1 > 3 * P.I1N ? TS.hot + 0.02 : Math.max(0, TS.hot - 0.02);
+      if (TS.hot > 0.2 && !TS.trip) { TS.trip = true; trLog('Jistič vypnul: proud ' + fmt(m.I1 / P.I1N, 1) + ' I_N'); }
+    }
+    if (TS.t >= TS.nextO) { TS.nextO = TS.t + OSC_DT; const o = TS.osc, i = o.i; o.t[i] = TS.t; o.u1[i] = r.u1; o.i1[i] = r.i1; o.i2[i] = TS.Z ? r.iL * P.p : NaN; o.psi[i] = r.pm; o.i = (i + 1) % OSC_N; o.n = Math.min(OSC_N, o.n + 1); }
+  }
+}
+function trLog(t) { const e = $('#tr-ev'); if (e) e.insertAdjacentHTML('afterbegin', `<li><b>${fmt(TS.t, 3)} s</b> ${sub(t)}</li>`); }
+function trSwitch(on) {
+  if (on === TR.on) return;
+  if (on) {
+    const a = TR.ang === 'rnd' ? Math.random() * 360 : +TR.ang; TS.th0 = a * DEG; TS.onT = TS.t; TS.trip = false; TS.hot = 0; TS.m.ipk = 0;
+    /* tok před zapnutím = remanence */
+    TS.s = [TS.pm, TS.pm, 0]; TR.on = true; trLog(`Zapnuto v okamžiku, kdy je fáze napětí ${fmt(a, 0)}° (0° = průchod nulou), remanence ${fmt(TS.pm / TRP.psiN * 100, 0)} %`);
+  } else { TR.on = false; TS.pm = clamp(TS.pm, -0.7 * TRP.psiN, 0.7 * TRP.psiN) * 0.9; TR.rem = TS.pm / TRP.psiN; trLog('Vypnuto, v jádře zůstala remanence ' + fmt(TR.rem * 100, 0) + ' %'); }
+}
+/* ---------- vykreslení ---------- */
+function trCtlHTML() {
+  const seg = (attr, cur, opts) => `<span class="seg">${opts.map(([k, t]) => `<button type="button" ${attr}="${k}" aria-pressed="${String(cur) === k}">${t}</button>`).join('')}</span>`;
+  const sl = (id, l, a, b, st, v, u) => `<label class="lsl"><span><span>${sub(l)}</span> <b id="trv-${id}">${fmt(v, st < 0.1 ? 2 : st < 1 ? 1 : 0)} ${sub(u)}</b></span><input type="range" data-tr="${id}" min="${a}" max="${b}" step="${st}" value="${v}"></label>`;
+  return `<div class="lgrp"><p class="lgh">Napájení primáru (230 V, 50 Hz)</p><div class="lrow"><button type="button" class="btn big${TR.on ? ' on' : ''}" id="tr-on">${TR.on ? 'Vypnout' : 'Zapnout'}</button>
+<label>Okamžik zapnutí<select id="tr-ang">${[['rnd', 'náhodně'], ['0', 'v nule napětí (0°)'], ['45', '45°'], ['90', 've vrcholu napětí (90°)']].map(([k, t]) => `<option value="${k}"${TR.ang === k ? ' selected' : ''}>${t}</option>`).join('')}</select></label></div>
+${sl('U', 'Napětí primáru (autotransformátor)', 0, 110, 1, TR.U, '%')}${sl('rem', 'Remanence před zapnutím', -0.8, 0.8, 0.05, TR.rem, '× ψ_N')}</div>
+<div class="lgrp"><p class="lgh">Sekundár</p><div class="lrow">${seg('data-trl', TR.load, [['open', 'naprázdno'], ['z', 'zátěž'], ['short', 'nakrátko']])}</div>
+${TR.load === 'z' ? `${sl('I', 'Zatížení I₂/I₂N (při U_N)', 0.05, 1.5, 0.05, TR.I, '')}${sl('cf', 'Účiník zátěže cos φ₂', 0, 1, 0.05, TR.cf, '')}<div class="lrow">${seg('data-trc', TR.ch, [['ind', 'induktivní'], ['cap', 'kapacitní']])}</div>` : TR.load === 'short' ? '<p class="note">Zkouška nakrátko: snižte napětí primáru asi na 5 % (napětí nakrátko). Při plném napětí vypne jistič.</p>' : '<p class="note">Zkouška naprázdno: plné napětí, sekundár rozpojený.</p>'}</div>`;
+}
+function trPresetHTML() {
+  return `<div class="lgrp"><p class="lgh">Předvolby pokusů</p><div class="lrow trpre">${TR_PRE.map((p, i) => `<button type="button" class="btn" data-trp="${i}">${p[0]}</button>`).join('')}</div></div>`;
+}
+const TR_PRE = [
+  ['Zkouška naprázdno', { load: 'open', U: 100, ang: '90', rem: 0 }],
+  ['Zkouška nakrátko', { load: 'short', U: 5, ang: '90', rem: 0 }],
+  ['Nejhorší zapínací ráz', { load: 'open', U: 100, ang: '0', rem: 0.7 }],
+  ['Zapnutí ve vrcholu (bez rázu)', { load: 'open', U: 100, ang: '90', rem: 0 }],
+  ['Jmenovitá induktivní zátěž', { load: 'z', U: 100, ang: '90', rem: 0, I: 1, cf: 0.8, ch: 'ind' }],
+  ['Kapacitní zátěž (napětí stoupne)', { load: 'z', U: 100, ang: '90', rem: 0, I: 1, cf: 0.2, ch: 'cap' }],
+];
+function renderTr(el) {
+  if (!TS) trInit();
+  el.innerHTML = `<div class="wrap lab"><h2>Laboratoř: transformátor</h2><p class="lead">Jednofázový transformátor 2 kVA, 230/115 V se počítá v čase včetně sycení jádra (u_k = 5 %, i₀ = 4 %). Níže je trojfázový transformátor s nesouměrnou zátěží a paralelní chod dvou transformátorů.</p>
+<div class="lbar"><label>Stroj<select id="lb-m">${[['am', 'asynchronní 400 V'], ['dc', 'stejnosměrný 440 V'], ['sm', 'synchronní s vyniklými póly'], ['tr', 'transformátor']].map(([k, t]) => `<option value="${k}"${k === 'tr' ? ' selected' : ''}>${t}</option>`).join('')}</select></label>
+<label>Zpomalení<select id="tr-sp">${[[0.1, '10×'], [0.05, '20×'], [0.02, '50×'], [0.01, '100×'], [0.005, '200×'], [0.002, '500×']].map(([v, t]) => `<option value="${v}"${+v === TR.sp ? ' selected' : ''}>${t}</option>`).join('')}</select></label>
+<span class="lrun"><button type="button" class="btn big" id="tr-go">${TR.run ? '❚❚ Pozastavit' : '▶ Pokračovat'}</button><button type="button" class="btn" id="tr-re">↺ Znovu</button></span></div>
+${trPresetHTML()}
+<div class="lctl"><div id="tr-ctl">${trCtlHTML()}</div><div class="lgrp"><p class="lgh">Zapojení</p><div id="tr-sch">${trSchSVG()}</div></div></div>
+<div class="lcds">${[['U1', 'U₁', 'V'], ['I1', 'I₁', 'A'], ['P1', 'P₁', 'W'], ['U2', 'U₂', 'V'], ['I2', 'I₂', 'A'], ['P2', 'P₂', 'W'], ['ipk', 'špička i₁ (0,5 s)', 'A'], ['t', 'čas', 's']].map(([k, t, u]) => `<div class="meter sm"><p>${t}</p><div class="lcd"><span id="trx-${k}">0</span><small>${u}</small></div></div>`).join('')}</div>
+<div class="ldiag"><div class="lgrp ldg dosc"><p class="lgh">Osciloskop</p><div class="lrow osct"><label>Časová základna<select id="tr-w">${[[0.04, '40 ms'], [0.1, '100 ms'], [0.4, '400 ms'], [1.2, '1,2 s']].map(([v, t]) => `<option value="${v}"${v === TR.win ? ' selected' : ''}>${t}</option>`).join('')}</select></label>
+${[['u1', 'napětí u₁', 'mut'], ['i1', 'proud i₁', 'a'], ['i2', 'proud i₂ (přepočtený na primár)', 'c'], ['psi', 'tok ψ_m', 'b']].map(([k, t, c]) => `<label class="chk osc-${c}"><input type="checkbox" data-trch="${k}"${TR.chs[k] ? ' checked' : ''}> ${sub(t)}</label>`).join('')}</div><canvas id="tr-cv" class="osccv"></canvas><p class="note">Každý kanál má vlastní měřítko (číslo vlevo dole). Při zapínacím rázu je dobře vidět, že tok začíná na remanenci a jeho stejnosměrná složka posune jádro do sycení: proud pak má úzké vysoké špičky jen v jedné polaritě.</p></div>
+<div class="lgrp ldg"><p class="lgh">Magnetizační charakteristika ψ(i)</p><div id="tr-bh" class="dgb"></div><p class="note">Bod je okamžitý stav jádra. Nad kolenem malá změna toku vyžaduje velký proud.</p></div>
+<div class="lgrp ldg"><p class="lgh">Fázorový diagram (ustálený stav)</p><div id="tr-ph" class="dgb"></div></div>
+<div class="lgrp ldg"><p class="lgh">Vyhodnocení měření</p><div id="tr-ev2" class="dgb"></div></div></div>
+<div class="cols2"><div class="lgrp"><p class="lgh">Záznam</p><ul class="lev" id="tr-ev"></ul></div><div class="lgrp"><p class="lgh">Na co se dívat</p><ul class="lt"><li>${sub('Naprázdno teče jen asi 4 % I_N a proud není sinusový (sycení): je špičatý.')}</li><li>${sub('Nakrátko stačí asi 5 % napětí na jmenovitý proud; wattmetr pak ukazuje ztráty ve vinutí.')}</li><li>Zapnutí v nule napětí s remanencí dá ráz až desetinásobku jmenovitého proudu, zapnutí ve vrcholu skoro žádný.</li><li>${sub('Při kapacitní zátěži je U₂ větší než naprázdno.')}</li></ul></div></div>
+${tr3HTML()}${trParHTML()}</div>`;
+  trDrawStatic(); tr3Draw(); trParDraw(); trStart();
+}
+function trSchSVG() {
+  const l = TR.load, Z = l === 'open' ? '' : l === 'short' ? '<path d="M470 40V140" class="lw"/>' : `<rect x="455" y="62" width="30" height="56" class="lfe"/><text x="500" y="95" class="b">Z (${TR.ch === 'ind' ? 'R+L' : 'R+C'})</text>`;
+  return `<svg viewBox="0 0 560 180" class="sch bench" role="img" aria-label="Zapojení transformátoru">
+<circle cx="40" cy="90" r="22" class="lfe"/><text x="40" y="96" text-anchor="middle" class="b">~</text><text x="40" y="132" text-anchor="middle" class="sm">autotr.</text>
+<path d="M40 68V40H150M40 112V140H200" class="lw"/><circle cx="100" cy="40" r="14" class="lfe"/><text x="100" y="45" text-anchor="middle" class="sm">A</text>
+<rect x="150" y="30" width="28" height="20" class="lfe"/><text x="164" y="44" text-anchor="middle" class="sm">W</text><path d="M178 40H210" class="lw"/>
+<circle cx="200" cy="90" r="13" class="lfe"/><text x="200" y="95" text-anchor="middle" class="sm">V</text><path d="M200 40V77M200 103V140" class="lw"/>
+<path d="M210 40H250V140H200" class="lw"/><path d="M250 55c14 0 14 14 0 14c14 0 14 14 0 14c14 0 14 14 0 14c14 0 14 14 0 14" class="lw"/>
+<path d="M268 40V140M276 40V140" class="lw"/><path d="M294 62c-14 0-14 12 0 12c-14 0-14 12 0 12c-14 0-14 12 0 12" class="lw"/>
+<path d="M294 62V40H350M294 98V140H470" class="lw"/><circle cx="330" cy="40" r="14" class="lfe"/><text x="330" y="45" text-anchor="middle" class="sm">A</text>
+<rect x="350" y="30" width="28" height="20" class="lfe"/><text x="364" y="44" text-anchor="middle" class="sm">W</text><path d="M378 40H470" class="lw"/>
+<circle cx="410" cy="90" r="13" class="lfe"/><text x="410" y="95" text-anchor="middle" class="sm">V</text><path d="M410 40V77M410 103V140" class="lw"/>
+${Z}${l !== 'short' && l !== 'open' ? '<path d="M470 40V62M470 118V140" class="lw"/>' : ''}
+<text x="262" y="166" text-anchor="middle" class="sm">230 V / 115 V</text></svg>`;
+}
+function trDrawStatic() {
+  const P = TRP, ps = [], i = []; for (let k = -60; k <= 60; k++) { const x = k / 60 * 2.8 * P.psiN; ps.push([trIm(x).i, x / P.psiN]); }
+  TRBH = ps;
+  const I = TR.load === 'z' ? TR.I : TR.load === 'short' ? 1 : 0, r = FAZ.tr.calc({ I, cf: TR.load === 'short' ? 0.01 : TR.cf, ch: TR.ch === 'cap' ? '-1' : '1', uk: P.uk * 100, ck: P.pk / P.uk, i0: P.i0 * 100, zm: 5 });
+  const e = $('#tr-ph'); if (e) e.innerHTML = `<figure class="sch fz">${figSub(r.svg)}</figure><p class="dgn">${r.out.slice(0, 2).map(([a, b]) => sub(a) + ': ' + b).join(' · ')}</p>`;
+  void i;
+}
+let TRBH = null;
+function trDraw() {
+  const P = TRP, m = TS.m, set = (k, v, d) => { const e = document.getElementById('trx-' + k); if (e) e.textContent = fmt(v, d); };
+  set('U1', m.U1, 1); set('I1', m.I1, m.I1 < 10 ? 2 : 1); set('P1', m.P1, 0); set('U2', m.U2, 1); set('I2', m.I2, m.I2 < 10 ? 2 : 1); set('P2', m.P2, 0); set('ipk', m.ipk, 1); set('t', TS.t, 2);
+  if (++dgTick % 3) return;
+  trOsc();
+  const bh = $('#tr-bh'); if (bh && TRBH) { const im = trIm(TS.pm).i; bh.innerHTML = miniPlot({ xr: [-60, 60], yr: [-2.8, 2.8], xl: 'i_μ [A]', yl: 'ψ / ψ_N', curves: [{ pts: TRBH, c: 'mc1' }], hl: [{ y: 1, c: 'mdl', t: 'ψ_N' }, { y: -1, c: 'mdl' }], pts: [{ x: im, y: TS.pm / P.psiN }], al: 'Magnetizační charakteristika' }); }
+  const ev = $('#tr-ev2'); if (ev) ev.innerHTML = trEval();
+}
+function trEval() {
+  const P = TRP, m = TS.m, rows = [];
+  if (!TR.on || m.U1 < 1) return '<p class="dgn">Zapněte napájení.</p>';
+  if (TR.load === 'open') {
+    const cf = m.P1 / (m.U1 * m.I1), Ife = m.P1 / m.U1, Imu = Math.sqrt(Math.max(m.I1 * m.I1 - Ife * Ife, 0));
+    rows.push(['Proud naprázdno i₀ = I₁/I₁N', fmt(m.I1 / P.I1N * 100, 2) + ' %'], ['Ztráty naprázdno P₀ (≈ ztráty v železe)', fmt(m.P1, 1) + ' W'], ['Účiník naprázdno cos φ₀', fmt(cf, 3)], ['R_Fe = U₁²/P₀', fmt(m.U1 * m.U1 / m.P1, 0) + ' Ω'], ['X_μ = U₁/I_μ', fmt(m.U1 / Imu, 0) + ' Ω'], ['Převod p = U₁/U₂', fmt(m.U1 / m.U2, 3)]);
+  } else if (TR.load === 'short') {
+    const Zk = m.U1 / m.I1, Rk = m.P1 / (m.I1 * m.I1), Xk = Math.sqrt(Math.max(Zk * Zk - Rk * Rk, 0));
+    rows.push(['Napětí nakrátko u_k (přepočteno na I_N)', fmt(Zk * P.I1N / P.U1 * 100, 2) + ' %'], ['Ztráty nakrátko P_k při I_N', fmt(Rk * P.I1N * P.I1N, 1) + ' W'], ['cos φ_k', fmt(Rk / Zk, 3)], ['R_k, X_k (na primáru)', fmt(Rk, 3) + ' Ω, ' + fmt(Xk, 3) + ' Ω'], ['Proud I₁/I₁N', fmt(m.I1 / P.I1N, 2)], ['Ustálený zkratový proud při U_N = I_N/u_k', fmt(P.I1N / P.uk, 0) + ' A']);
+  } else {
+    const U20 = P.U2 * TR.U / 100;
+    rows.push(['Účinnost η = P₂/P₁', fmt(m.P2 / m.P1 * 100, 1) + ' %'], ['Úbytek napětí Δu = (U₂₀ − U₂)/U₂₀', fmt((U20 - m.U2) / U20 * 100, 2) + ' %'], ['Ztráty P₁ − P₂', fmt(m.P1 - m.P2, 0) + ' W'], ['Zatížení I₂/I₂N', fmt(m.I2 / P.I2N, 2)], ['Účiník primáru cos φ₁', fmt(m.P1 / (m.U1 * m.I1), 3)]);
+  }
+  return `<table class="fzout">${rows.map(([a, b]) => `<tr><td>${sub(a)}</td><td>${b}</td></tr>`).join('')}</table><p class="dgn">Hodnoty jsou efektivní za poslední periodu; v přechodném ději (ráz) jsou orientační.</p>`;
+}
+function trOsc() {
+  const cv = $('#tr-cv'); if (!cv) return;
+  const W = cv.clientWidth, H = cv.clientHeight, dpr = window.devicePixelRatio || 1; if (!W) return;
+  if (cv.width !== Math.round(W * dpr) || cv.height !== Math.round(H * dpr)) { cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); }
+  const c = cv.getContext('2d'), col = labColors(); c.setTransform(dpr, 0, 0, dpr, 0, 0); c.clearRect(0, 0, W, H);
+  const o = TS.osc, N = o.n; if (N < 3) return; const st = (o.i - N + OSC_N) % OSC_N, at = j => (st + j) % OSC_N, tE = o.t[at(N - 1)], t0 = tE - TR.win;
+  const pad = 8, X = t => pad + (W - 2 * pad) * (t - t0) / TR.win, Ym = H / 2, A = H / 2 - 16;
+  c.strokeStyle = col.rule; c.lineWidth = 1; c.beginPath(); for (let k = 0; k <= 10; k++) { const x = pad + (W - 2 * pad) * k / 10; c.moveTo(x, 6); c.lineTo(x, H - 6); } c.moveTo(pad, Ym); c.lineTo(W - pad, Ym); c.stroke();
+  const cl = { u1: col.mut, i1: col.red, i2: col.blu, psi: col.och }, P = TRP, info = [];
+  for (const k of Object.keys(TR.chs).filter(k => TR.chs[k])) {
+    let mx = 1e-9; for (let j = 0; j < N; j++) { const i = at(j); if (o.t[i] >= t0 && isFinite(o[k][i])) mx = Math.max(mx, Math.abs(o[k][i])); }
+    if (k === 'psi') mx = Math.max(mx, P.psiN); if (k === 'u1') mx = Math.max(mx, P.U1 * Math.SQRT2 * 0.05);
+    c.strokeStyle = cl[k]; c.lineWidth = k === 'u1' ? 1.4 : 2; c.setLineDash(k === 'u1' ? [5, 4] : []); c.beginPath(); let first = true;
+    for (let j = 0; j < N; j++) { const i = at(j); if (o.t[i] < t0) continue; const v = o[k][i]; if (!isFinite(v)) { first = true; continue; } const x = X(o.t[i]), y = Ym - A * v / mx; if (first) c.moveTo(x, y); else c.lineTo(x, y); first = false; }
+    c.stroke(); info.push(k === 'u1' ? `u₁ ±${fmt(mx, 0)} V` : k === 'psi' ? `ψ ±${fmt(mx / P.psiN, 2)} ψ_N` : `${k === 'i1' ? 'i₁' : 'i₂′'} ±${fmt(mx, mx < 10 ? 2 : 0)} A`);
+  }
+  c.setLineDash([]); c.fillStyle = col.mut; c.font = '12px Inter, sans-serif'; c.fillText(`${fmt(TR.win * 100, TR.win < 0.1 ? 1 : 0)} ms/díl · ${info.join(' · ')}`, pad + 2, H - 4);
+}
+function trLoop(ts) {
+  trRaf = 0; if (tab !== 'lab' || LAB.m !== 'tr' || !$('#tr-cv')) { trLast = 0; return; }
+  const dt = trLast ? Math.min(0.05, (ts - trLast) / 1000) : 0; trLast = ts;
+  if (TR.run && dt > 0) trAdvance(dt * TR.sp);
+  trDraw(); trRaf = requestAnimationFrame(trLoop);
+}
+function trStart() { if (!trRaf) { trLast = 0; trRaf = requestAnimationFrame(trLoop); } }
+function trSetLoad() { TS.Z = trLoadZ(); TS.s[2] = 0; if (TS.Z) TS.s[1] = TS.pm; $('#tr-ctl').innerHTML = trCtlHTML(); $('#tr-sch').innerHTML = trSchSVG(); trDrawStatic(); }
+
+/* ---------- trojfázový transformátor s nesouměrnou zátěží (fázorově, souměrné složky) ---------- */
+const T3 = { con: 'Dyn', core: 'core', la: 100, lb: 30, lc: 0, cf: 1 };
+const A3 = [Cx(1, 0), cpol(1, -120 * DEG), cpol(1, 120 * DEG)];
+function c3solve(M, b) {   /* Gauss pro komplexní 3×3 */
+  const a = M.map((r, i) => [...r, b[i]]);
+  for (let i = 0; i < 3; i++) { let p = i; for (let r = i + 1; r < 3; r++) if (cabs(a[r][i]) > cabs(a[p][i])) p = r; [a[i], a[p]] = [a[p], a[i]];
+    for (let r = 0; r < 3; r++) if (r !== i) { const f = cdiv(a[r][i], a[i][i]); for (let c = i; c < 4; c++) a[r][c] = csub(a[r][c], cmul(f, a[i][c])); } }
+  return [0, 1, 2].map(i => cdiv(a[i][3], a[i][i]));
+}
+function tr3Calc() {
+  const zk = Cx(0.01, 0.04), zero = { Dyn: zk, Yzn: csc(zk, 0.25), Yyn: T3.core === 'core' ? Cx(0.05, 0.9) : Cx(0.3, 20) }[T3.con];   /* p.j. */
+  const a = cpol(1, 120 * DEG), a2 = cpol(1, 240 * DEG), Am = [[Cx(1), Cx(1), Cx(1)], [Cx(1), a2, a], [Cx(1), a, a2]], Z = [zero, zk, zk];
+  /* Zs = A diag(Z) A⁻¹, A⁻¹ = (1/3)[[1,1,1],[1,a,a²],[1,a²,a]] */
+  const Ai = [[Cx(1), Cx(1), Cx(1)], [Cx(1), a, a2], [Cx(1), a2, a]].map(r => r.map(x => csc(x, 1 / 3)));
+  const Zs = [0, 1, 2].map(i => [0, 1, 2].map(j => [0, 1, 2].reduce((s, k) => cadd(s, cmul(cmul(Am[i][k], Z[k]), Ai[k][j])), Cx(0))));
+  const ph = Math.acos(T3.cf), ZL = [T3.la, T3.lb, T3.lc].map(x => x < 1 ? Cx(1e6, 0) : cpol(100 / x, ph));
+  const M = Zs.map((r, i) => r.map((z, j) => i === j ? cadd(z, ZL[i]) : z)), I = c3solve(M, A3), V = I.map((x, i) => cmul(ZL[i], x));
+  const In = cadd(cadd(I[0], I[1]), I[2]), V0 = csc(cadd(cadd(V[0], V[1]), V[2]), 1 / 3);
+  return { I, V, In, V0, zero };
+}
+function tr3HTML() {
+  const seg = (attr, cur, opts) => `<span class="seg">${opts.map(([k, t]) => `<button type="button" ${attr}="${k}" aria-pressed="${cur === k}">${t}</button>`).join('')}</span>`;
+  const sl = (id, l, a, b, st, v, u) => `<label class="lsl"><span><span>${sub(l)}</span> <b id="t3v-${id}">${fmt(v, st < 1 ? 2 : 0)} ${sub(u)}</b></span><input type="range" data-t3="${id}" min="${a}" max="${b}" step="${st}" value="${v}"></label>`;
+  return `<h3 id="tr3">Trojfázový transformátor s nesouměrnou zátěží</h3><p>Rozvodný transformátor napájí na straně NN fázové zátěže proti nulovému vodiči. Ustálený stav se počítá souměrnými složkami: rozhoduje impedance pro netočivou (nulovou) složku, a ta závisí na zapojení a na jádře.</p>
+<div class="fzgrid"><figure class="sch fz" id="t3-svg"></figure><div class="fzctl"><div class="lrow">${seg('data-t3c', T3.con, [['Dyn', 'Dyn'], ['Yzn', 'Yzn'], ['Yyn', 'Yyn']])}</div>
+${T3.con === 'Yyn' ? `<div class="lrow">${seg('data-t3k', T3.core, [['core', 'trojsloupkové jádro'], ['bank', '3 jednofázové (skupina)']])}</div>` : ''}
+${sl('la', 'Zatížení fáze a', 0, 150, 5, T3.la, '% I_N')}${sl('lb', 'Zatížení fáze b', 0, 150, 5, T3.lb, '% I_N')}${sl('lc', 'Zatížení fáze c', 0, 150, 5, T3.lc, '% I_N')}${sl('cf', 'Účiník zátěží', 0.1, 1, 0.05, T3.cf, '')}
+<table class="fzout" id="t3-out"></table><p class="note" id="t3-note"></p></div></div>`;
+}
+function tr3Draw() {
+  const e = $('#t3-svg'); if (!e) return; const r = tr3Calc();
+  const V = [0, 1, 2].map(k => ({ a: Cx(0, 0), b: r.V[k], t: 'U_' + 'abc'[k], side: -1 })).concat([0, 1, 2].map(k => ({ a: Cx(0, 0), b: csc(A3[k], 1), c: 'kd' })));
+  if (cabs(r.V0) > 0.005) V.push({ a: Cx(0, 0), b: r.V0, c: 'kor', t: 'U_0 (posun uzlu)', tc: 'sm' });
+  r.I.forEach((x, k) => { if (cabs(x) > 0.01) V.push({ a: Cx(0, 0), b: csc(x, 0.5), c: 'kr', t: 'I_' + 'abc'[k], tc: 'sm' }); });
+  e.innerHTML = figSub(phasorSVG(V, [], [], 'Fázová napětí sekundáru'));
+  $('#t3-out').innerHTML = [['Napětí fází U_a, U_b, U_c', r.V.map(x => fmt(cabs(x) * 100, 1)).join(' / ') + ' %'], ['Posun uzlu U_0', fmt(cabs(r.V0) * 100, 1) + ' %'], ['Proud nulovým vodičem', fmt(cabs(r.In) * 100, 0) + ' % I_N'], ['Impedance pro nulovou složku Z_0', fmt(cabs(r.zero), 2) + ' p.j.']].map(([a, b]) => `<tr><td>${sub(a)}</td><td>${b}</td></tr>`).join('');
+  $('#t3-note').innerHTML = sub(T3.con === 'Dyn' ? 'Dyn: proud nulové složky ze sekundáru se uzavře v trojúhelníku primáru, Z₀ ≈ Z_k. Napětí zůstávají téměř souměrná – proto je to běžné zapojení distribučních transformátorů.' : T3.con === 'Yzn' ? 'Yzn: lomená hvězda rozdělí proud fáze na dva sloupky, ampérzávity nulové složky se vyruší už na sekundáru, Z₀ je velmi malá.' : T3.core === 'bank' ? 'Yyn ze tří jednofázových: nulová složka toku má plnou cestu železem, Z₀ je velká (magnetizační) a jednofázová zátěž způsobí obrovský posun uzlu. Takto se zapojovat nesmí.' : 'Yyn s trojsloupkovým jádrem: tok nulové složky se uzavírá vzduchem a nádobou, Z₀ je asi 1 p.j. Posun uzlu je znatelný, nádoba se ohřívá; Yyn se proto smí zatěžovat nesouměrně jen omezeně (asi do 10 % I_N v nulovém vodiči).');
+}
+/* ---------- paralelní chod dvou transformátorů ---------- */
+const TP = { sA: 100, sB: 100, ukA: 4, ukB: 6, dp: 0, hd: 0, L: 100, cf: 0.9 };
+function trParCalc() {
+  const S = TP.sA + TP.sB, zA = cmul(Cx(0.3, 1), Cx(TP.ukA / 100 / Math.hypot(0.3, 1) * S / TP.sA)), zB = cmul(Cx(0.3, 1), Cx(TP.ukB / 100 / Math.hypot(0.3, 1) * S / TP.sB));   /* p.j. na základ S_A + S_B */
+  const EA = cpol(1 + TP.dp / 100, -TP.hd * 30 * DEG), EB = Cx(1, 0), ZL = TP.L > 0.5 ? cpol(100 / TP.L, Math.acos(TP.cf)) : Cx(1e6, 0);
+  const yA = cdiv(Cx(1), zA), yB = cdiv(Cx(1), zB), yL = cdiv(Cx(1), ZL), V = cdiv(cadd(cmul(EA, yA), cmul(EB, yB)), cadd(cadd(yA, yB), yL));
+  const IA = cdiv(csub(EA, V), zA), IB = cdiv(csub(EB, V), zB), Ic = cdiv(csub(EA, EB), cadd(zA, zB));
+  return { V, IA, IB, Ic, S, kA: cabs(IA) * S / TP.sA, kB: cabs(IB) * S / TP.sB, cA: cabs(Ic) * S / TP.sA };
+}
+function trParHTML() {
+  const sl = (id, l, a, b, st, v, u) => `<label class="lsl"><span><span>${sub(l)}</span> <b id="tpv-${id}">${fmt(v, st < 1 ? 1 : 0)} ${u}</b></span><input type="range" data-tp="${id}" min="${a}" max="${b}" step="${st}" value="${v}"></label>`;
+  return `<h3 id="trpar">Paralelní chod dvou transformátorů</h3><p>Dva transformátory napájejí společnou zátěž. Zkuste, co udělá rozdílné u_k, rozdílný převod nebo rozdílný hodinový úhel.</p>
+<div class="fzgrid"><figure class="sch fz" id="tp-svg"></figure><div class="fzctl">${sl('sA', 'Výkon S_A', 50, 400, 10, TP.sA, 'kVA')}${sl('sB', 'Výkon S_B', 50, 400, 10, TP.sB, 'kVA')}${sl('ukA', 'u_k A', 2, 12, 0.5, TP.ukA, '%')}${sl('ukB', 'u_k B', 2, 12, 0.5, TP.ukB, '%')}
+${sl('dp', 'Rozdíl převodů (napětí naprázdno A proti B)', -5, 5, 0.5, TP.dp, '%')}${sl('hd', 'Rozdíl hodinových úhlů', 0, 6, 1, TP.hd, 'h')}${sl('L', 'Zatížení (součtu výkonů)', 0, 130, 5, TP.L, '%')}${sl('cf', 'Účiník zátěže', 0.2, 1, 0.05, TP.cf, '')}
+<div id="tp-bars"></div><table class="fzout" id="tp-out"></table><p class="note" id="tp-note"></p></div></div>`;
+}
+function trParDraw() {
+  const e = $('#tp-svg'); if (!e) return; const r = trParCalc();
+  const s = 0.5, V = [{ a: Cx(0, 0), b: r.V, t: 'U (přípojnice)', side: -1 }, { a: Cx(0, 0), b: csc(r.IA, s), c: 'kr', t: 'I_A', tc: 'sm' }, { a: Cx(0, 0), b: csc(r.IB, s), c: 'kor', t: 'I_B', tc: 'sm' }];
+  if (cabs(r.Ic) > 0.01) V.push({ a: Cx(0, 0), b: csc(r.Ic, s), c: 'kbl', t: 'I_vyr', tc: 'sm' });
+  e.innerHTML = figSub(phasorSVG(V, [], [], 'Paralelní chod'));
+  const bar = (t, k) => `<div class="dbr${k > 1.05 ? ' g' : ''}"><span>${t}</span><i><b style="width:${Math.min(k / 2, 1) * 100}%"></b></i><em>${fmt(k * 100, 0)} %</em></div>`;
+  $('#tp-bars').innerHTML = `<div class="dbar"><p>Zatížení vůči vlastnímu jmenovitému výkonu</p>${bar('A', r.kA)}${bar('B', r.kB)}</div>`;
+  $('#tp-out').innerHTML = [['Vyrovnávací proud naprázdno (vůči I_N A)', fmt(r.cA * 100, 0) + ' %'], ['Napětí přípojnice', fmt(cabs(r.V) * 100, 1) + ' %']].map(([a, b]) => `<tr><td>${sub(a)}</td><td>${b}</td></tr>`).join('');
+  $('#tp-note').innerHTML = sub(TP.hd ? 'Různý hodinový úhel: napětí naprázdno se liší o ' + TP.hd * 30 + '°, vyrovnávací proud je řádově zkratový. Takové transformátory se paralelně spojit nesmějí.' : Math.abs(TP.ukA - TP.ukB) > 0.1 ? 'Zatížení se dělí nepřímo úměrně u_k (vztaženému na vlastní výkon): transformátor s menším u_k se přetíží dřív.' : TP.dp ? 'Rozdílný převod: i bez zátěže teče vyrovnávací proud, který zbytečně zatěžuje oba transformátory.' : 'Stejné u_k i převod: zatížení se dělí v poměru výkonů.');
+}
+/* ---------- ovládání ---------- */
+document.addEventListener('click', e => {
+  if (LAB.m !== 'tr' || tab !== 'lab') return;
+  const t = e.target, b = t.closest('button'); if (!b) return;
+  if (b.id === 'tr-on') { trSwitch(!TR.on); $('#tr-ctl').innerHTML = trCtlHTML(); }
+  else if (b.id === 'tr-go') { TR.run = !TR.run; b.textContent = TR.run ? '❚❚ Pozastavit' : '▶ Pokračovat'; }
+  else if (b.id === 'tr-re') { TR.on = false; trInit(); $('#tr-ev').innerHTML = ''; $('#tr-ctl').innerHTML = trCtlHTML(); }
+  else if (b.dataset.trl) { TR.load = b.dataset.trl; trSetLoad(); }
+  else if (b.dataset.trc) { TR.ch = b.dataset.trc; trSetLoad(); }
+  else if (b.dataset.trp) { const [n, o] = TR_PRE[+b.dataset.trp]; const keepRem = o.rem; TR.on = false; trInit(); Object.assign(TR, o); TR.rem = keepRem; TS.pm = TR.rem * TRP.psiN; TS.s = [TS.pm, TS.pm, 0]; trSetLoad(); trLog('Pokus: ' + n); trSwitch(true); $('#tr-ctl').innerHTML = trCtlHTML(); }
+  else if (b.dataset.t3c) { T3.con = b.dataset.t3c; trRerender3(); }
+  else if (b.dataset.t3k) { T3.core = b.dataset.t3k; trRerender3(); }
+});
+function trRerender3() { const h = $('#tr3'), g = h.nextElementSibling.nextElementSibling; const tmp = document.createElement('div'); tmp.innerHTML = tr3HTML(); g.replaceWith(tmp.children[2]); tr3Draw(); }
+document.addEventListener('input', e => {
+  if (LAB.m !== 'tr' || tab !== 'lab') return; const t = e.target, d = t.dataset;
+  if (d.tr) { TR[d.tr] = +t.value; const o = $('#trv-' + d.tr); if (o) o.innerHTML = fmt(+t.value, +t.step < 0.1 ? 2 : +t.step < 1 ? 1 : 0) + ' ' + sub(d.tr === 'U' ? '%' : d.tr === 'rem' ? '× ψ_N' : ''); if (d.tr === 'rem' && !TR.on) { TS.pm = TR.rem * TRP.psiN; } if (d.tr === 'I' || d.tr === 'cf') { TS.Z = trLoadZ(); trDrawStatic(); } }
+  else if (d.t3) { T3[d.t3] = +t.value; $('#t3v-' + d.t3).innerHTML = fmt(+t.value, +t.step < 1 ? 2 : 0) + ' ' + sub(d.t3 === 'cf' ? '' : '% I_N'); tr3Draw(); }
+  else if (d.tp) { TP[d.tp] = +t.value; $('#tpv-' + d.tp).textContent = fmt(+t.value, +t.step < 1 ? 1 : 0) + ' ' + ({ sA: 'kVA', sB: 'kVA', ukA: '%', ukB: '%', dp: '%', hd: 'h', L: '%', cf: '' })[d.tp]; trParDraw(); }
+});
+document.addEventListener('change', e => {
+  if (LAB.m !== 'tr' || tab !== 'lab') return; const t = e.target;
+  if (t.id === 'tr-sp') TR.sp = +t.value; else if (t.id === 'tr-ang') TR.ang = t.value; else if (t.id === 'tr-w') TR.win = +t.value; else if (t.dataset.trch) TR.chs[t.dataset.trch] = t.checked;
+});
+
 /* ===== Záložka Točivé pole ===== */
 const PO = { wt: 0, play: true, spd: 90, I: [1, 1, 1], ph: [0, -120, 120], geo: '3f', vec: true, seq: true, trail: true, pre: 'sym' };
 const PO_PRE = {
@@ -5195,10 +5622,14 @@ function stCardHTML(c, i, ex) {
 }
 function renderStroje(el) {
   const src = stView === 'ex' ? ST_EX : ST_CARDS, ex = stView === 'ex';
-  const seg = `<span class="seg" role="group" aria-label="Zobrazit">${[['q', 'Otázky (' + ST_CARDS.length + ')'], ['ex', 'Příklady (' + ST_EX.length + ')'], ['fig', 'Průřezy a schémata']].map(([k, l]) => `<button type="button" data-stv="${k}" aria-pressed="${stView === k}">${l}</button>`).join('')}</span>`;
+  const seg = `<span class="seg" role="group" aria-label="Zobrazit">${[['q', 'Otázky (' + ST_CARDS.length + ')'], ['ex', 'Příklady (' + ST_EX.length + ')'], ['vs', 'Všetečné (' + ST_VS.length + ')'], ['fig', 'Průřezy a schémata']].map(([k, l]) => `<button type="button" data-stv="${k}" aria-pressed="${stView === k}">${l}</button>`).join('')}</span>`;
   const partSel = `<label for="stpart">Část</label><select id="stpart"><option value="all">všechny</option>${Object.entries(ST_PARTS).map(([k, v]) => `<option value="${k}"${stPart === k ? ' selected' : ''}>${v}</option>`).join('')}</select>`;
   let body, bar;
-  if (stView === 'fig') {
+  if (stView === 'vs') {
+    const list = ST_VS.map((_, i) => i).filter(i => stPart === 'all' || ST_VS[i][0] === +stPart);
+    bar = `<div class="cbar">${seg}${partSel}<button type="button" class="btn" id="stvs-open">${stvsOpen ? 'Sbalit vše' : 'Rozbalit vše'}</button><span class="st">${list.length} otázek</span></div>`;
+    body = `<p class="lead">Záludné otázky, na kterých se u zkoušky ze strojů nejčastěji „pohoří“. Nejdřív odpovězte nahlas, pak rozbalte.</p>${stVsHTML(list)}`;
+  } else if (stView === 'fig') {
     const g = ST_GAL.filter(([, p]) => stPart === 'all' || p === +stPart);
     bar = `<div class="cbar">${seg}${partSel}</div>`;
     body = g.length ? `<div class="figs">${g.map(([n]) => `<figure class="sch">${figHTML(n)}</figure>`).join('')}</div>` : '<p class="lead">Pro tuto část tu obrázek není; zkuste jinou část.</p>';
@@ -5213,6 +5644,7 @@ function renderStroje(el) {
 }
 document.addEventListener('click', e => {
   const b = e.target.closest('[data-stv]'); if (b) { stView = b.dataset.stv; stOrder = null; renderCards(); return; }
+  if (e.target.id === 'stvs-open') { stvsOpen = !stvsOpen; renderCards(); return; }
   if (e.target.id === 'stmix') { const n = (stView === 'ex' ? ST_EX : ST_CARDS).length, a = [...Array(n).keys()]; for (let i = n - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } stOrder = a; renderCards(); }
 });
 document.addEventListener('change', e => { if (e.target.id === 'stpart') { stPart = e.target.value; renderCards(); } });

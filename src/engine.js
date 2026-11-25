@@ -286,10 +286,14 @@ function stCardHTML(c, i, ex) {
 }
 function renderStroje(el) {
   const src = stView === 'ex' ? ST_EX : ST_CARDS, ex = stView === 'ex';
-  const seg = `<span class="seg" role="group" aria-label="Zobrazit">${[['q', 'Otázky (' + ST_CARDS.length + ')'], ['ex', 'Příklady (' + ST_EX.length + ')'], ['fig', 'Průřezy a schémata']].map(([k, l]) => `<button type="button" data-stv="${k}" aria-pressed="${stView === k}">${l}</button>`).join('')}</span>`;
+  const seg = `<span class="seg" role="group" aria-label="Zobrazit">${[['q', 'Otázky (' + ST_CARDS.length + ')'], ['ex', 'Příklady (' + ST_EX.length + ')'], ['vs', 'Všetečné (' + ST_VS.length + ')'], ['fig', 'Průřezy a schémata']].map(([k, l]) => `<button type="button" data-stv="${k}" aria-pressed="${stView === k}">${l}</button>`).join('')}</span>`;
   const partSel = `<label for="stpart">Část</label><select id="stpart"><option value="all">všechny</option>${Object.entries(ST_PARTS).map(([k, v]) => `<option value="${k}"${stPart === k ? ' selected' : ''}>${v}</option>`).join('')}</select>`;
   let body, bar;
-  if (stView === 'fig') {
+  if (stView === 'vs') {
+    const list = ST_VS.map((_, i) => i).filter(i => stPart === 'all' || ST_VS[i][0] === +stPart);
+    bar = `<div class="cbar">${seg}${partSel}<button type="button" class="btn" id="stvs-open">${stvsOpen ? 'Sbalit vše' : 'Rozbalit vše'}</button><span class="st">${list.length} otázek</span></div>`;
+    body = `<p class="lead">Záludné otázky, na kterých se u zkoušky ze strojů nejčastěji „pohoří“. Nejdřív odpovězte nahlas, pak rozbalte.</p>${stVsHTML(list)}`;
+  } else if (stView === 'fig') {
     const g = ST_GAL.filter(([, p]) => stPart === 'all' || p === +stPart);
     bar = `<div class="cbar">${seg}${partSel}</div>`;
     body = g.length ? `<div class="figs">${g.map(([n]) => `<figure class="sch">${figHTML(n)}</figure>`).join('')}</div>` : '<p class="lead">Pro tuto část tu obrázek není; zkuste jinou část.</p>';
@@ -304,6 +308,7 @@ function renderStroje(el) {
 }
 document.addEventListener('click', e => {
   const b = e.target.closest('[data-stv]'); if (b) { stView = b.dataset.stv; stOrder = null; renderCards(); return; }
+  if (e.target.id === 'stvs-open') { stvsOpen = !stvsOpen; renderCards(); return; }
   if (e.target.id === 'stmix') { const n = (stView === 'ex' ? ST_EX : ST_CARDS).length, a = [...Array(n).keys()]; for (let i = n - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } stOrder = a; renderCards(); }
 });
 document.addEventListener('change', e => { if (e.target.id === 'stpart') { stPart = e.target.value; renderCards(); } });

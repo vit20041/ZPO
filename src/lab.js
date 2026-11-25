@@ -361,11 +361,12 @@ function labMeters() {
       : [['x1', 'Frekvence f₁', 'Hz'], ['x2', 'Skluz s', '%'], ['x3', 'Výkon M·Ω', 'kW'], ['t', 'Čas simulace', 's']] };
 }
 function renderLab(el) {
+  if (LAB.m === 'tr') { renderTr(el); return; }
   if (!L || L.m !== LAB.m || L.gen !== LAB.gen) { labInit(); labGaugeInit(); }
   const { meters, extra } = labMeters();
   el.innerHTML = `<div class="wrap lab"><h2>Laboratoř: stroj naživo</h2><p class="lead">Stroj se počítá průběžně a běží, dokud ho nevypnete; za chodu můžete přepínat napájení, zátěž i buzení. Ručky ukazují okamžité hodnoty${L.m === 'sm' ? '' : ' (u střídavého stroje efektivní)'}; červená šipka je osa magnetického pole${L.m === 'dc' ? '' : ' statoru'}, bílý pruh značka na rotoru.</p>
 <div class="lbar">
-<label>Stroj<select id="lb-m">${[['am', 'asynchronní 400 V'], ['dc', 'stejnosměrný 440 V'], ['sm', 'synchronní s vyniklými póly']].map(([k, t]) => `<option value="${k}"${L.m === k ? ' selected' : ''}>${t}</option>`).join('')}</select></label>
+<label>Stroj<select id="lb-m">${[['am', 'asynchronní 400 V'], ['dc', 'stejnosměrný 440 V'], ['sm', 'synchronní s vyniklými póly'], ['tr', 'transformátor']].map(([k, t]) => `<option value="${k}"${L.m === k ? ' selected' : ''}>${t}</option>`).join('')}</select></label>
 <label>Režim<span class="seg">${[['mot', 'motor'], ['gen', L.m === 'dc' ? 'dynamo' : 'generátor']].map(([k, t]) => `<button type="button" data-lgen="${k}" aria-pressed="${(k === 'gen') === L.gen}">${t}</button>`).join('')}</span></label>
 <label>Zpomalení<select id="lb-sp">${[[1, 'skutečný čas'], [0.5, '2×'], [0.2, '5×'], [0.1, '10×'], [0.05, '20×'], [0.02, '50×'], [0.01, '100×'], [0.005, '200×'], [0.002, '500×']].map(([v, t]) => `<option value="${v}"${+v === LAB.sp ? ' selected' : ''}>${t}</option>`).join('')}</select></label>
 <label>Setrvačnost<select id="lb-J">${[0.5, 1, 2, 4].map(v => `<option value="${v}"${v === LAB.J ? ' selected' : ''}>${fmt(v, 1)}× J</option>`).join('')}</select></label>
